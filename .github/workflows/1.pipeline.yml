@@ -1,0 +1,82 @@
+name: "> Main Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - '*'
+  pull_request:
+    branches: [ '*' ]
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Release Library'
+        required: true
+        default: '...no release'
+        type: choice
+        options:
+          - '...no release'
+          - major
+          - minor
+          - patch
+
+jobs:
+  build:
+    name: Build + unit tests
+    uses: ./.github/workflows/callable.build.yml
+    permissions:
+      checks: write
+    if: |
+      !contains(github.event.head_commit.message, '[maven-release-plugin] prepare for next development iteration')
+      || github.ref_type == 'tag'
+
+  code_analysis:
+    name: Code Analysis (multi)
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: ./.github/workflows/callable.code-analysis.yml
+    needs: build
+    if: |
+      github.event_name != 'workflow_dispatch'
+      || inputs.type == '...no release'
+
+  maven_release:
+    name: Create release
+    uses: ./.github/workflows/callable.maven-release.yml
+    secrets: inherit
+    needs: build
+    permissions:
+      contents: write
+    with:
+      type: ${{ inputs.type }}
+    if: |
+      github.event_name == 'workflow_dispatch'
+      && inputs.type != '...no release'
+
+  publish_sonatype:
+    name: Publish artifact (Maven Central)
+    uses: ./.github/workflows/callable.publish-sonatype.yml
+    secrets: inherit
+    needs: build
+    if: |
+      (
+        github.event_name != 'workflow_dispatch'
+        || inputs.type == '...no release'
+      ) && (
+        github.ref == 'refs/heads/main'
+        || github.ref_type == 'tag'
+      )
+
+  publish_javadoc:
+    name: Publish javadoc (GitHub Pages)
+    permissions:
+      contents: write
+    uses: ./.github/workflows/callable.publish-javadoc.yml
+    needs: build
+    if: |
+      (
+        github.ref == 'refs/heads/main'
+        && ( inputs.type == '' || inputs.type == '...no release' )
+      ) || github.ref_type == 'tag'

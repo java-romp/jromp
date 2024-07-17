@@ -1,0 +1,268 @@
+package jromp.parallel;
+
+import jromp.Constants;
+import jromp.parallel.builder.SectionBuilder;
+import jromp.parallel.task.ForTask;
+import jromp.parallel.task.Task;
+import jromp.parallel.utils.Utils;
+import jromp.parallel.var.ReductionVariable;
+import jromp.parallel.var.SharedVariable;
+import jromp.parallel.var.Variable;
+import jromp.parallel.var.Variables;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Parallel execution block.
+ */
+public class Parallel {
+	/**
+	 * The number of threads used in the current block.
+	 */
+	private final int threads;
+
+	/**
+	 * The thread pool.
+	 */
+	private final ThreadPoolExecutor pool;
+
+	/**
+	 * The variables used in the current block.
+	 */
+	private Variables variables = Variables.create();
+
+	private final List<Variables> variablesList = new ArrayList<>();
+
+	/**
+	 * Create a new parallel execution block.
+	 *
+	 * @param threads The number of threads.
+	 */
+	private Parallel(int threads) {
+		this.threads = threads;
+		this.pool = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
+		                                   new ArrayBlockingQueue<>(threads));
+	}
+
+	/**
+	 * Create a new parallel execution block with the default number of threads.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public static Parallel defaultConfig() {
+		return new Parallel(Constants.MAX_THREADS);
+	}
+
+	/**
+	 * Create a new parallel execution block with the given number of threads.
+	 *
+	 * @param threads The number of threads to use.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public static Parallel withThreads(int threads) {
+		return new Parallel(Utils.checkThreads(threads));
+	}
+
+	/**
+	 * Add the number of threads to the variables.
+	 *
+	 * @param variables The variables to add the number of threads to.
+	 */
+	private void addNumThreadsToVariables(Variables variables) {
+		variables.add(Constants.NUM_THREADS, new SharedVariable<>(this.threads));
+	}
+
+	/**
+	 * Begin the parallel execution block with the given task.
+	 *
+	 * @param task The task to run.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel begin(Task task) {
+		addNumThreadsToVariables(this.variables);
+
+		for (int i = 0; i < this.threads; i++) {
+			final int finalI = i;
+			this.variablesList.add(this.variables);
+
+			pool.execute(() -> task.run(finalI, this.variables));
+		}
+
+		return this;
+	}
+
+	/**
+	 * Wait for all threads to finish.
+	 */
+	public void join() {
+		pool.shutdown();
+
+		while (!pool.isTerminated()) {
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+				// Ignore
+			}
+		}
+
+		// Perform the last operation on all variables.
+		for (Variables vars : variablesList) {
+			// Merge all reduction variables after the parallel block has ended.
+			vars.getVariablesOfType(ReductionVariable.class)
+			    .forEach(variable -> ((ReductionVariable<?>) variable).merge());
+
+			vars.getVariables().values().forEach(Variable::end);
+		}
+	}
+
+	/**
+	 * Executes a task in a parallel block, using the default variables.
+	 *
+	 * @param task The task to run.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel block(Task task) {
+		return this.block(Variables.create(), task);
+	}
+
+	/**
+	 * Executes a task in a parallel block, using the given variables.
+	 *
+	 * @param variables The variables to use.
+	 * @param task      The task to run.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel block(Variables variables, Task task) {
+		this.variables = variables;
+		return begin(task);
+	}
+
+
+	/**
+	 * Executes a for loop in parallel with the given start and end indices, using a task implementation.
+	 *
+	 * @param start The start index of the for loop.
+	 * @param end   The end index of the for loop.
+	 * @param task  The task to be executed in parallel.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel parallelFor(int start, int end, ForTask task) {
+		return this.parallelFor(start, end, Variables.create(), task);
+	}
+
+	/**
+	 * Executes a for loop in parallel with the given start and end indices, using a
+	 * task implementation and variables.
+	 *
+	 * @param start     The start index of the for loop.
+	 * @param end       The end index of the for loop.
+	 * @param variables The variables to use in the task.
+	 * @param forTask   The task to be executed in parallel.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel parallelFor(int start, int end, Variables variables, ForTask forTask) {
+		this.variables = variables;
+		addNumThreadsToVariables(this.variables);
+		this.variablesList.add(this.variables);
+
+		for (int i = 0; i < this.threads; i++) {
+			// Calculate the start and end indices for the current thread.
+			int chunkSize = (end - start) / this.threads;
+			int chunkStart = start + i * chunkSize;
+			int chunkEnd;
+
+			// If this is the last thread, make sure to include the remaining elements.
+			if (i == this.threads - 1) {
+				chunkEnd = end;
+			} else {
+				chunkEnd = chunkStart + chunkSize;
+			}
+
+			final int finalI = i;
+			final Variables finalVariables = variables.copy();
+			this.variablesList.add(finalVariables);
+			pool.execute(() -> forTask.run(finalI, chunkStart, chunkEnd, finalVariables));
+		}
+
+		return this;
+	}
+
+
+	/**
+	 * Executes the given tasks in separate sections.
+	 *
+	 * @param tasks The tasks to run in parallel.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel sections(Task... tasks) {
+		return this.sections(Variables.create(), tasks);
+	}
+
+	/**
+	 * Executes the given tasks in separate sections.
+	 *
+	 * @param variables The variables to use.
+	 * @param tasks     The tasks to run in parallel.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel sections(Variables variables, Task... tasks) {
+		this.variables = variables;
+		addNumThreadsToVariables(this.variables);
+		this.variablesList.add(this.variables);
+
+		for (int i = 0; i < this.threads; i++) {
+			final int finalI = i;
+			Task task = tasks[i];
+			Variables vars = variables.copy();
+			this.variablesList.add(vars);
+
+			pool.execute(() -> task.run(finalI, vars));
+		}
+
+		return this;
+	}
+
+	/**
+	 * Executes the given sections in parallel.
+	 *
+	 * @param sections The sections to run in parallel.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel sections(Section... sections) {
+		for (int i = 0; i < sections.length; i++) {
+			final int finalI = i;
+			Task task = sections[i].task();
+			Variables vars = sections[i].variables();
+			addNumThreadsToVariables(vars);
+			this.variablesList.add(vars);
+
+			pool.execute(() -> task.run(finalI, vars));
+		}
+
+		return this;
+	}
+
+	/**
+	 * Executes the given sections in parallel.
+	 *
+	 * @param sectionBuilder The builder for parallel sections.
+	 *
+	 * @return The parallel execution block.
+	 */
+	public Parallel sections(SectionBuilder sectionBuilder) {
+		return this.sections(sectionBuilder.build().toArray(Section[]::new));
+	}
+}
