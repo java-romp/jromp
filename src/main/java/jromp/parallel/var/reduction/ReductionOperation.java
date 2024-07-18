@@ -38,31 +38,26 @@ public interface ReductionOperation<T> {
 	T combine(T a, T b);
 
 	/**
-	 * Returns the value of type T based on the given value and number.
+	 * Returns the value of the number received, converted to the
+	 * type of the reduction operation.
 	 *
-	 * @param value the value to be converted.
+	 * @param value the value used to determine the type of the conversion.
 	 * @param num   the number to be converted to the desired type.
 	 *
-	 * @return the converted value of type T.
+	 * @return the converted value with type T.
 	 *
 	 * @throws IllegalArgumentException if the type is not supported.
 	 */
 	@SuppressWarnings("unchecked")
 	default T getT(T value, double num) {
-		if (value instanceof Double) {
-			return (T) Double.valueOf(num);
-		} else if (value instanceof Integer) {
-			return (T) Integer.valueOf((int) num);
-		} else if (value instanceof Long) {
-			return (T) Long.valueOf((long) num);
-		} else if (value instanceof Float) {
-			return (T) Float.valueOf((float) num);
-		} else if (value instanceof Short) {
-			return (T) Short.valueOf((short) num);
-		} else if (value instanceof Byte) {
-			return (T) Byte.valueOf((byte) num);
-		} else {
-			throw new IllegalArgumentException("Unsupported type");
-		}
+		return switch (value) {
+			case Double ignoredV -> (T) Double.valueOf(num);
+			case Integer ignoredI -> (T) Integer.valueOf((int) num);
+			case Long ignoredL -> (T) Long.valueOf((long) num);
+			case Float ignoredV -> (T) Float.valueOf((float) num);
+			case Short ignoredI -> (T) Short.valueOf((short) num);
+			case Byte ignoredB -> (T) Byte.valueOf((byte) num);
+			case null, default -> throw new IllegalArgumentException("Unsupported type");
+		};
 	}
 }
