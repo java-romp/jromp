@@ -8,13 +8,33 @@ using Java's `ThreadPoolExecutor` and designed to be efficient and scalable.
 
 - Simple API for parallel programming.
 - Efficient and scalable implementation using `ThreadPoolExecutor`.
-- Compatible with **Java 17** and later.
+- Compatible with **Java 21** and later.
 - Minimal dependencies.
 - Easy to use.
 
 ## Getting Started
 
-[//]: # (Todo: Add instructions to add JROMP as a dependency using Maven and Gradle.)
+## Installation
+
+To use JROMP in your project, you can add the dependency using the following code snippets:
+
+### Maven
+
+<!-- @formatter:off -->
+```xml
+<dependency>
+  <groupId>io.github.java-romp</groupId>
+  <artifactId>jromp</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+<!-- @formatter:on -->
+
+### Gradle
+
+```groovy
+implementation 'io.github.java-romp:jromp:0.0.1'
+```
 
 ## Usage
 
@@ -39,6 +59,7 @@ number of threads.
 
 ## More examples
 
-If you want to see more examples of how to use JROMP, you can check all the available examples (with its equivalent code
-written in C) in the [jromp-examples](https://github.com/scastd/jromp-examples) repository.
+If you want to see more examples of how to use JROMP, you can check all the available examples
+(with its equivalent code written in C) in the [jromp-examples](https://github.com/scastd/jromp-examples)
+repository.
 
