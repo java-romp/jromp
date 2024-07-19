@@ -14,7 +14,6 @@ class OperationTests {
 	@Test
 	void testFromIdentifier() {
 		assertThat(Operation.fromIdentifier("+")).isInstanceOf(Sum.class);
-		assertThat(Operation.fromIdentifier("-")).isInstanceOf(Sub.class);
 		assertThat(Operation.fromIdentifier("*")).isInstanceOf(Mul.class);
 		assertThat(Operation.fromIdentifier("&&")).isInstanceOf(LogicalAnd.class);
 		assertThat(Operation.fromIdentifier("||")).isInstanceOf(LogicalOr.class);
@@ -28,7 +27,6 @@ class OperationTests {
 	@Test
 	void testCombine() {
 		assertThat(Operation.SUM.combine(1, 2)).isEqualTo(3);
-		assertThat(Operation.SUB.combine(1, 2)).isEqualTo(-1);
 		assertThat(Operation.MUL.combine(2, 3)).isEqualTo(6);
 		assertThat(Operation.BAND.combine(1, 2)).isZero();
 		assertThat(Operation.BOR.combine(1, 2)).isEqualTo(3);
@@ -42,7 +40,6 @@ class OperationTests {
 	@Test
 	void testGetIdentifier() {
 		assertThat(Operation.SUM.getIdentifier()).isEqualTo("+");
-		assertThat(Operation.SUB.getIdentifier()).isEqualTo("-");
 		assertThat(Operation.MUL.getIdentifier()).isEqualTo("*");
 		assertThat(Operation.BAND.getIdentifier()).isEqualTo("&");
 		assertThat(Operation.BOR.getIdentifier()).isEqualTo("|");
@@ -56,7 +53,6 @@ class OperationTests {
 	@Test
 	void testGetOp() {
 		assertThat(Operation.SUM.getOp()).isInstanceOf(Sum.class);
-		assertThat(Operation.SUB.getOp()).isInstanceOf(Sub.class);
 		assertThat(Operation.MUL.getOp()).isInstanceOf(Mul.class);
 		assertThat(Operation.BAND.getOp()).isInstanceOf(BitwiseAnd.class);
 		assertThat(Operation.BOR.getOp()).isInstanceOf(BitwiseOr.class);
@@ -71,8 +67,6 @@ class OperationTests {
 	void testInitialize() {
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		Operation.SUM.initialize(variable);
-		assertThat(variable.get()).isZero();
-		Operation.SUB.initialize(variable);
 		assertThat(variable.get()).isZero();
 		Operation.MUL.initialize(variable);
 		assertThat(variable.get()).isEqualTo(1);
