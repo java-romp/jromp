@@ -13,11 +13,6 @@ public enum Operation {
 	SUM(new Sum()),
 
 	/**
-	 * Subtraction reduction operation.
-	 */
-	@Deprecated SUB(new Sub()),
-
-	/**
 	 * Multiplication reduction operation.
 	 */
 	MUL(new Mul()),

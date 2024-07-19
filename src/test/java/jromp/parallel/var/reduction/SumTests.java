@@ -29,4 +29,11 @@ class SumTests {
 		assertThat(sum.combine(1, 0)).isOne();
 		assertThat(sum.combine(1, 1)).isEqualTo(2);
 	}
+
+	@Test
+	void testSubtraction() {
+		Sum<Integer> sum = new Sum<>();
+		assertThat(sum.combine(0, -1)).isEqualTo(-1);
+		assertThat(sum.combine(1, -1)).isZero();
+	}
 }
