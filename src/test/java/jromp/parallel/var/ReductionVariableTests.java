@@ -16,13 +16,13 @@ class ReductionVariableTests {
 		Variables vars = Variables.create().add("sum", new ReductionVariable<>(new Sum<>(), 0));
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, vars, (id, start, end, variables) -> {
-					for (int i = start; i < end; i++) {
-						Variable<Integer> insideSum = variables.get("sum");
-						insideSum.update(old -> old + 1);
-					}
-				})
-				.join();
+		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+			        for (int i = start; i < end; i++) {
+				        Variable<Integer> insideSum = variables.get("sum");
+				        insideSum.update(old -> old + 1);
+			        }
+		        })
+		        .join();
 
 		assertThat(vars.get("sum").get()).isEqualTo(iterations);
 	}
@@ -36,18 +36,18 @@ class ReductionVariableTests {
 		double h = 1.0 / (double) n;
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, n, vars, (id, start, end, variables) -> {
-					double x, sum = 0.0;
+		        .parallelFor(0, n, vars, (id, start, end, variables) -> {
+			        double x, sum = 0.0;
 
-					for (int i = start; i < end; i++) {
-						x = h * ((double) i - 0.5);
-						sum += 4.0 / (1.0 + x * x);
-					}
+			        for (int i = start; i < end; i++) {
+				        x = h * ((double) i - 0.5);
+				        sum += 4.0 / (1.0 + x * x);
+			        }
 
-					final double finalSum = sum;
-					variables.<Double>get("pi").update(old -> old + finalSum);
-				})
-				.join();
+			        final double finalSum = sum;
+			        variables.<Double>get("pi").update(old -> old + finalSum);
+		        })
+		        .join();
 
 		double finalResult = h * result.get();
 		assertThat(finalResult).isCloseTo(Math.PI, offset(1e-5));

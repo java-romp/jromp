@@ -14,14 +14,14 @@ class SharedVariableTests {
 		Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, vars, (id, start, end, variables) -> {
-					for (int i = start; i < end; i++) {
-						Variable<Integer> insideSum = variables.get("sum");
-						insideSum.update(old -> old + 1);
-						countsPerThread[id]++;
-					}
-				})
-				.join();
+		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+			        for (int i = start; i < end; i++) {
+				        Variable<Integer> insideSum = variables.get("sum");
+				        insideSum.update(old -> old + 1);
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .join();
 
 		assertThat(vars.get("sum").get()).isEqualTo(iterations);
 		assertThat(countsPerThread).containsOnly(iterations / threads);
@@ -36,13 +36,13 @@ class SharedVariableTests {
 		Variables vars = Variables.create().add("sum", outsideSum);
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, vars, (id, start, end, variables) -> {
-					for (int i = start; i < end; i++) {
-						outsideSum.update(old -> old + 1);
-						countsPerThread[id]++;
-					}
-				})
-				.join();
+		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+			        for (int i = start; i < end; i++) {
+				        outsideSum.update(old -> old + 1);
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .join();
 
 		assertThat(outsideSum.get()).isEqualTo(iterations);
 		assertThat(countsPerThread).containsOnly(iterations / threads);
@@ -55,13 +55,13 @@ class SharedVariableTests {
 		Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, vars, (id, start, end, variables) -> {
-					for (int i = start; i < end; i++) {
-						Variable<Integer> sum = variables.get("sum");
-						sum.set(1);
-					}
-				})
-				.join();
+		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+			        for (int i = start; i < end; i++) {
+				        Variable<Integer> sum = variables.get("sum");
+				        sum.set(1);
+			        }
+		        })
+		        .join();
 
 		assertThat(vars.get("sum").get()).isEqualTo(1);
 	}

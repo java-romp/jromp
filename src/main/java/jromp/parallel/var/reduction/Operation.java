@@ -115,6 +115,7 @@ public enum Operation {
 	 * Returns the reduction operation corresponding to the given identifier.
 	 *
 	 * @param identifier the identifier of the reduction operation.
+	 *
 	 * @return the reduction operation corresponding to the identifier, or null if not found.
 	 */
 	public static ReductionOperation fromIdentifier(String identifier) {

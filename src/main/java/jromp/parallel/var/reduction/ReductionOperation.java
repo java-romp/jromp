@@ -4,13 +4,13 @@ import jromp.parallel.var.Variable;
 
 /**
  * Interface for reduction operations.
- *
- * @param <T> the type of the reduction operation.
  * <p>
  * All reduction identifiers are defined in the point
  * <a href="https://www.openmp.org/spec-html/5.2/openmpsu47.html#x83-87001r1">
  * 5.5.3  Implicitly Declared OpenMP Reduction Identifiers
  * </a>.
+ *
+ * @param <T> the type of the reduction operation.
  */
 public interface ReductionOperation<T> {
 	/**

@@ -42,8 +42,8 @@ class ParallelTests {
 		Task simpleTask = (id, variables) -> result[id] = "Hello, world!";
 
 		Parallel.withThreads(4)
-				.begin(simpleTask)
-				.join();
+		        .begin(simpleTask)
+		        .join();
 
 		assertThat(result).containsOnly("Hello, world!");
 	}
@@ -55,14 +55,14 @@ class ParallelTests {
 		int[] countsPerThread = new int[threads];
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, (id, start, end, vars) -> {
-					assertThat(vars).isNotNull();
+		        .parallelFor(0, iterations, (id, start, end, vars) -> {
+			        assertThat(vars).isNotNull();
 
-					for (int i = start; i < end; i++) {
-						countsPerThread[id]++;
-					}
-				})
-				.join();
+			        for (int i = start; i < end; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .join();
 
 		assertThat(countsPerThread).containsOnly(iterations / threads);
 	}
@@ -74,17 +74,17 @@ class ParallelTests {
 		int[] countsPerThread = new int[threads];
 
 		Parallel.withThreads(threads)
-				.block((id, vars) -> {
-					assertThat(vars).isNotNull();
-					assertThat(vars.isEmpty()).isFalse();
-					assertThat(vars.size()).isEqualTo(1);
-					assertThat(vars.get(Constants.NUM_THREADS).get()).isEqualTo(threads);
+		        .block((id, vars) -> {
+			        assertThat(vars).isNotNull();
+			        assertThat(vars.isEmpty()).isFalse();
+			        assertThat(vars.size()).isEqualTo(1);
+			        assertThat(vars.get(Constants.NUM_THREADS).get()).isEqualTo(threads);
 
-					for (int i = 0; i < iterations; i++) {
-						countsPerThread[id]++;
-					}
-				})
-				.join();
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .join();
 
 		assertThat(countsPerThread).containsOnly(iterations);
 	}
@@ -97,15 +97,15 @@ class ParallelTests {
 		Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
 
 		Parallel.withThreads(threads)
-				.block(variables, (id, vars) -> {
-					assertThat(vars).isNotNull();
-					assertThat(vars.isEmpty()).isFalse();
+		        .block(variables, (id, vars) -> {
+			        assertThat(vars).isNotNull();
+			        assertThat(vars.isEmpty()).isFalse();
 
-					for (int i = 0; i < iterations; i++) {
-						countsPerThread[id]++;
-					}
-				})
-				.join();
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .join();
 
 		assertThat(countsPerThread).containsOnly(iterations);
 	}
@@ -115,8 +115,8 @@ class ParallelTests {
 		String[] result = new String[Constants.MAX_THREADS];
 
 		Parallel.defaultConfig()
-				.begin((id, variables) -> result[id] = "Hello, world!")
-				.join();
+		        .begin((id, variables) -> result[id] = "Hello, world!")
+		        .join();
 
 		assertThat(result).containsOnly("Hello, world!");
 	}

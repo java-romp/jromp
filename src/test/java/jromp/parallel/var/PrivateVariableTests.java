@@ -38,7 +38,7 @@ class PrivateVariableTests {
 		Variable<Integer> copy = privateVariable.copy();
 		assertThat(copy.get()).isZero();
 		assertThat(copy).isInstanceOf(PrivateVariable.class)
-				.isNotEqualTo(privateVariable);
+		                .isNotEqualTo(privateVariable);
 	}
 
 	@Test
@@ -48,13 +48,13 @@ class PrivateVariableTests {
 		Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, vars, (id, start, end, variables) -> {
-					for (int i = start; i < end; i++) {
-						Variable<Integer> sum = variables.get("sum");
-						sum.set(sum.get() + 1);
-					}
-				})
-				.join();
+		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+			        for (int i = start; i < end; i++) {
+				        Variable<Integer> sum = variables.get("sum");
+				        sum.set(sum.get() + 1);
+			        }
+		        })
+		        .join();
 
 		// The value is zero because each thread has its own copy of the variable
 		assertThat(vars.get("sum").get()).isEqualTo(0);
@@ -67,12 +67,12 @@ class PrivateVariableTests {
 		Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
 		Parallel.withThreads(threads)
-				.parallelFor(0, iterations, vars, (id, start, end, variables) -> {
-					for (int i = start; i < end; i++) {
-						variables.<Integer>get("sum").update(old -> old + 1);
-					}
-				})
-				.join();
+		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+			        for (int i = start; i < end; i++) {
+				        variables.<Integer>get("sum").update(old -> old + 1);
+			        }
+		        })
+		        .join();
 
 		// The value is zero because each thread has its own copy of the variable
 		assertThat(vars.get("sum").get()).isEqualTo(0);

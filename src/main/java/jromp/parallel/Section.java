@@ -6,7 +6,7 @@ import jromp.parallel.var.Variables;
 /**
  * A section of a parallel block.
  *
- * @param task The task to be executed.
+ * @param task      The task to be executed.
  * @param variables The variables to be used.
  */
 public record Section(Task task, Variables variables) {
