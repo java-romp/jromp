@@ -35,6 +35,10 @@ public class Parallel {
 	 */
 	private Variables variables = Variables.create();
 
+	/**
+	 * The list of variables used in the current block to perform the
+	 * {@link Variable#end()} operation when joining the threads.
+	 */
 	private final List<Variables> variablesList = new ArrayList<>();
 
 	/**
@@ -66,6 +70,14 @@ public class Parallel {
 	 */
 	public static Parallel withThreads(int threads) {
 		return new Parallel(Utils.checkThreads(threads));
+	}
+
+	private static void waitForFinish() {
+		try {
+			Thread.sleep(0);
+		} catch (InterruptedException e) {
+			// Ignore
+		}
 	}
 
 	/**
@@ -104,11 +116,7 @@ public class Parallel {
 		pool.shutdown();
 
 		while (!pool.isTerminated()) {
-			try {
-				Thread.sleep(0);
-			} catch (InterruptedException e) {
-				// Ignore
-			}
+			waitForFinish();
 		}
 
 		// Perform the last operation on all variables.
@@ -117,6 +125,7 @@ public class Parallel {
 			vars.getVariablesOfType(ReductionVariable.class)
 			    .forEach(variable -> ((ReductionVariable<?>) variable).merge());
 
+			// End all variables.
 			vars.getVariables().values().forEach(Variable::end);
 		}
 	}
