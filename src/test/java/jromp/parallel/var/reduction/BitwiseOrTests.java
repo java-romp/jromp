@@ -18,7 +18,7 @@ class BitwiseOrTests {
 		BitwiseOr<Integer> bitwiseOr = new BitwiseOr<>();
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		bitwiseOr.initialize(variable);
-		assertThat(variable.get()).isZero();
+		assertThat(variable.value()).isZero();
 	}
 
 	@Test

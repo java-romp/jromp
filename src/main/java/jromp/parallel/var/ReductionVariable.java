@@ -51,12 +51,12 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 	}
 
 	@Override
-	public T get() {
+	public T value() {
 		if (!merged) {
 			throw new IllegalStateException("ReductionVariable must be merged before getting the result.");
 		}
 
-		return result.get();
+		return result.value();
 	}
 
 	@Override
@@ -95,7 +95,8 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 		}
 
 		operation.initialize(result);
-		privateVariables.forEach(variable -> result.update(oldResult -> operation.combine(oldResult, variable.get())));
+		privateVariables.forEach(
+				variable -> result.update(oldResult -> operation.combine(oldResult, variable.value())));
 		merged = true;
 	}
 

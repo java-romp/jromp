@@ -15,7 +15,7 @@ public class BitwiseXor<T extends Number> implements ReductionOperation<T> {
 
 	@Override
 	public void initialize(Variable<T> variable) {
-		variable.set(getT(variable.get(), 0));
+		variable.set(getT(variable.value(), 0));
 	}
 
 	@Override

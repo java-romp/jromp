@@ -18,7 +18,7 @@ class SumTests {
 		Sum<Integer> sum = new Sum<>();
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		sum.initialize(variable);
-		assertThat(variable.get()).isZero();
+		assertThat(variable.value()).isZero();
 	}
 
 	@Test

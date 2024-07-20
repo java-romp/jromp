@@ -16,7 +16,7 @@ public interface Variable<T> extends Serializable {
 	 *
 	 * @return the value of the variable.
 	 */
-	T get();
+	T value();
 
 	/**
 	 * Sets the value of the variable.

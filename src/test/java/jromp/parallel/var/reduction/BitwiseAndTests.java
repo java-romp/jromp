@@ -18,7 +18,7 @@ class BitwiseAndTests {
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		BitwiseAnd<Integer> op = new BitwiseAnd<>();
 		op.initialize(variable);
-		assertThat(variable.get()).isEqualTo(Integer.valueOf(~0)); // ~0 = -1
+		assertThat(variable.value()).isEqualTo(Integer.valueOf(~0)); // ~0 = -1
 	}
 
 	@Test

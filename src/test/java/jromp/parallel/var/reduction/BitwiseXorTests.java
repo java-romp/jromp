@@ -18,7 +18,7 @@ class BitwiseXorTests {
 		BitwiseXor<Integer> bitwiseXor = new BitwiseXor<>();
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		bitwiseXor.initialize(variable);
-		assertThat(variable.get()).isZero();
+		assertThat(variable.value()).isZero();
 	}
 
 	@Test

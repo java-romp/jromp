@@ -7,36 +7,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FirstPrivateVariableTests {
 	@Test
-	void testGetZero() {
+	void testValueZero() {
 		FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(0);
-		assertThat(firstPrivateVariable.get()).isZero();
+		assertThat(firstPrivateVariable.value()).isZero();
 	}
 
 	@Test
-	void testGetOne() {
+	void testValueOne() {
 		FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(1);
-		assertThat(firstPrivateVariable.get()).isOne();
+		assertThat(firstPrivateVariable.value()).isOne();
 	}
 
 	@Test
 	void testSet() {
 		FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(0);
 		firstPrivateVariable.set(1);
-		assertThat(firstPrivateVariable.get()).isOne();
+		assertThat(firstPrivateVariable.value()).isOne();
 	}
 
 	@Test
 	void testUpdate() {
 		FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(0);
 		firstPrivateVariable.update(x -> x + 1);
-		assertThat(firstPrivateVariable.get()).isOne();
+		assertThat(firstPrivateVariable.value()).isOne();
 	}
 
 	@Test
 	void testCopy() {
 		FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(0);
 		Variable<Integer> copy = firstPrivateVariable.copy();
-		assertThat(copy.get()).isZero();
+		assertThat(copy.value()).isZero();
 	}
 
 	@Test
@@ -49,13 +49,13 @@ class FirstPrivateVariableTests {
 		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
 			        for (int i = start; i < end; i++) {
 				        Variable<Integer> sum = variables.get("sum");
-				        sum.set(sum.get() + 1);
+				        sum.set(sum.value() + 1);
 			        }
 		        })
 		        .join();
 
 		// The value is zero because each thread has its own copy of the variable
-		assertThat(vars.get("sum").get()).isEqualTo(0);
+		assertThat(vars.get("sum").value()).isEqualTo(0);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class FirstPrivateVariableTests {
 		        .join();
 
 		// The value is zero because each thread has its own copy of the variable
-		assertThat(vars.get("sum").get()).isEqualTo(0);
+		assertThat(vars.get("sum").value()).isEqualTo(0);
 	}
 
 	@Test
@@ -99,6 +99,6 @@ class FirstPrivateVariableTests {
 		        .join();
 
 		// The value is zero because each thread has its own copy of the variable
-		assertThat(vars.get("sum").get()).isEqualTo(0);
+		assertThat(vars.get("sum").value()).isEqualTo(0);
 	}
 }

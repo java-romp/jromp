@@ -35,7 +35,7 @@ class SectionTests {
 		        .sections(builder)
 		        .join();
 
-		assertThat(counters).extracting(PrivateVariable::get).containsExactly(0, 0, 0, 0);
+		assertThat(counters).extracting(PrivateVariable::value).containsExactly(0, 0, 0, 0);
 	}
 
 	@Test
@@ -71,6 +71,6 @@ class SectionTests {
 		        .sections(builder)
 		        .join();
 
-		assertThat(counters).extracting(PrivateVariable::get).containsExactly(0, 0, 0, 0, 0);
+		assertThat(counters).extracting(PrivateVariable::value).containsExactly(0, 0, 0, 0, 0);
 	}
 }

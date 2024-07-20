@@ -24,7 +24,7 @@ public class SharedVariable<T> implements Variable<T> {
 	}
 
 	@Override
-	public T get() {
+	public T value() {
 		return this.value.get();
 	}
 

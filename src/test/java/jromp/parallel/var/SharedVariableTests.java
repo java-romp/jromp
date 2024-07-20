@@ -24,7 +24,7 @@ class SharedVariableTests {
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(iterations);
+		assertThat(vars.get("sum").value()).isEqualTo(iterations);
 		assertThat(countsPerThread).containsOnly(iterations / threads);
 	}
 
@@ -45,7 +45,7 @@ class SharedVariableTests {
 		        })
 		        .join();
 
-		assertThat(outsideSum.get()).isEqualTo(iterations);
+		assertThat(outsideSum.value()).isEqualTo(iterations);
 		assertThat(countsPerThread).containsOnly(iterations / threads);
 	}
 
@@ -64,7 +64,7 @@ class SharedVariableTests {
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(1);
+		assertThat(vars.get("sum").value()).isEqualTo(1);
 	}
 
 	@Test
@@ -101,6 +101,6 @@ class SharedVariableTests {
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(200);
+		assertThat(vars.get("sum").value()).isEqualTo(200);
 	}
 }

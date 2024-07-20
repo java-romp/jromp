@@ -18,7 +18,7 @@ class MulTests {
 		Mul<Integer> mul = new Mul<>();
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		mul.initialize(variable);
-		assertThat(variable.get()).isOne();
+		assertThat(variable.value()).isOne();
 	}
 
 	@Test

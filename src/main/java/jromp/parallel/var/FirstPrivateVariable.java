@@ -33,7 +33,7 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 	}
 
 	@Override
-	public T get() {
+	public T value() {
 		return this.value;
 	}
 
