@@ -22,4 +22,9 @@ public class BitwiseAnd<T extends Number> implements ReductionOperation<T> {
 	public T combine(T a, T b) {
 		return getT(a, a.longValue() & b.longValue());
 	}
+
+	@Override
+	public String toString() {
+		return "BitwiseAnd";
+	}
 }

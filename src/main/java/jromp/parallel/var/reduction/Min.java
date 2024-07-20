@@ -22,4 +22,9 @@ public class Min<T extends Number> implements ReductionOperation<T> {
 	public T combine(T a, T b) {
 		return a.doubleValue() < b.doubleValue() ? a : b;
 	}
+
+	@Override
+	public String toString() {
+		return "Min";
+	}
 }

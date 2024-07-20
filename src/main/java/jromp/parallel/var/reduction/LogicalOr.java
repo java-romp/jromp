@@ -20,4 +20,9 @@ public class LogicalOr implements ReductionOperation<Boolean> {
 	public Boolean combine(Boolean a, Boolean b) {
 		return a || b;
 	}
+
+	@Override
+	public String toString() {
+		return "LogicalOr";
+	}
 }

@@ -103,4 +103,20 @@ class ReductionVariableTests {
 		sum.merge();
 		assertThatThrownBy(sum::merge).isInstanceOf(IllegalStateException.class);
 	}
+
+	@Test
+	void testToString() {
+		ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+
+		assertThat(sum.toString()).hasToString(
+				"ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    \n  ],\n  result=PrivateVariable{value=0},\n  merged=false}");
+
+		sum.copy();
+		sum.copy();
+		sum.copy();
+		sum.merge();
+
+		assertThat(sum.toString()).hasToString(
+				"ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    PrivateVariable{value=0}\n    PrivateVariable{value=0}\n    PrivateVariable{value=0}\n  ],\n  result=PrivateVariable{value=0},\n  merged=true}");
+	}
 }

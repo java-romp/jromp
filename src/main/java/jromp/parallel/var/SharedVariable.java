@@ -62,4 +62,9 @@ public class SharedVariable<T> implements Variable<T> {
 	public void end() {
 		// Do nothing (keep the last value).
 	}
+
+	@Override
+	public String toString() {
+		return "SharedVariable{value=%s}".formatted(value.get());
+	}
 }

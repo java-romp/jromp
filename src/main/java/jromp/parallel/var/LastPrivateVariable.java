@@ -72,4 +72,9 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 			this.endCallback.apply(this.value);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "LastPrivateVariable{value=%s, lastValue=%s}".formatted(this.value, this.lastValue);
+	}
 }

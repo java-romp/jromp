@@ -98,4 +98,15 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 		privateVariables.forEach(variable -> result.update(oldResult -> operation.combine(oldResult, variable.get())));
 		merged = true;
 	}
+
+	@Override
+	public String toString() {
+		List<String> privateVariableList = privateVariables.stream()
+		                                                   .map(PrivateVariable::toString)
+		                                                   .toList();
+		String privateVariablesString = String.join("\n    ", privateVariableList);
+
+		return "ReductionVariable{%n  operation=%s,%n  initialValue=%s,%n  privateVariables=[%n    %s%n  ],%n  result=%s,%n  merged=%s}"
+				.formatted(operation, initialValue, privateVariablesString, result, merged);
+	}
 }

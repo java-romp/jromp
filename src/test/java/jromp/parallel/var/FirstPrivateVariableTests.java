@@ -75,4 +75,13 @@ class FirstPrivateVariableTests {
 		// The value is zero because each thread has its own copy of the variable
 		assertThat(vars.get("sum").get()).isEqualTo(0);
 	}
+
+	@Test
+	void testToString() {
+		FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(0);
+		assertThat(firstPrivateVariable.toString()).hasToString("FirstPrivateVariable{value=0, initialValue=0}");
+
+		firstPrivateVariable.set(1);
+		assertThat(firstPrivateVariable.toString()).hasToString("FirstPrivateVariable{value=1, initialValue=0}");
+	}
 }

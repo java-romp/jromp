@@ -33,12 +33,29 @@ class VariableTests {
 	}
 
 	@Test
+	void testMapOrderedAlphabetically() {
+		Variables vars = Variables.create();
+		SharedVariable<Integer> sum = new SharedVariable<>(0);
+		SharedVariable<Integer> count = new SharedVariable<>(0);
+		SharedVariable<Integer> avg = new SharedVariable<>(0);
+
+		vars.add("sum", sum);
+		vars.add("count", count);
+		vars.add("average", avg);
+
+		Object[] array = vars.getVariables().values().toArray();
+		assertThat(array[0]).isSameAs(avg);
+		assertThat(array[1]).isSameAs(count);
+		assertThat(array[2]).isSameAs(sum);
+	}
+
+	@Test
 	void testToString() {
 		Variables vars = Variables.create()
-				.add("sum", new SharedVariable<>(0))
-				.add("count", new SharedVariable<>(0));
+		                          .add("sum", new SharedVariable<>(1))
+		                          .add("count", new SharedVariable<>(2));
 
-		assertThat(vars.toString()).hasToString("count: 0, sum: 0");
+		assertThat(vars.toString()).hasToString("count -> SharedVariable{value=2}\nsum -> SharedVariable{value=1}");
 	}
 
 	@Test
