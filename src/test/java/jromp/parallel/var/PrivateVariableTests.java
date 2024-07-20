@@ -86,4 +86,21 @@ class PrivateVariableTests {
 		privateVariable.set(1);
 		assertThat(privateVariable.toString()).hasToString("PrivateVariable{value=1}");
 	}
+
+	@Test
+	void testDontKeepValueAfterExecution() {
+		Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
+
+		Parallel.withThreads(4)
+		        .block(vars, (id, variables) -> {
+			        for (int i = 0; i < 20; i++) {
+				        Variable<Integer> sum = variables.get("sum");
+				        sum.update(old -> old + 1);
+			        }
+		        })
+		        .join();
+
+		// The value is zero because each thread has its own copy of the variable
+		assertThat(vars.get("sum").get()).isEqualTo(0);
+	}
 }

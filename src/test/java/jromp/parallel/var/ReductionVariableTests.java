@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.offset;
 
 class ReductionVariableTests {
 	@Test
-	void testReductionVariable() {
+	void testReductionVariableAndKeepValueAfterExecution() {
 		int threads = 4;
 		int iterations = 1000;
 		Variables vars = Variables.create().add("sum", new ReductionVariable<>(new Sum<>(), 0));

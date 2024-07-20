@@ -1,6 +1,7 @@
 package jromp.parallel.var;
 
 import jromp.parallel.Parallel;
+import jromp.parallel.utils.Utils;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,5 +74,33 @@ class SharedVariableTests {
 
 		sharedVariable.set(1);
 		assertThat(sharedVariable.toString()).hasToString("SharedVariable{value=1}");
+	}
+
+	@Test
+	void testKeepLastValueAfterExecution() {
+		Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
+
+		Parallel.withThreads(4)
+		        .block(vars, (id, variables) -> {
+			        for (int i = 0; i < 2; i++) {
+				        Variable<Integer> sum = variables.get("sum");
+
+				        // The master thread will sleep for a while to end up with a different value
+				        if (Utils.isMaster(id)) {
+					        try {
+						        Thread.sleep(5);
+					        } catch (InterruptedException e) {
+						        throw new RuntimeException(e);
+					        }
+
+					        sum.set(200);
+				        } else {
+					        sum.update(old -> old + 1);
+				        }
+			        }
+		        })
+		        .join();
+
+		assertThat(vars.get("sum").get()).isEqualTo(200);
 	}
 }
