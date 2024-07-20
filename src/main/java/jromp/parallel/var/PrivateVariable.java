@@ -50,4 +50,9 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
 	public void end() {
 		this.value = (T) InitialValues.getInitialValue(value.getClass());
 	}
+
+	@Override
+	public String toString() {
+		return "PrivateVariable{value=%s}".formatted(value);
+	}
 }

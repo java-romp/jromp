@@ -65,4 +65,13 @@ class SharedVariableTests {
 
 		assertThat(vars.get("sum").get()).isEqualTo(1);
 	}
+
+	@Test
+	void testToString() {
+		SharedVariable<Integer> sharedVariable = new SharedVariable<>(0);
+		assertThat(sharedVariable.toString()).hasToString("SharedVariable{value=0}");
+
+		sharedVariable.set(1);
+		assertThat(sharedVariable.toString()).hasToString("SharedVariable{value=1}");
+	}
 }

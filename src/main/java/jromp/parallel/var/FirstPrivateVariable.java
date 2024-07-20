@@ -56,4 +56,9 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 	public void end() {
 		this.value = this.initialValue;
 	}
+
+	@Override
+	public String toString() {
+		return "FirstPrivateVariable{value=%s, initialValue=%s}".formatted(this.value, this.initialValue);
+	}
 }

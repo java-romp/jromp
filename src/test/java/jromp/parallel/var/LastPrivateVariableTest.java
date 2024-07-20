@@ -75,4 +75,13 @@ class LastPrivateVariableTest {
 
 		assertThat(vars.get("sum").get()).isEqualTo(25);
 	}
+
+	@Test
+	void testToString() {
+		LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
+		assertThat(lastPrivateVariable.toString()).hasToString("LastPrivateVariable{value=0, lastValue=0}");
+
+		lastPrivateVariable.set(1);
+		assertThat(lastPrivateVariable.toString()).hasToString("LastPrivateVariable{value=1, lastValue=1}");
+	}
 }

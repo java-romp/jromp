@@ -1,18 +1,19 @@
 package jromp.parallel.var;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Represents a collection of variables.
  */
 public class Variables {
 	/**
-	 * The map of variables.
+	 * The map of variables. The map is sorted by the keys in ascending
+	 * order (lexicographical order) when adding variables.
 	 */
-	private final Map<String, Variable<?>> variableMap = new HashMap<>();
+	private final Map<String, Variable<?>> variableMap = new TreeMap<>();
 
 	private Variables() {
 		// Prevent instantiation.
@@ -97,7 +98,7 @@ public class Variables {
 	/**
 	 * Returns a string representation of the Variables object.
 	 * The string contains all the variables in the variable map,
-	 * formatted as {@code "name: value, "}.
+	 * formatted as {@code "name -> variableString\n"}.
 	 * If the variable map is empty, the string "No variables" is returned.
 	 *
 	 * @return a string representation of the Variables object.
@@ -110,14 +111,12 @@ public class Variables {
 
 		StringBuilder sb = new StringBuilder();
 
-		for (Map.Entry<String, Variable<?>> entry : this.variableMap.entrySet()) {
-			sb.append(entry.getKey())
-			  .append(": ")
-			  .append(entry.getValue().get())
-			  .append(", ");
-		}
+		this.variableMap.forEach((key, value) -> sb.append(key)
+		                                           .append(" -> ")
+		                                           .append(value)
+		                                           .append("\n"));
 
-		return sb.delete(sb.length() - 2, sb.length())
+		return sb.delete(sb.length() - 1, sb.length())
 		         .toString();
 	}
 
