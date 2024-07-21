@@ -18,7 +18,7 @@ class MaxTests {
 		Max<Integer> max = new Max<>();
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		max.initialize(variable);
-		assertThat(variable.get()).isEqualTo((int) Double.NEGATIVE_INFINITY);
+		assertThat(variable.value()).isEqualTo((int) Double.NEGATIVE_INFINITY);
 	}
 
 	@Test

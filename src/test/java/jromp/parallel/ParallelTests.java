@@ -78,7 +78,7 @@ class ParallelTests {
 			        assertThat(vars).isNotNull();
 			        assertThat(vars.isEmpty()).isFalse();
 			        assertThat(vars.size()).isEqualTo(1);
-			        assertThat(vars.get(Constants.NUM_THREADS).get()).isEqualTo(threads);
+			        assertThat(vars.get(Constants.NUM_THREADS).value()).isEqualTo(threads);
 
 			        for (int i = 0; i < iterations; i++) {
 				        countsPerThread[id]++;

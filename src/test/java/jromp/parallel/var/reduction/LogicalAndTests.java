@@ -18,7 +18,7 @@ class LogicalAndTests {
 		LogicalAnd logicalAnd = new LogicalAnd();
 		Variable<Boolean> variable = new PrivateVariable<>(false);
 		logicalAnd.initialize(variable);
-		assertThat(variable.get()).isTrue();
+		assertThat(variable.value()).isTrue();
 	}
 
 	@Test

@@ -12,11 +12,11 @@ class VariableTests {
 		Map<String, Variable<?>> varMap = Map.of("sum", new SharedVariable<>(0));
 		Variables vars = Variables.create(varMap);
 
-		assertThat(vars.get("sum").get()).isEqualTo(0);
+		assertThat(vars.get("sum").value()).isEqualTo(0);
 	}
 
 	@Test
-	void testGetVariables() {
+	void testValueVariables() {
 		Variables vars = Variables.create();
 		vars.add("sum", new SharedVariable<>(0));
 		vars.add("count", new SharedVariable<>(0));
@@ -64,7 +64,7 @@ class VariableTests {
 		Variables vars = Variables.create().add("sum", sharedVariable);
 		Variables copy = vars.copy();
 
-		assertThat(copy.get("sum").get()).isEqualTo(0);
+		assertThat(copy.get("sum").value()).isEqualTo(0);
 		assertThat(copy.get("sum")).isSameAs(sharedVariable);
 	}
 
@@ -74,7 +74,7 @@ class VariableTests {
 		Variables vars = Variables.create().add("sum", privateVariable);
 		Variables copy = vars.copy();
 
-		assertThat(copy.get("sum").get()).isEqualTo(0);
+		assertThat(copy.get("sum").value()).isEqualTo(0);
 		assertThat(copy.get("sum")).isNotSameAs(privateVariable);
 	}
 
@@ -103,7 +103,7 @@ class VariableTests {
 	}
 
 	@Test
-	void testGetVariablesOfTypePrivateVariable() {
+	void testValueVariablesOfTypePrivateVariable() {
 		Variables vars = Variables.create();
 		vars.add("sum1", new PrivateVariable<>(0));
 		vars.add("sum2", new PrivateVariable<>(0));

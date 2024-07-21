@@ -24,7 +24,7 @@ class ReductionVariableTests {
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(iterations);
+		assertThat(vars.get("sum").value()).isEqualTo(iterations);
 	}
 
 	@Test
@@ -49,14 +49,14 @@ class ReductionVariableTests {
 		        })
 		        .join();
 
-		double finalResult = h * result.get();
+		double finalResult = h * result.value();
 		assertThat(finalResult).isCloseTo(Math.PI, offset(1e-5));
 	}
 
 	@Test
-	void testGetBeforeMerge() {
+	void testValueBeforeMerge() {
 		ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
-		assertThatThrownBy(sum::get).isInstanceOf(IllegalStateException.class);
+		assertThatThrownBy(sum::value).isInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class ReductionVariableTests {
 	void testCopy() {
 		ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
 		Variable<Integer> copy = sum.copy();
-		assertThat(copy.get()).isZero();
+		assertThat(copy.value()).isZero();
 		assertThat(copy).isInstanceOf(PrivateVariable.class);
 	}
 
@@ -86,7 +86,7 @@ class ReductionVariableTests {
 		sum.copy().update($ -> 2);
 		sum.copy().update($ -> 3);
 		sum.merge();
-		assertThat(sum.get()).isEqualTo(6);
+		assertThat(sum.value()).isEqualTo(6);
 	}
 
 	@Test

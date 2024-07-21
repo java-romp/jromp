@@ -18,7 +18,7 @@ class LogicalOrTests {
 		LogicalOr logicalOr = new LogicalOr();
 		Variable<Boolean> variable = new PrivateVariable<>(false);
 		logicalOr.initialize(variable);
-		assertThat(variable.get()).isFalse();
+		assertThat(variable.value()).isFalse();
 	}
 
 	@Test

@@ -8,36 +8,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LastPrivateVariableTest {
 	@Test
-	void testGetZero() {
+	void testValueZero() {
 		LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
-		assertThat(lastPrivateVariable.get()).isZero();
+		assertThat(lastPrivateVariable.value()).isZero();
 	}
 
 	@Test
-	void testGetConstructedWithNonZero() {
+	void testValueConstructedWithNonZero() {
 		LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(10);
-		assertThat(lastPrivateVariable.get()).isZero();
+		assertThat(lastPrivateVariable.value()).isZero();
 	}
 
 	@Test
 	void testSet() {
 		LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
 		lastPrivateVariable.set(1);
-		assertThat(lastPrivateVariable.get()).isOne();
+		assertThat(lastPrivateVariable.value()).isOne();
 	}
 
 	@Test
 	void testUpdate() {
 		LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
 		lastPrivateVariable.update(x -> x + 1);
-		assertThat(lastPrivateVariable.get()).isOne();
+		assertThat(lastPrivateVariable.value()).isOne();
 	}
 
 	@Test
 	void testCopy() {
 		LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
 		Variable<Integer> copy = lastPrivateVariable.copy();
-		assertThat(copy.get()).isZero();
+		assertThat(copy.value()).isZero();
 		assertThat(copy).isInstanceOf(LastPrivateVariable.class)
 		                .isNotEqualTo(lastPrivateVariable);
 	}
@@ -52,12 +52,12 @@ class LastPrivateVariableTest {
 		        .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
 			        for (int i = start; i < end; i++) {
 				        Variable<Integer> sum = variables.get("sum");
-				        sum.set(sum.get() + 1);
+				        sum.set(sum.value() + 1);
 			        }
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(25);
+		assertThat(vars.get("sum").value()).isEqualTo(25);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class LastPrivateVariableTest {
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(25);
+		assertThat(vars.get("sum").value()).isEqualTo(25);
 	}
 
 	@Test
@@ -111,6 +111,6 @@ class LastPrivateVariableTest {
 		        })
 		        .join();
 
-		assertThat(vars.get("sum").get()).isEqualTo(200);
+		assertThat(vars.get("sum").value()).isEqualTo(200);
 	}
 }

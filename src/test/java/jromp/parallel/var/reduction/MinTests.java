@@ -18,7 +18,7 @@ class MinTests {
 		Min<Integer> min = new Min<>();
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		min.initialize(variable);
-		assertThat(variable.get()).isEqualTo((int) Double.POSITIVE_INFINITY);
+		assertThat(variable.value()).isEqualTo((int) Double.POSITIVE_INFINITY);
 	}
 
 	@Test

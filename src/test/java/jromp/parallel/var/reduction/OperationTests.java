@@ -67,52 +67,52 @@ class OperationTests {
 	void testInitialize() {
 		Variable<Integer> variable = new PrivateVariable<>(0);
 		Operation.SUM.initialize(variable);
-		assertThat(variable.get()).isZero();
+		assertThat(variable.value()).isZero();
 		Operation.MUL.initialize(variable);
-		assertThat(variable.get()).isEqualTo(1);
+		assertThat(variable.value()).isEqualTo(1);
 		Operation.BAND.initialize(variable);
-		assertThat(variable.get()).isEqualTo(~0);
+		assertThat(variable.value()).isEqualTo(~0);
 		Operation.BOR.initialize(variable);
-		assertThat(variable.get()).isZero();
+		assertThat(variable.value()).isZero();
 		Operation.BXOR.initialize(variable);
-		assertThat(variable.get()).isZero();
+		assertThat(variable.value()).isZero();
 		Variable<Boolean> variable2 = new PrivateVariable<>(false);
 		Operation.LAND.initialize(variable2);
-		assertThat(variable2.get()).isTrue();
+		assertThat(variable2.value()).isTrue();
 		Operation.LOR.initialize(variable2);
-		assertThat(variable2.get()).isFalse();
+		assertThat(variable2.value()).isFalse();
 		Variable<Double> variable3 = new PrivateVariable<>(0.0);
 		Operation.MAX.initialize(variable3);
-		assertThat(variable3.get()).isEqualTo(Double.NEGATIVE_INFINITY);
+		assertThat(variable3.value()).isEqualTo(Double.NEGATIVE_INFINITY);
 		Operation.MIN.initialize(variable3);
-		assertThat(variable3.get()).isEqualTo(Double.POSITIVE_INFINITY);
+		assertThat(variable3.value()).isEqualTo(Double.POSITIVE_INFINITY);
 	}
 
 	@Test
 	void testGetTDifferentTypesOperations() {
 		Variable<Integer> variableI = new PrivateVariable<>(0);
 		Operation.SUM.initialize(variableI);
-		assertThat(variableI.get()).isZero();
+		assertThat(variableI.value()).isZero();
 
 		Variable<Short> variableS = new PrivateVariable<>((short) 0);
 		Operation.SUM.initialize(variableS);
-		assertThat(variableS.get()).isZero();
+		assertThat(variableS.value()).isZero();
 
 		Variable<Byte> variableB = new PrivateVariable<>((byte) 0);
 		Operation.SUM.initialize(variableB);
-		assertThat(variableB.get()).isZero();
+		assertThat(variableB.value()).isZero();
 
 		Variable<Float> variableF = new PrivateVariable<>(0.0f);
 		Operation.SUM.initialize(variableF);
-		assertThat(variableF.get()).isZero();
+		assertThat(variableF.value()).isZero();
 
 		Variable<Long> variableL = new PrivateVariable<>(0L);
 		Operation.SUM.initialize(variableL);
-		assertThat(variableL.get()).isZero();
+		assertThat(variableL.value()).isZero();
 
 		Variable<Double> variableD = new PrivateVariable<>(0d);
 		Operation.SUM.initialize(variableD);
-		assertThat(variableD.get()).isZero();
+		assertThat(variableD.value()).isZero();
 
 		// Unsupported types
 		Variable<BigDecimal> variableBD = new PrivateVariable<>(BigDecimal.ZERO);

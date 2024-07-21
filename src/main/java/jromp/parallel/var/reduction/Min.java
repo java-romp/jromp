@@ -15,7 +15,7 @@ public class Min<T extends Number> implements ReductionOperation<T> {
 
 	@Override
 	public void initialize(Variable<T> variable) {
-		variable.set(getT(variable.get(), Double.POSITIVE_INFINITY));
+		variable.set(getT(variable.value(), Double.POSITIVE_INFINITY));
 	}
 
 	@Override

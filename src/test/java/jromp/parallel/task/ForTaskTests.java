@@ -17,7 +17,7 @@ class ForTaskTests {
 
 		forTask.run(0, 0, 10);
 
-		assertThat(count.get()).isEqualTo(10);
+		assertThat(count.value()).isEqualTo(10);
 	}
 
 	@Test
@@ -31,6 +31,6 @@ class ForTaskTests {
 
 		forTask.run(0, 0, 10, null);
 
-		assertThat(count.get()).isEqualTo(10);
+		assertThat(count.value()).isEqualTo(10);
 	}
 }
