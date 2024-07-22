@@ -57,7 +57,6 @@ public enum Operation {
 	 */
 	private final ReductionOperation op;
 
-
 	/**
 	 * Initializes a new Operation with the given ReductionOperation.
 	 *
@@ -84,7 +83,6 @@ public enum Operation {
 	public String getIdentifier() {
 		return op.identifier();
 	}
-
 
 	/**
 	 * Initializes the variable with the identity value of the reduction operation.

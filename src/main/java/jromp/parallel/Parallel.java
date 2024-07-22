@@ -154,7 +154,6 @@ public class Parallel {
 		return begin(task);
 	}
 
-
 	/**
 	 * Executes a for loop in parallel with the given start and end indices, using a task implementation.
 	 *
@@ -205,7 +204,6 @@ public class Parallel {
 
 		return this;
 	}
-
 
 	/**
 	 * Executes the given tasks in separate sections.

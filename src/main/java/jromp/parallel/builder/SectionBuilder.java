@@ -60,7 +60,6 @@ public class SectionBuilder implements Builder<List<Section>> {
 		return this;
 	}
 
-
 	/**
 	 * Sets the task to be executed in the section.
 	 *
