@@ -47,16 +47,7 @@ public class SectionBuilder implements Builder<List<Section>> {
 	 * @return The section builder.
 	 */
 	public SectionBuilder add() {
-		Section lastSection = new Section(task, variables);
-
-		// The second equals call is useless because the lambdas could be added in different order
-		// and the equals method would return false. That would work if a function variable is passed
-		// and all sections were checked. But that's not the case.
-		if (!sections.isEmpty() && sections.get(sections.size() - 1).equals(lastSection)) {
-			throw new IllegalArgumentException("Section already exists. Please configure a new one.");
-		}
-
-		sections.add(lastSection);
+		sections.add(new Section(task, variables));
 		return this;
 	}
 
