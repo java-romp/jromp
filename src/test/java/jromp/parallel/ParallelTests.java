@@ -175,32 +175,14 @@ class ParallelTests {
 	}
 
 	@Test
-	void testSinglePrinting() {
+	void testThreadsStopOnImplicitBarrier() {
 		int threads = 4;
-		int iterations = 1000;
-		int[] countsPerThread = new int[threads];
-		Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
+		int[] value = new int[1];
 
 		Parallel.withThreads(threads)
-		        .block(variables, (id, vars) -> {
-			        System.out.println("Block executed by thread " + id);
-
-			        for (int i = 0; i < iterations; i++) {
-				        countsPerThread[id]++;
-			        }
-		        })
-		        .singleBlock((id, vars) -> {
-			        System.out.println("Single block executed by thread " + id);
-
-			        for (int i = 0; i < iterations; i++) {
-				        countsPerThread[id]++;
-			        }
-		        })
-		        .block(variables, (id, vars) -> {
-			        System.out.println("Thread " + id + " has finished.");
-		        })
+		        .block((id, vars) -> assertThat(value[0]).isZero())
+		        .singleBlock((id, vars) -> value[0] = 1)
+		        .block((id, vars) -> assertThat(value[0]).isOne())
 		        .join();
-
-		assertThat(countsPerThread).containsOnlyOnce(iterations * 2);
 	}
 }

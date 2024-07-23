@@ -181,6 +181,7 @@ public class Parallel {
 		this.variables = variables;
 		addNumThreadsToVariables(this.variables);
 		this.variablesList.add(this.variables);
+		Barrier barrier = new Barrier("ParallelFor", this.threads);
 
 		for (int i = 0; i < this.threads; i++) {
 			// Calculate the start and end indices for the current thread.
@@ -198,7 +199,10 @@ public class Parallel {
 			final int finalI = i;
 			final Variables finalVariables = variables.copy();
 			this.variablesList.add(finalVariables);
-			threadExecutor.execute(() -> forTask.run(finalI, chunkStart, chunkEnd, finalVariables));
+			threadExecutor.execute(() -> {
+				forTask.run(finalI, chunkStart, chunkEnd, finalVariables);
+				barrier.await();
+			});
 		}
 
 		return this;
