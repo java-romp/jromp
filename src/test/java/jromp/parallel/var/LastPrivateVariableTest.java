@@ -98,7 +98,7 @@ class LastPrivateVariableTest {
 				        // The master thread will sleep for a while to end up with a different value
 				        if (Utils.isMaster(id)) {
 					        try {
-						        Thread.sleep(5);
+						        Thread.sleep(100);
 					        } catch (InterruptedException e) {
 						        throw new RuntimeException(e);
 					        }

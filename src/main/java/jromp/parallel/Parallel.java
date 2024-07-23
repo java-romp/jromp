@@ -228,20 +228,13 @@ public class Parallel {
 	 * @return The parallel execution block.
 	 */
 	public Parallel sections(Variables variables, Task... tasks) {
-		this.variables = variables;
-		addNumThreadsToVariables(this.variables);
-		this.variablesList.add(this.variables);
+		List<Section> sections = new ArrayList<>();
 
-		for (int i = 0; i < this.threads; i++) {
-			final int finalI = i;
-			Task task = tasks[i];
-			Variables vars = variables.copy();
-			this.variablesList.add(vars);
-
-			threadExecutor.execute(() -> task.run(finalI, vars));
+		for (Task task : tasks) {
+			sections.add(new Section(task, variables));
 		}
 
-		return this;
+		return this.sections(sections.toArray(Section[]::new));
 	}
 
 	/**
