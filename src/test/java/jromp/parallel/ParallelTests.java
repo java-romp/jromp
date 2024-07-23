@@ -68,6 +68,38 @@ class ParallelTests {
 	}
 
 	@Test
+	void testSections() {
+		int[] result = new int[4];
+
+		Parallel.withThreads(4)
+		        .sections(
+				        (id, vars) -> result[id] = 1,
+				        (id, vars) -> result[id] = 2,
+				        (id, vars) -> result[id] = 3,
+				        (id, vars) -> result[id] = 4
+		        )
+		        .join();
+
+		assertThat(result).containsOnly(1, 2, 3, 4);
+	}
+
+	@Test
+	void testSectionsMoreThreadsThanSections() {
+		int threads = 4;
+		int[] result = new int[threads];
+
+		Parallel.withThreads(threads)
+		        .sections(
+				        (id, vars) -> result[id] = 1,
+				        (id, vars) -> result[id] = 2,
+				        (id, vars) -> result[id] = 3
+		        )
+		        .join();
+
+		assertThat(result).containsOnly(1, 2, 3, 0);
+	}
+
+	@Test
 	void testParallelBlockWithDefaultVariables() {
 		int threads = 4;
 		int iterations = 1000;
