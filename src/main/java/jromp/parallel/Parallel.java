@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Parallel execution block.
@@ -269,5 +270,24 @@ public class Parallel {
 	 */
 	public Parallel sections(SectionBuilder sectionBuilder) {
 		return this.sections(sectionBuilder.build().toArray(Section[]::new));
+	}
+
+	public Parallel singleBlock(Task task) {
+		AtomicBoolean executed = new AtomicBoolean(false);
+
+		for (int i = 0; i < this.threads; i++) {
+			final int finalI = i;
+			this.variablesList.add(this.variables);
+
+			threadExecutor.execute(() -> {
+				if (executed.compareAndSet(false, true)) {
+					// Only execute the task once.
+					task.run(finalI, this.variables);
+				}
+				// Other threads will pass through without executing the task.
+			});
+		}
+
+		return this;
 	}
 }
