@@ -173,4 +173,34 @@ class ParallelTests {
 			}
 		}
 	}
+
+	@Test
+	void testSinglePrinting() {
+		int threads = 4;
+		int iterations = 1000;
+		int[] countsPerThread = new int[threads];
+		Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
+
+		Parallel.withThreads(threads)
+		        .block(variables, (id, vars) -> {
+			        System.out.println("Block executed by thread " + id);
+
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .singleBlock((id, vars) -> {
+			        System.out.println("Single block executed by thread " + id);
+
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .block(variables, (id, vars) -> {
+			        System.out.println("Thread " + id + " has finished.");
+		        })
+		        .join();
+
+		assertThat(countsPerThread).containsOnlyOnce(iterations * 2);
+	}
 }

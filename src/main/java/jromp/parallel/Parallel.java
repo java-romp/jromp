@@ -274,6 +274,7 @@ public class Parallel {
 
 	public Parallel singleBlock(Task task) {
 		AtomicBoolean executed = new AtomicBoolean(false);
+		Barrier barrier = new Barrier("SingleBlock", this.threads);
 
 		for (int i = 0; i < this.threads; i++) {
 			final int finalI = i;
@@ -285,6 +286,8 @@ public class Parallel {
 					task.run(finalI, this.variables);
 				}
 				// Other threads will pass through without executing the task.
+
+				barrier.await(); // Wait for all threads to reach the barrier.
 			});
 		}
 
