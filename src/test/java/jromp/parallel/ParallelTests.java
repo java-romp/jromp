@@ -120,4 +120,57 @@ class ParallelTests {
 
 		assertThat(result).containsOnly("Hello, world!");
 	}
+
+	@Test
+	void testSingle() {
+		int threads = 4;
+		int iterations = 1000;
+		int[] countsPerThread = new int[threads];
+		boolean[] singleBlockExecuted = new boolean[threads];
+		int[] singleBlockExecutionId = new int[1];
+		Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
+
+		Parallel.withThreads(threads)
+		        .block(variables, (id, vars) -> {
+			        assertThat(vars).isNotNull();
+			        assertThat(vars.isEmpty()).isFalse();
+
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .singleBlock((id, vars) -> {
+			        assertThat(vars).isNotNull();
+			        assertThat(vars.isEmpty()).isFalse();
+			        assertThat(vars.size()).isEqualTo(2);
+			        assertThat(vars.get(Constants.NUM_THREADS).value()).isEqualTo(threads);
+			        singleBlockExecuted[id] = true;
+			        singleBlockExecutionId[0] = id;
+
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .block(variables, (id, vars) -> {
+			        assertThat(vars).isNotNull();
+			        assertThat(vars.isEmpty()).isFalse();
+
+			        for (int i = 0; i < iterations; i++) {
+				        countsPerThread[id]++;
+			        }
+		        })
+		        .join();
+
+		assertThat(countsPerThread).containsOnlyOnce(iterations * 3);
+		assertThat(singleBlockExecuted).containsOnlyOnce(true);
+
+		// In the position of the single block execution id, the value should be true
+		assertThat(singleBlockExecuted[singleBlockExecutionId[0]]).isTrue();
+		// In the other positions, the value should be false
+		for (int i = 0; i < threads; i++) {
+			if (i != singleBlockExecutionId[0]) {
+				assertThat(singleBlockExecuted[i]).isFalse();
+			}
+		}
+	}
 }

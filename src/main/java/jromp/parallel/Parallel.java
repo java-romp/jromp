@@ -12,9 +12,9 @@ import jromp.parallel.var.Variables;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Parallel execution block.
@@ -26,9 +26,9 @@ public class Parallel {
 	private final int threads;
 
 	/**
-	 * The thread pool.
+	 * The thread executor used to execute the tasks.
 	 */
-	private final ThreadPoolExecutor pool;
+	private final ExecutorService threadExecutor;
 
 	/**
 	 * The variables used in the current block.
@@ -48,8 +48,7 @@ public class Parallel {
 	 */
 	private Parallel(int threads) {
 		this.threads = threads;
-		this.pool = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
-		                                   new ArrayBlockingQueue<>(threads));
+		this.threadExecutor = Executors.newFixedThreadPool(threads);
 	}
 
 	/**
@@ -103,7 +102,7 @@ public class Parallel {
 			final int finalI = i;
 			this.variablesList.add(this.variables);
 
-			pool.execute(() -> task.run(finalI, this.variables));
+			threadExecutor.execute(() -> task.run(finalI, this.variables));
 		}
 
 		return this;
@@ -113,9 +112,9 @@ public class Parallel {
 	 * Wait for all threads to finish.
 	 */
 	public void join() {
-		pool.shutdown();
+		threadExecutor.shutdown();
 
-		while (!pool.isTerminated()) {
+		while (!threadExecutor.isTerminated()) {
 			waitForFinish();
 		}
 
@@ -199,7 +198,7 @@ public class Parallel {
 			final int finalI = i;
 			final Variables finalVariables = variables.copy();
 			this.variablesList.add(finalVariables);
-			pool.execute(() -> forTask.run(finalI, chunkStart, chunkEnd, finalVariables));
+			threadExecutor.execute(() -> forTask.run(finalI, chunkStart, chunkEnd, finalVariables));
 		}
 
 		return this;
@@ -235,7 +234,7 @@ public class Parallel {
 			Variables vars = variables.copy();
 			this.variablesList.add(vars);
 
-			pool.execute(() -> task.run(finalI, vars));
+			threadExecutor.execute(() -> task.run(finalI, vars));
 		}
 
 		return this;
@@ -256,7 +255,7 @@ public class Parallel {
 			addNumThreadsToVariables(vars);
 			this.variablesList.add(vars);
 
-			pool.execute(() -> task.run(finalI, vars));
+			threadExecutor.execute(() -> task.run(finalI, vars));
 		}
 
 		return this;
@@ -271,5 +270,24 @@ public class Parallel {
 	 */
 	public Parallel sections(SectionBuilder sectionBuilder) {
 		return this.sections(sectionBuilder.build().toArray(Section[]::new));
+	}
+
+	public Parallel singleBlock(Task task) {
+		AtomicBoolean executed = new AtomicBoolean(false);
+
+		for (int i = 0; i < this.threads; i++) {
+			final int finalI = i;
+			this.variablesList.add(this.variables);
+
+			threadExecutor.execute(() -> {
+				if (executed.compareAndSet(false, true)) {
+					// Only execute the task once.
+					task.run(finalI, this.variables);
+				}
+				// Other threads will pass through without executing the task.
+			});
+		}
+
+		return this;
 	}
 }
