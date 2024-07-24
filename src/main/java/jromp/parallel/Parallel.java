@@ -245,14 +245,31 @@ public class Parallel {
 	 * @return The parallel execution block.
 	 */
 	public Parallel sections(Section... sections) {
-		for (int i = 0; i < sections.length; i++) {
-			final int finalI = i;
-			Task task = sections[i].task();
-			Variables vars = sections[i].variables();
-			addNumThreadsToVariables(vars);
-			this.variablesList.add(vars);
+		if (sections.length <= this.threads) {
+			Barrier barrier = new Barrier("Sections", sections.length);
 
-			threadExecutor.execute(() -> task.run(finalI, vars));
+			for (int i = 0; i < sections.length; i++) {
+				final int finalI = i;
+				Task task = sections[i].task();
+				Variables vars = sections[i].variables();
+				addNumThreadsToVariables(vars);
+				this.variablesList.add(vars);
+
+				threadExecutor.execute(() -> {
+					task.run(finalI, vars);
+					barrier.await();
+				});
+			}
+		} else {
+			// If there are more sections than threads, submit the tasks in batches of threads.
+			for (int i = 0; i < sections.length; i += this.threads) {
+				int end = Math.min(i + this.threads, sections.length);
+				int batchSize = end - i;
+				Section[] batch = new Section[batchSize];
+
+				System.arraycopy(sections, i, batch, 0, batchSize);
+				this.sections(batch);
+			}
 		}
 
 		return this;
