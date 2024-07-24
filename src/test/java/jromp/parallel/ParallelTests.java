@@ -2,6 +2,7 @@ package jromp.parallel;
 
 import jromp.Constants;
 import jromp.parallel.task.Task;
+import jromp.parallel.var.LastPrivateVariable;
 import jromp.parallel.var.PrivateVariable;
 import jromp.parallel.var.Variables;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,75 @@ class ParallelTests {
 		        .join();
 
 		assertThat(countsPerThread).containsOnly(iterations / threads);
+	}
+
+	@Test
+	void testSections() {
+		int[] result = new int[4];
+
+		Parallel.withThreads(4)
+		        .sections(
+				        (id, vars) -> result[id] = 1,
+				        (id, vars) -> result[id] = 2,
+				        (id, vars) -> result[id] = 3,
+				        (id, vars) -> result[id] = 4
+		        )
+		        .join();
+
+		assertThat(result).containsOnly(1, 2, 3, 4);
+	}
+
+	@Test
+	void testSectionsMoreThreadsThanSections() {
+		int threads = 4;
+		int[] result = new int[threads];
+
+		Parallel.withThreads(threads)
+		        .sections(
+				        (id, vars) -> result[id] = 1,
+				        (id, vars) -> result[id] = 2,
+				        (id, vars) -> result[id] = 3
+		        )
+		        .join();
+
+		assertThat(result).containsOnly(1, 2, 3, 0);
+	}
+
+	@Test
+	void testSectionsMoreSectionsThanThreads() {
+		int threads = 2;
+		int[] result = new int[threads];
+
+		Parallel.withThreads(threads)
+		        .sections(
+				        (id, vars) -> result[id] = 1,
+				        (id, vars) -> result[id] = 2,
+				        (id, vars) -> result[id] = 3,
+				        (id, vars) -> result[id] = 4,
+				        (id, vars) -> result[id] = 5
+		        )
+		        .join();
+
+		assertThat(result).containsAnyOf(4, 5);
+	}
+
+	@Test
+	void testSectionsMoreSectionsThanThreadsKeepLastValueSystemArrayCopy() {
+		int threads = 3;
+		Variables variables = Variables.create().add("num", new LastPrivateVariable<>(0));
+
+		Parallel.withThreads(threads)
+		        .sections(
+				        variables,
+				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1)
+		        )
+		        .join();
+
+		assertThat(variables.<Integer>get("num").value()).isEqualTo(5);
 	}
 
 	@Test
@@ -172,5 +242,17 @@ class ParallelTests {
 				assertThat(singleBlockExecuted[i]).isFalse();
 			}
 		}
+	}
+
+	@Test
+	void testThreadsStopOnImplicitBarrier() {
+		int threads = 4;
+		int[] value = new int[1];
+
+		Parallel.withThreads(threads)
+		        .block((id, vars) -> assertThat(value[0]).isZero())
+		        .singleBlock((id, vars) -> value[0] = 1)
+		        .block((id, vars) -> assertThat(value[0]).isOne())
+		        .join();
 	}
 }
