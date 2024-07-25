@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * Represents a reduction variable that its value is reduced from private variables using a reduction operation.
@@ -102,10 +103,9 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
 	@Override
 	public String toString() {
-		List<String> privateVariableList = privateVariables.stream()
-		                                                   .map(PrivateVariable::toString)
-		                                                   .toList();
-		String privateVariablesString = String.join("\n    ", privateVariableList);
+		String privateVariablesString = privateVariables.stream()
+		                                                .map(PrivateVariable::toString)
+		                                                .collect(Collectors.joining("\n    "));
 
 		return "ReductionVariable{%n  operation=%s,%n  initialValue=%s,%n  privateVariables=[%n    %s%n  ],%n  result=%s,%n  merged=%s}"
 				.formatted(operation, initialValue, privateVariablesString, result, merged);
