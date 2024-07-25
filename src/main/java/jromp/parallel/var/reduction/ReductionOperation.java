@@ -50,13 +50,13 @@ public interface ReductionOperation<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	default T getT(T value, double num) {
-		return switch (value) {
-			case Double ignoredV -> (T) Double.valueOf(num);
-			case Integer ignoredI -> (T) Integer.valueOf((int) num);
-			case Long ignoredL -> (T) Long.valueOf((long) num);
-			case Float ignoredV -> (T) Float.valueOf((float) num);
-			case Short ignoredI -> (T) Short.valueOf((short) num);
-			case Byte ignoredB -> (T) Byte.valueOf((byte) num);
+		return switch (value.getClass().getName()) {
+			case "java.lang.Double" -> (T) Double.valueOf(num);
+			case "java.lang.Integer" -> (T) Integer.valueOf((int) num);
+			case "java.lang.Long" -> (T) Long.valueOf((long) num);
+			case "java.lang.Float" -> (T) Float.valueOf((float) num);
+			case "java.lang.Short" -> (T) Short.valueOf((short) num);
+			case "java.lang.Byte" -> (T) Byte.valueOf((byte) num);
 			case null, default -> throw new IllegalArgumentException("Unsupported type");
 		};
 	}
