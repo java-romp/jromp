@@ -2,8 +2,8 @@ package jromp.parallel;
 
 import jromp.Constants;
 import jromp.parallel.task.Task;
-import jromp.parallel.var.LastPrivateVariable;
 import jromp.parallel.var.PrivateVariable;
+import jromp.parallel.var.SharedVariable;
 import jromp.parallel.var.Variables;
 import org.junit.jupiter.api.Test;
 
@@ -121,7 +121,7 @@ class ParallelTests {
 	@Test
 	void testSectionsMoreSectionsThanThreadsKeepLastValueSystemArrayCopy() {
 		int threads = 3;
-		Variables variables = Variables.create().add("num", new LastPrivateVariable<>(0));
+		Variables variables = Variables.create().add("num", new SharedVariable<>(0));
 
 		Parallel.withThreads(threads)
 		        .sections(
