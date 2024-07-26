@@ -96,6 +96,18 @@ public class Variables {
     }
 
     /**
+     * Checks if the variable map contains a variable with the specified name.
+     *
+     * @param name the name of the variable to check.
+     *
+     * @return {@code true} if the variable map contains a variable with the specified name,
+     * {@code false} otherwise.
+     */
+    public boolean contains(String name) {
+        return this.variableMap.containsKey(name);
+    }
+
+    /**
      * Returns a string representation of the Variables object.
      * The string contains all the variables in the variable map,
      * formatted as {@code "name -> variableString\n"}.
