@@ -1,45 +1,46 @@
 package jromp.parallel.var;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
 
 /**
- * A variable that is shared between threads.
+ * A variable that performs atomic operations over its value.
  *
  * @param <T> the type of the variable.
  */
-public class SharedVariable<T extends Serializable> implements Variable<T> {
+public class AtomicVariable<T extends Serializable> implements Variable<T> {
     /**
      * The value of the variable.
      */
-    private T value;
+    private final AtomicReference<T> value;
 
     /**
-     * Constructs a new shared variable with the given value.
+     * Constructs a new atomic variable with the given value.
      *
      * @param value the value of the variable.
      */
-    public SharedVariable(T value) {
-        this.value = value;
+    public AtomicVariable(T value) {
+        this.value = new AtomicReference<>(value);
     }
 
     @Override
     public T value() {
-        return this.value;
+        return this.value.get();
     }
 
     @Override
     public void set(T value) {
-        this.value = value;
+        this.value.getAndSet(value);
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        this.value = operator.apply(this.value);
+        this.value.updateAndGet(operator);
     }
 
     @Override
-    public SharedVariable<T> copy() {
+    public Variable<T> copy() {
         return this;
     }
 
@@ -50,6 +51,6 @@ public class SharedVariable<T extends Serializable> implements Variable<T> {
 
     @Override
     public String toString() {
-        return "SharedVariable{value=%s}".formatted(value);
+        return "AtomicVariable{value=%s}".formatted(this.value.get());
     }
 }
