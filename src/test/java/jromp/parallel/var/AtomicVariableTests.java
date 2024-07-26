@@ -2,18 +2,17 @@ package jromp.parallel.var;
 
 import jromp.parallel.Parallel;
 import jromp.parallel.utils.Utils;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SharedVariableTests {
+class AtomicVariableTests {
     @Test
-    void testParallelForSharedVarUpdateInside() {
+    void testParallelForAtomicVarUpdateInside() {
         int threads = 4;
         int iterations = 1000;
         int[] countsPerThread = new int[threads];
-        Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
+        Variables vars = Variables.create().add("sum", new AtomicVariable<>(0));
 
         Parallel.withThreads(threads)
                 .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
@@ -25,19 +24,16 @@ class SharedVariableTests {
                 })
                 .join();
 
-        // The value of the shared variable should be less than or equal to the number of iterations
-        // because the update operation is not atomic and race conditions can occur.
-        assertThat(vars.get("sum").value()).satisfies(
-                new Condition<>(value -> (Integer) value <= iterations, "value <= iterations"));
+        assertThat(vars.get("sum").value()).isEqualTo(iterations);
         assertThat(countsPerThread).containsOnly(iterations / threads);
     }
 
     @Test
-    void testParallelForSharedVarUpdateOutside() {
+    void testParallelForAtomicVarUpdateOutside() {
         int threads = 4;
         int iterations = 1000;
         int[] countsPerThread = new int[threads];
-        SharedVariable<Integer> outsideSum = new SharedVariable<>(0);
+        AtomicVariable<Integer> outsideSum = new AtomicVariable<>(0);
         Variables vars = Variables.create().add("sum", outsideSum);
 
         Parallel.withThreads(threads)
@@ -49,18 +45,15 @@ class SharedVariableTests {
                 })
                 .join();
 
-        // The value of the shared variable should be less than or equal to the number of iterations
-        // because the update operation is not atomic and race conditions can occur.
-        assertThat(outsideSum.value()).satisfies(
-                new Condition<>(value -> value <= iterations, "value <= iterations"));
+        assertThat(outsideSum.value()).isEqualTo(iterations);
         assertThat(countsPerThread).containsOnly(iterations / threads);
     }
 
     @Test
-    void testParallelForSharedVarSet() {
+    void testParallelForAtomicVarSet() {
         int threads = 2;
         int iterations = 10;
-        Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
+        Variables vars = Variables.create().add("sum", new AtomicVariable<>(0));
 
         Parallel.withThreads(threads)
                 .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
@@ -76,16 +69,16 @@ class SharedVariableTests {
 
     @Test
     void testToString() {
-        SharedVariable<Integer> sharedVariable = new SharedVariable<>(0);
-        assertThat(sharedVariable.toString()).hasToString("SharedVariable{value=0}");
+        AtomicVariable<Integer> sharedVariable = new AtomicVariable<>(0);
+        assertThat(sharedVariable.toString()).hasToString("AtomicVariable{value=0}");
 
         sharedVariable.set(1);
-        assertThat(sharedVariable.toString()).hasToString("SharedVariable{value=1}");
+        assertThat(sharedVariable.toString()).hasToString("AtomicVariable{value=1}");
     }
 
     @Test
     void testKeepLastValueAfterExecution() {
-        Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
+        Variables vars = Variables.create().add("sum", new AtomicVariable<>(0));
 
         Parallel.withThreads(4)
                 .block(vars, (id, variables) -> {
