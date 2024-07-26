@@ -8,23 +8,23 @@ import jromp.parallel.var.Variable;
  * @param <T> the type of the reduction operation.
  */
 public class Max<T extends Number> implements ReductionOperation<T> {
-	@Override
-	public String identifier() {
-		return "max";
-	}
+    @Override
+    public String identifier() {
+        return "max";
+    }
 
-	@Override
-	public void initialize(Variable<T> variable) {
-		variable.set(getT(variable.value(), Double.NEGATIVE_INFINITY));
-	}
+    @Override
+    public void initialize(Variable<T> variable) {
+        variable.set(getT(variable.value(), Double.NEGATIVE_INFINITY));
+    }
 
-	@Override
-	public T combine(T a, T b) {
-		return a.doubleValue() > b.doubleValue() ? a : b;
-	}
+    @Override
+    public T combine(T a, T b) {
+        return a.doubleValue() > b.doubleValue() ? a : b;
+    }
 
-	@Override
-	public String toString() {
-		return "Max";
-	}
+    @Override
+    public String toString() {
+        return "Max";
+    }
 }

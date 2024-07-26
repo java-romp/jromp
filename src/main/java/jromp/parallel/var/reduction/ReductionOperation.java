@@ -13,51 +13,51 @@ import jromp.parallel.var.Variable;
  * @param <T> the type of the reduction operation.
  */
 public interface ReductionOperation<T> {
-	/**
-	 * Returns the identifier of the reduction operation.
-	 *
-	 * @return String representation of the operation.
-	 */
-	String identifier();
+    /**
+     * Returns the identifier of the reduction operation.
+     *
+     * @return String representation of the operation.
+     */
+    String identifier();
 
-	/**
-	 * Initializes the variable with the identity value of the reduction operation.
-	 *
-	 * @param variable the variable to initialize.
-	 */
-	void initialize(Variable<T> variable);
+    /**
+     * Initializes the variable with the identity value of the reduction operation.
+     *
+     * @param variable the variable to initialize.
+     */
+    void initialize(Variable<T> variable);
 
-	/**
-	 * Combines two values of the reduction operation.
-	 *
-	 * @param a the first value.
-	 * @param b the second value.
-	 *
-	 * @return the result of the combination.
-	 */
-	T combine(T a, T b);
+    /**
+     * Combines two values of the reduction operation.
+     *
+     * @param a the first value.
+     * @param b the second value.
+     *
+     * @return the result of the combination.
+     */
+    T combine(T a, T b);
 
-	/**
-	 * Returns the value of the number received, converted to the
-	 * type of the reduction operation.
-	 *
-	 * @param value the value used to determine the type of the conversion.
-	 * @param num   the number to be converted to the desired type.
-	 *
-	 * @return the converted value with type T.
-	 *
-	 * @throws IllegalArgumentException if the type is not supported.
-	 */
-	@SuppressWarnings("unchecked")
-	default T getT(T value, double num) {
-		return switch (value.getClass().getName()) {
-			case "java.lang.Double" -> (T) Double.valueOf(num);
-			case "java.lang.Integer" -> (T) Integer.valueOf((int) num);
-			case "java.lang.Long" -> (T) Long.valueOf((long) num);
-			case "java.lang.Float" -> (T) Float.valueOf((float) num);
-			case "java.lang.Short" -> (T) Short.valueOf((short) num);
-			case "java.lang.Byte" -> (T) Byte.valueOf((byte) num);
-			case null, default -> throw new IllegalArgumentException("Unsupported type");
-		};
-	}
+    /**
+     * Returns the value of the number received, converted to the
+     * type of the reduction operation.
+     *
+     * @param value the value used to determine the type of the conversion.
+     * @param num   the number to be converted to the desired type.
+     *
+     * @return the converted value with type T.
+     *
+     * @throws IllegalArgumentException if the type is not supported.
+     */
+    @SuppressWarnings("unchecked")
+    default T getT(T value, double num) {
+        return switch (value.getClass().getName()) {
+            case "java.lang.Double" -> (T) Double.valueOf(num);
+            case "java.lang.Integer" -> (T) Integer.valueOf((int) num);
+            case "java.lang.Long" -> (T) Long.valueOf((long) num);
+            case "java.lang.Float" -> (T) Float.valueOf((float) num);
+            case "java.lang.Short" -> (T) Short.valueOf((short) num);
+            case "java.lang.Byte" -> (T) Byte.valueOf((byte) num);
+            case null, default -> throw new IllegalArgumentException("Unsupported type");
+        };
+    }
 }

@@ -10,17 +10,17 @@ import jromp.parallel.var.Variables;
  * @param variables The variables to be used.
  */
 public record Section(Task task, Variables variables) {
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
 
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
 
-		Section section = (Section) obj;
-		return task.equals(section.task) && variables.equals(section.variables);
-	}
+        Section section = (Section) obj;
+        return task.equals(section.task) && variables.equals(section.variables);
+    }
 }

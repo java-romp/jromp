@@ -12,47 +12,47 @@ import java.util.function.UnaryOperator;
  * @param <T> the type of the variable.
  */
 public class PrivateVariable<T extends Serializable> implements Variable<T> {
-	/**
-	 * The value of the variable.
-	 */
-	private T value;
+    /**
+     * The value of the variable.
+     */
+    private T value;
 
-	/**
-	 * Constructs a new private variable with the default value of the given type.
-	 */
-	@SuppressWarnings("unchecked")
-	public PrivateVariable(T value) {
-		this.value = (T) InitialValues.getInitialValue(value.getClass());
-	}
+    /**
+     * Constructs a new private variable with the default value of the given type.
+     */
+    @SuppressWarnings("unchecked")
+    public PrivateVariable(T value) {
+        this.value = (T) InitialValues.getInitialValue(value.getClass());
+    }
 
-	@Override
-	public T value() {
-		return this.value;
-	}
+    @Override
+    public T value() {
+        return this.value;
+    }
 
-	@Override
-	public void set(T value) {
-		this.value = value;
-	}
+    @Override
+    public void set(T value) {
+        this.value = value;
+    }
 
-	@Override
-	public void update(UnaryOperator<T> operator) {
-		this.value = operator.apply(this.value);
-	}
+    @Override
+    public void update(UnaryOperator<T> operator) {
+        this.value = operator.apply(this.value);
+    }
 
-	@Override
-	public PrivateVariable<T> copy() {
-		return new PrivateVariable<>(SerializationUtils.clone(this.value));
-	}
+    @Override
+    public PrivateVariable<T> copy() {
+        return new PrivateVariable<>(SerializationUtils.clone(this.value));
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void end() {
-		this.value = (T) InitialValues.getInitialValue(value.getClass());
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public void end() {
+        this.value = (T) InitialValues.getInitialValue(value.getClass());
+    }
 
-	@Override
-	public String toString() {
-		return "PrivateVariable{value=%s}".formatted(value);
-	}
+    @Override
+    public String toString() {
+        return "PrivateVariable{value=%s}".formatted(value);
+    }
 }
