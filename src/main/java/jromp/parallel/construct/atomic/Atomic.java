@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
 public class Atomic {
+    private Atomic() {
+    }
+
     public static synchronized <T extends Serializable>
     T read(String name, Variables variables) {
         SharedVariable<T> sharedVariable = getSharedVariable(name, variables);
