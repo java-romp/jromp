@@ -1,4 +1,4 @@
-package jromp.parallel.construct;
+package jromp.parallel.construct.atomic;
 
 import jromp.parallel.Parallel;
 import jromp.parallel.var.SharedVariable;
