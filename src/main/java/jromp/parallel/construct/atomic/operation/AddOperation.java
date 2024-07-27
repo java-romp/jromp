@@ -4,9 +4,22 @@ import jromp.parallel.utils.NumberUtils;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Operation to add a value to another value.
+ *
+ * @param <T> the type of the value.
+ */
 public class AddOperation<T extends Number> implements Operation<T> {
+    /**
+     * The value to add.
+     */
     private final T value;
 
+    /**
+     * Constructs an add operation.
+     *
+     * @param value the value to add.
+     */
     public AddOperation(T value) {
         this.value = value;
     }

@@ -4,9 +4,22 @@ import jromp.parallel.utils.NumberUtils;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Operation to multiply a value by another value.
+ *
+ * @param <T> the type of the value.
+ */
 public class MultiplyOperation<T extends Number> implements Operation<T> {
+    /**
+     * The value to multiply by.
+     */
     private final T value;
 
+    /**
+     * Constructs a multiply operation.
+     *
+     * @param value the value to multiply by.
+     */
     public MultiplyOperation(T value) {
         this.value = value;
     }
