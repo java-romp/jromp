@@ -1,10 +1,10 @@
 package jromp.parallel.construct.atomic;
 
+import jromp.parallel.construct.atomic.operation.Operation;
 import jromp.parallel.var.SharedVariable;
 import jromp.parallel.var.Variables;
 
 import java.io.Serializable;
-import java.util.function.UnaryOperator;
 
 public class Atomic {
     private Atomic() {
@@ -22,9 +22,9 @@ public class Atomic {
     }
 
     public static synchronized <T extends Serializable>
-    void update(String name, UnaryOperator<T> valueOp, Variables variables) {
+    void update(String name, Operation<T> operation, Variables variables) {
         SharedVariable<T> sharedVariable = getSharedVariable(name, variables);
-        sharedVariable.toAtomic().update(valueOp);
+        sharedVariable.toAtomic().update(operation.get());
     }
 
     private static <T extends Serializable>

@@ -1,6 +1,7 @@
 package jromp.parallel.construct.atomic;
 
 import jromp.parallel.Parallel;
+import jromp.parallel.construct.atomic.operation.Operations;
 import jromp.parallel.var.SharedVariable;
 import jromp.parallel.var.Variables;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class AtomicTests {
 
         Parallel.withThreads(4)
                 .block(variables, (id, vars) -> {
-                    Atomic.<Integer>update("x", v -> v + 1, vars);
+                    Atomic.update("x", Operations.add(1), vars);
 
                     // Only the atomic variable should be updated here
                     assertThat(((SharedVariable<Integer>) variables.<Integer>get("x")).hasAtomic()).isTrue();
