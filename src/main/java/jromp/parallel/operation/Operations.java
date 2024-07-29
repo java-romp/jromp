@@ -1,4 +1,4 @@
-package jromp.parallel.construct.atomic.operation;
+package jromp.parallel.operation;
 
 /**
  * Operations to perform on values.

@@ -1,4 +1,4 @@
-package jromp.parallel.construct.atomic.operation;
+package jromp.parallel.operation;
 
 import java.util.function.UnaryOperator;
 
