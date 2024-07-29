@@ -2,6 +2,8 @@ package jromp.parallel.var.reduction;
 
 import jromp.parallel.var.Variable;
 
+import static jromp.parallel.utils.NumberUtils.getT;
+
 /**
  * Reduction operation for addition.
  *

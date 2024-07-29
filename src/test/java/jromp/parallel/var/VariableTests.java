@@ -112,4 +112,20 @@ class VariableTests {
 
         assertThat(vars.getVariablesOfType(PrivateVariable.class)).hasSize(3);
     }
+
+    @Test
+    void testContains() {
+        Variables vars = Variables.create();
+        vars.add("sum1", new PrivateVariable<>(0));
+
+        assertThat(vars.contains("sum1")).isTrue();
+    }
+
+    @Test
+    void testContainsNot() {
+        Variables vars = Variables.create();
+        vars.add("sum1", new PrivateVariable<>(0));
+
+        assertThat(vars.contains("sum2")).isFalse();
+    }
 }
