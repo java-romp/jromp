@@ -1,5 +1,6 @@
 package jromp.parallel.var.reduction;
 
+import jromp.parallel.operation.Operations;
 import jromp.parallel.var.Variable;
 
 import static jromp.parallel.utils.NumberUtils.getT;
@@ -22,7 +23,7 @@ public class Sum<T extends Number> implements ReductionOperation<T> {
 
     @Override
     public T combine(T a, T b) {
-        return getT(a, a.doubleValue() + b.doubleValue());
+        return Operations.add(a).apply(b);
     }
 
     @Override

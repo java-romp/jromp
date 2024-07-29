@@ -129,4 +129,28 @@ public class Operations {
     public static <T extends Number> Operation<T> shiftRight(T value) {
         return new ShiftRightOperation<>(value);
     }
+
+    /**
+     * Creates a min operation.
+     *
+     * @param value the value to compare.
+     * @param <T>   the type of the value.
+     *
+     * @return the min operation.
+     */
+    public static <T extends Number> Operation<T> min(T value) {
+        return new MinOperation<>(value);
+    }
+
+    /**
+     * Creates a max operation.
+     *
+     * @param value the value to compare.
+     * @param <T>   the type of the value.
+     *
+     * @return the max operation.
+     */
+    public static <T extends Number> Operation<T> max(T value) {
+        return new MaxOperation<>(value);
+    }
 }

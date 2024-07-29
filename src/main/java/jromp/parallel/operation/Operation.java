@@ -24,4 +24,15 @@ public interface Operation<T extends Serializable> extends Supplier<UnaryOperato
      */
     @Override
     UnaryOperator<T> get();
+
+    /**
+     * Applies the operation to the specified value.
+     *
+     * @param value the value to apply the operation to.
+     *
+     * @return the result of applying the operation to the value.
+     */
+    default T apply(T value) {
+        return get().apply(value);
+    }
 }
