@@ -1,6 +1,6 @@
 package jromp.parallel.construct.atomic;
 
-import jromp.parallel.construct.atomic.operation.Operation;
+import jromp.parallel.operation.Operation;
 import jromp.parallel.var.SharedVariable;
 import jromp.parallel.var.Variables;
 

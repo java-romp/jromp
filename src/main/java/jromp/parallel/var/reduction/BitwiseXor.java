@@ -1,5 +1,6 @@
 package jromp.parallel.var.reduction;
 
+import jromp.parallel.operation.Operations;
 import jromp.parallel.var.Variable;
 
 import static jromp.parallel.utils.NumberUtils.getT;
@@ -22,7 +23,7 @@ public class BitwiseXor<T extends Number> implements ReductionOperation<T> {
 
     @Override
     public T combine(T a, T b) {
-        return getT(a, a.longValue() ^ b.longValue());
+        return Operations.bitwiseXor(a).apply(b);
     }
 
     @Override

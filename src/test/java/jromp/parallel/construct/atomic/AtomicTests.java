@@ -1,7 +1,7 @@
 package jromp.parallel.construct.atomic;
 
 import jromp.parallel.Parallel;
-import jromp.parallel.construct.atomic.operation.Operations;
+import jromp.parallel.operation.Operations;
 import jromp.parallel.var.SharedVariable;
 import jromp.parallel.var.Variables;
 import org.junit.jupiter.api.Test;

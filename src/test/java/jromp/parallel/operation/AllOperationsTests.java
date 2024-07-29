@@ -1,4 +1,4 @@
-package jromp.parallel.construct.atomic.operation;
+package jromp.parallel.operation;
 
 import jromp.parallel.Parallel;
 import jromp.parallel.construct.atomic.Atomic;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AllAtomicOperationsTests {
+class AllOperationsTests {
     @Test
     void testAssign() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
@@ -119,5 +119,27 @@ class AllAtomicOperationsTests {
                 .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0);
+    }
+
+    @Test
+    void testMax() {
+        Variables variables = Variables.create().add("x", new SharedVariable<>(5));
+
+        Parallel.withThreads(4)
+                .block(variables, (id, vars) -> Atomic.update("x", Operations.max(10), vars))
+                .join();
+
+        assertThat(variables.get("x").value()).isEqualTo(10);
+    }
+
+    @Test
+    void testMin() {
+        Variables variables = Variables.create().add("x", new SharedVariable<>(5));
+
+        Parallel.withThreads(4)
+                .block(variables, (id, vars) -> Atomic.update("x", Operations.min(10), vars))
+                .join();
+
+        assertThat(variables.get("x").value()).isEqualTo(5);
     }
 }
