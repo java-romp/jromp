@@ -25,7 +25,6 @@ public class InitialValues {
         INITIAL_VALUES_MAP.put(Byte.class, (byte) 0);
         INITIAL_VALUES_MAP.put(Short.class, (short) 0);
         INITIAL_VALUES_MAP.put(String.class, "");
-        INITIAL_VALUES_MAP.put(Object.class, null);
     }
 
     /**

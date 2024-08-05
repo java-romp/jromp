@@ -118,11 +118,16 @@ class OperationTests {
         Variable<BigDecimal> variableBD = new PrivateVariable<>(BigDecimal.ZERO);
         assertThatThrownBy(() -> Operation.SUM.initialize(variableBD))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported type");
+                .hasMessage("Unsupported type (java.math.BigDecimal)");
 
         Variable<BigInteger> variableBI = new PrivateVariable<>(BigInteger.ZERO);
         assertThatThrownBy(() -> Operation.SUM.initialize(variableBI))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unsupported type");
+                .hasMessage("Unsupported type (java.math.BigInteger)");
+
+        Variable<StringBuilder> variableSB = new PrivateVariable<>(new StringBuilder());
+        assertThatThrownBy(() -> Operation.SUM.initialize(variableSB))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unsupported type (null)");
     }
 }
