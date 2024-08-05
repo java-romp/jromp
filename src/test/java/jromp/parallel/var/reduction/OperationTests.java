@@ -1,6 +1,7 @@
 package jromp.parallel.var.reduction;
 
 import jromp.parallel.var.PrivateVariable;
+import jromp.parallel.var.SharedVariable;
 import jromp.parallel.var.Variable;
 import org.junit.jupiter.api.Test;
 
@@ -115,17 +116,17 @@ class OperationTests {
         assertThat(variableD.value()).isZero();
 
         // Unsupported types
-        Variable<BigDecimal> variableBD = new PrivateVariable<>(BigDecimal.ZERO);
+        Variable<BigDecimal> variableBD = new SharedVariable<>(BigDecimal.ZERO);
         assertThatThrownBy(() -> Operation.SUM.initialize(variableBD))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unsupported type (java.math.BigDecimal)");
 
-        Variable<BigInteger> variableBI = new PrivateVariable<>(BigInteger.ZERO);
+        Variable<BigInteger> variableBI = new SharedVariable<>(BigInteger.ZERO);
         assertThatThrownBy(() -> Operation.SUM.initialize(variableBI))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unsupported type (java.math.BigInteger)");
 
-        Variable<StringBuilder> variableSB = new PrivateVariable<>(new StringBuilder());
+        Variable<BigInteger> variableSB = new SharedVariable<>(null);
         assertThatThrownBy(() -> Operation.SUM.initialize(variableSB))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unsupported type (null)");
