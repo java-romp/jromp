@@ -17,6 +17,10 @@ public class NumberUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Number> T getT(T value, double num) {
+        if (value == null) {
+            throw new IllegalArgumentException("Unsupported type (null)");
+        }
+
         return switch (value.getClass().getName()) {
             case "java.lang.Double" -> (T) Double.valueOf(num);
             case "java.lang.Integer" -> (T) Integer.valueOf((int) num);
@@ -24,7 +28,7 @@ public class NumberUtils {
             case "java.lang.Float" -> (T) Float.valueOf((float) num);
             case "java.lang.Short" -> (T) Short.valueOf((short) num);
             case "java.lang.Byte" -> (T) Byte.valueOf((byte) num);
-            case null, default -> throw new IllegalArgumentException("Unsupported type");
+            default -> throw new IllegalArgumentException("Unsupported type (" + value.getClass().getName() + ")");
         };
     }
 }
