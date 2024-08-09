@@ -1,7 +1,6 @@
 package jromp.parallel;
 
 import jromp.Constants;
-import jromp.parallel.task.Task;
 import jromp.parallel.var.AtomicVariable;
 import jromp.parallel.var.PrivateVariable;
 import jromp.parallel.var.Variables;
@@ -35,18 +34,6 @@ class ParallelTests {
 	void testWithThreadsTooMany() {
 		int availableProcessors = Constants.MAX_THREADS;
 		assertThat(Parallel.withThreads(availableProcessors + 10)).isNotNull();
-	}
-
-	@Test
-	void testBeginJoinSimple() {
-		String[] result = new String[4];
-		Task simpleTask = (id, variables) -> result[id] = "Hello, world!";
-
-		Parallel.withThreads(4)
-		        .begin(simpleTask)
-		        .join();
-
-		assertThat(result).containsOnly("Hello, world!");
 	}
 
 	@Test
@@ -185,7 +172,7 @@ class ParallelTests {
 		String[] result = new String[Constants.MAX_THREADS];
 
 		Parallel.defaultConfig()
-		        .begin((id, variables) -> result[id] = "Hello, world!")
+                .block((id, variables) -> result[id] = "Hello, world!")
 		        .join();
 
 		assertThat(result).containsOnly("Hello, world!");
