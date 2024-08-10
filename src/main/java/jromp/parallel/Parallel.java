@@ -89,26 +89,6 @@ public class Parallel {
     }
 
     /**
-     * Begin the parallel execution block with the given task.
-     *
-     * @param task The task to run.
-     *
-     * @return The parallel execution block.
-     */
-    public Parallel begin(Task task) {
-        addNumThreadsToVariables(this.variables);
-
-        for (int i = 0; i < this.threads; i++) {
-            final int finalI = i;
-            this.variablesList.add(this.variables);
-
-            threadExecutor.execute(() -> task.run(finalI, this.variables));
-        }
-
-        return this;
-    }
-
-    /**
      * Wait for all threads to finish.
      */
     public void join() {
@@ -150,7 +130,16 @@ public class Parallel {
      */
     public Parallel block(Variables variables, Task task) {
         this.variables = variables;
-        return begin(task);
+        addNumThreadsToVariables(this.variables);
+
+        for (int i = 0; i < this.threads; i++) {
+            final int finalI = i;
+            this.variablesList.add(this.variables);
+
+            threadExecutor.execute(() -> task.run(finalI, this.variables));
+        }
+
+        return this;
     }
 
     /**
