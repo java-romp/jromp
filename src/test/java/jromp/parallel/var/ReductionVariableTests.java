@@ -16,7 +16,7 @@ class ReductionVariableTests {
         Variables vars = Variables.create().add("sum", new ReductionVariable<>(new Sum<>(), 0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         Variable<Integer> insideSum = variables.get("sum");
                         insideSum.update(old -> old + 1);
@@ -36,7 +36,7 @@ class ReductionVariableTests {
         double h = 1.0 / (double) n;
 
         Parallel.withThreads(threads)
-                .parallelFor(0, n, vars, (id, start, end, variables) -> {
+                .parallelFor(0, n, vars, false, (id, start, end, variables) -> {
                     double x, sum = 0.0;
 
                     for (int i = start; i < end; i++) {
