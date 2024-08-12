@@ -2,33 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Template [x.y.z](https://github.com/java-romp/jromp/releases/tag/x.y.z) (yyyy-mm-dd)
+## Version [1.0.0](https://github.com/java-romp/jromp/releases/tag/1.0.0) (2024-08-12)
 
-[a.b.c...x.y.z](https://github.com/java-romp/jromp/compare/a.b.c...x.y.z)
+[1.0.0...0.0.1](https://github.com/java-romp/jromp/compare/1.0.0...0.0.1)
 
-### Added
+### ⚠️ Breaking Changes
 
-- for new features
+* remove deprecated `Sub` class in [#2](https://github.com/java-romp/jromp/pull/2)
+* implicit barriers in [#15](https://github.com/java-romp/jromp/pull/15)
+* add `AtomicVariable` and remove atomic operations from `SharedVariable`
+  in [#17](https://github.com/java-romp/jromp/pull/17)
+* `begin` method to be integrated into block in [#25](https://github.com/java-romp/jromp/pull/25)
 
-### Changed
+### ✨ Features
 
-- for changes in existing functionality
+* add `toString` methods with specific format in [#4](https://github.com/java-romp/jromp/pull/4)
+* `single` construct in [#12](https://github.com/java-romp/jromp/pull/12)
+* add support for `atomic` construct in [#18](https://github.com/java-romp/jromp/pull/18)
+* add Critical class implementation in [#21](https://github.com/java-romp/jromp/pull/21)
+* add no-wait functionality to parallel and section methods in [#26](https://github.com/java-romp/jromp/pull/26)
 
-### Deprecated
+### 🐞 Fixes
 
-- for soon-to-be removed features
+* prevent `ArrayIndexOutOfBoundsException` on sections construct in [#14](https://github.com/java-romp/jromp/pull/14)
+* deps: Update all dependencies in [#23](https://github.com/java-romp/jromp/pull/23)
+* deps: Update dependency org.apache.maven.plugins:maven-gpg-plugin to v3.2.5
+  in [#27](https://github.com/java-romp/jromp/pull/27)
 
-### Removed
+### 🛠️ Refactor
 
-- for now removed features
+* method name from 'get' to 'value' in all Variable subclasses in [#6](https://github.com/java-romp/jromp/pull/6)
+* reduction operations use general ones in [#20](https://github.com/java-romp/jromp/pull/20)
 
-### Fixed
-
-- for any bug fixes
-
-### Security
-
-- in case of vulnerabilities
+## Version [0.0.1](https://github.com/java-romp/jromp/releases/tag/0.0.1) (2024-07-18)
