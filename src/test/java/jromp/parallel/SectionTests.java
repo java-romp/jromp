@@ -32,7 +32,7 @@ class SectionTests {
 				              .add();
 
 		Parallel.withThreads(4)
-		        .sections(builder)
+                .sections(false, builder)
 		        .join();
 
 		assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4);
@@ -68,7 +68,7 @@ class SectionTests {
 				              .add();
 
 		Parallel.withThreads(4)
-		        .sections(builder)
+                .sections(false, builder)
 		        .join();
 
 		assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4, 10);

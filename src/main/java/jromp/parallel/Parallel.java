@@ -12,6 +12,7 @@ import jromp.parallel.var.Variables;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -145,14 +146,15 @@ public class Parallel {
     /**
      * Executes a for loop in parallel with the given start and end indices, using a task implementation.
      *
-     * @param start The start index of the for loop.
-     * @param end   The end index of the for loop.
-     * @param task  The task to be executed in parallel.
+     * @param start  The start index of the for loop.
+     * @param end    The end index of the for loop.
+     * @param nowait Whether to wait for the threads to finish.
+     * @param task   The task to be executed in parallel.
      *
      * @return The parallel execution block.
      */
-    public Parallel parallelFor(int start, int end, ForTask task) {
-        return this.parallelFor(start, end, Variables.create(), task);
+    public Parallel parallelFor(int start, int end, boolean nowait, ForTask task) {
+        return this.parallelFor(start, end, Variables.create(), nowait, task);
     }
 
     /**
@@ -162,15 +164,16 @@ public class Parallel {
      * @param start     The start index of the for loop.
      * @param end       The end index of the for loop.
      * @param variables The variables to use in the task.
+     * @param nowait    Whether to wait for the threads to finish.
      * @param forTask   The task to be executed in parallel.
      *
      * @return The parallel execution block.
      */
-    public Parallel parallelFor(int start, int end, Variables variables, ForTask forTask) {
+    public Parallel parallelFor(int start, int end, Variables variables, boolean nowait, ForTask forTask) {
         this.variables = variables;
         addNumThreadsToVariables(this.variables);
         this.variablesList.add(this.variables);
-        Barrier barrier = new Barrier("ParallelFor", this.threads);
+        Optional<Barrier> barrierOpt = Optional.ofNullable(nowait ? null : new Barrier("ParallelFor", this.threads));
 
         for (int i = 0; i < this.threads; i++) {
             // Calculate the start and end indices for the current thread.
@@ -190,7 +193,7 @@ public class Parallel {
             this.variablesList.add(finalVariables);
             threadExecutor.execute(() -> {
                 forTask.run(finalI, chunkStart, chunkEnd, finalVariables);
-                barrier.await();
+                barrierOpt.ifPresent(Barrier::await);
             });
         }
 
@@ -200,42 +203,46 @@ public class Parallel {
     /**
      * Executes the given tasks in separate sections.
      *
-     * @param tasks The tasks to run in parallel.
+     * @param nowait Whether to wait for the threads to finish.
+     * @param tasks  The tasks to run in parallel.
      *
      * @return The parallel execution block.
      */
-    public Parallel sections(Task... tasks) {
-        return this.sections(Variables.create(), tasks);
+    public Parallel sections(boolean nowait, Task... tasks) {
+        return this.sections(Variables.create(), nowait, tasks);
     }
 
     /**
      * Executes the given tasks in separate sections.
      *
      * @param variables The variables to use.
+     * @param nowait    Whether to wait for the threads to finish.
      * @param tasks     The tasks to run in parallel.
      *
      * @return The parallel execution block.
      */
-    public Parallel sections(Variables variables, Task... tasks) {
+    public Parallel sections(Variables variables, boolean nowait, Task... tasks) {
         List<Section> sections = new ArrayList<>();
 
         for (Task task : tasks) {
             sections.add(new Section(task, variables));
         }
 
-        return this.sections(sections.toArray(Section[]::new));
+        return this.sections(nowait, sections.toArray(Section[]::new));
     }
 
     /**
      * Executes the given sections in parallel.
      *
+     * @param nowait   Whether to wait for the threads to finish.
      * @param sections The sections to run in parallel.
      *
      * @return The parallel execution block.
      */
-    public Parallel sections(Section... sections) {
+    public Parallel sections(boolean nowait, Section... sections) {
         if (sections.length <= this.threads) {
-            Barrier barrier = new Barrier("Sections", sections.length);
+            Optional<Barrier> barrierOpt = Optional.ofNullable(
+                    nowait ? null : new Barrier("Sections", sections.length));
 
             for (int i = 0; i < sections.length; i++) {
                 final int finalI = i;
@@ -246,7 +253,7 @@ public class Parallel {
 
                 threadExecutor.execute(() -> {
                     task.run(finalI, vars);
-                    barrier.await();
+                    barrierOpt.ifPresent(Barrier::await);
                 });
             }
         } else {
@@ -257,7 +264,7 @@ public class Parallel {
                 Section[] batch = new Section[batchSize];
 
                 System.arraycopy(sections, i, batch, 0, batchSize);
-                this.sections(batch);
+                this.sections(nowait, batch);
             }
         }
 
@@ -267,12 +274,13 @@ public class Parallel {
     /**
      * Executes the given sections in parallel.
      *
+     * @param nowait         Whether to wait for the threads to finish.
      * @param sectionBuilder The builder for parallel sections.
      *
      * @return The parallel execution block.
      */
-    public Parallel sections(SectionBuilder sectionBuilder) {
-        return this.sections(sectionBuilder.build().toArray(Section[]::new));
+    public Parallel sections(boolean nowait, SectionBuilder sectionBuilder) {
+        return this.sections(nowait, sectionBuilder.build().toArray(Section[]::new));
     }
 
     public Parallel singleBlock(Task task) {

@@ -43,7 +43,7 @@ class ParallelTests {
 		int[] countsPerThread = new int[threads];
 
 		Parallel.withThreads(threads)
-		        .parallelFor(0, iterations, (id, start, end, vars) -> {
+                .parallelFor(0, iterations, false, (id, start, end, vars) -> {
 			        assertThat(vars).isNotNull();
 
 			        for (int i = start; i < end; i++) {
@@ -61,10 +61,11 @@ class ParallelTests {
 
 		Parallel.withThreads(4)
 		        .sections(
-				        (id, vars) -> result[id] = 1,
-				        (id, vars) -> result[id] = 2,
-				        (id, vars) -> result[id] = 3,
-				        (id, vars) -> result[id] = 4
+                        false,
+                        (id, vars) -> result[id] = 1,
+                        (id, vars) -> result[id] = 2,
+                        (id, vars) -> result[id] = 3,
+                        (id, vars) -> result[id] = 4
 		        )
 		        .join();
 
@@ -78,9 +79,10 @@ class ParallelTests {
 
 		Parallel.withThreads(threads)
 		        .sections(
-				        (id, vars) -> result[id] = 1,
-				        (id, vars) -> result[id] = 2,
-				        (id, vars) -> result[id] = 3
+                        false,
+                        (id, vars) -> result[id] = 1,
+                        (id, vars) -> result[id] = 2,
+                        (id, vars) -> result[id] = 3
 		        )
 		        .join();
 
@@ -94,11 +96,12 @@ class ParallelTests {
 
 		Parallel.withThreads(threads)
 		        .sections(
-				        (id, vars) -> result[id] = 1,
-				        (id, vars) -> result[id] = 2,
-				        (id, vars) -> result[id] = 3,
-				        (id, vars) -> result[id] = 4,
-				        (id, vars) -> result[id] = 5
+                        false,
+                        (id, vars) -> result[id] = 1,
+                        (id, vars) -> result[id] = 2,
+                        (id, vars) -> result[id] = 3,
+                        (id, vars) -> result[id] = 4,
+                        (id, vars) -> result[id] = 5
 		        )
 		        .join();
 
@@ -112,12 +115,13 @@ class ParallelTests {
 
 		Parallel.withThreads(threads)
 		        .sections(
-				        variables,
-				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
-				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
-				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
-				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
-				        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1)
+                        variables,
+                        false,
+                        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+                        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+                        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+                        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
+                        (id, vars) -> vars.<Integer>get("num").update(n -> n + 1)
 		        )
 		        .join();
 

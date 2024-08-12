@@ -16,7 +16,7 @@ class SharedVariableTests {
         Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         Variable<Integer> insideSum = variables.get("sum");
                         insideSum.update(old -> old + 1);
@@ -41,7 +41,7 @@ class SharedVariableTests {
         Variables vars = Variables.create().add("sum", outsideSum);
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         outsideSum.update(old -> old + 1);
                         countsPerThread[id]++;
@@ -63,7 +63,7 @@ class SharedVariableTests {
         Variables vars = Variables.create().add("sum", new SharedVariable<>(0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, (id, start, end, variables) -> {
+                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         Variable<Integer> sum = variables.get("sum");
                         sum.set(1);
