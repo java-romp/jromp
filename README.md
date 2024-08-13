@@ -12,6 +12,26 @@ using Java's `ThreadPoolExecutor` and designed to be efficient and scalable.
 - Minimal dependencies.
 - Easy to use.
 
+### Supported constructs
+
+- `parallel` - Executes a block of code in parallel.
+- `for` - Executes a loop in parallel.
+- `sections` - Executes a block of code in parallel.
+- `single` - Executes a block of code in a single thread.
+- `barrier` - Synchronizes all threads.
+- `critical` - Executes a block of code in a critical section.
+- `atomic` - Executes a block of code atomically.
+- `reduction` - Performs a reduction operation.
+
+### Supported variables
+
+- `shared` - Shared variable between threads.
+- `private` - Private variable for each thread.
+- `firstprivate` - Private variable with initial value (it takes the value prior to the parallel region).
+- `lastprivate` - Last private variable (it takes the value after the parallel region).
+- `reduction` - Reduction variable (it accumulates the value of each thread depending on the operation).
+- `atomic` - Atomic variable (it is updated atomically).
+
 ## Getting Started
 
 ## Installation
@@ -25,7 +45,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 <dependency>
   <groupId>io.github.java-romp</groupId>
   <artifactId>jromp</artifactId>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 <!-- @formatter:on -->
@@ -33,8 +53,11 @@ To use JROMP in your project, you can add the dependency using the following cod
 ### Gradle
 
 ```groovy
-implementation 'io.github.java-romp:jromp:0.0.1'
+implementation 'io.github.java-romp:jromp:1.0.0'
 ```
+
+If your package manager is not listed here, you can check the latest version on
+the [Maven Central Repository](https://central.sonatype.com/artifact/io.github.java-romp/jromp).
 
 ## Usage
 
@@ -47,7 +70,7 @@ import jromp.parallel.Parallel;
 public class BasicUsage {
   public static void main(String[] args) {
     Parallel.defaultConfig()
-            .begin((id, variables) -> System.out.printf("Hello World from thread %d of %d%n", id,
+            .block((id, variables) -> System.out.printf("Hello World from thread %d of %d%n", id,
                     variables.<Integer>get(Constants.NUM_THREADS).value()))
             .join();
   }
