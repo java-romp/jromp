@@ -1,5 +1,7 @@
 package jromp.parallel.var;
 
+import jromp.parallel.operation.Operation;
+
 import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
@@ -10,7 +12,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <T> the type of the variable.
  */
-public interface Variable<T> extends Serializable {
+public interface Variable<T extends Serializable> extends Serializable {
     /**
      * Retrieves the value of the variable.
      *
@@ -31,6 +33,15 @@ public interface Variable<T> extends Serializable {
      * @param operator the unary operator to apply.
      */
     void update(UnaryOperator<T> operator);
+
+    /**
+     * Updates the value of the variable using the given operation.
+     *
+     * @param operation the operation to apply.
+     */
+    default void update(Operation<T> operation) {
+        update(operation.get());
+    }
 
     /**
      * Creates a copy of the variable.

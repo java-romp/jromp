@@ -2,6 +2,8 @@ package jromp.parallel.var.reduction;
 
 import jromp.parallel.var.Variable;
 
+import java.io.Serializable;
+
 /**
  * Enum for reduction operations.
  */
@@ -91,7 +93,7 @@ public enum Operation {
      * @param <T>      the type of the variable.
      */
     @SuppressWarnings("unchecked")
-    public <T> void initialize(Variable<T> variable) {
+    public <T extends Serializable> void initialize(Variable<T> variable) {
         op.initialize(variable);
     }
 
@@ -105,7 +107,7 @@ public enum Operation {
      * @return the result of the combination.
      */
     @SuppressWarnings("unchecked")
-    public <T> T combine(T a, T b) {
+    public <T extends Serializable> T combine(T a, T b) {
         return (T) op.combine(a, b);
     }
 
