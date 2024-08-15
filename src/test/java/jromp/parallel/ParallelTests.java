@@ -202,7 +202,7 @@ class ParallelTests {
                         countsPerThread[id]++;
                     }
                 })
-                .singleBlock((id, vars) -> {
+                .singleBlock(false, (id, vars) -> {
                     assertThat(vars).isNotNull();
                     assertThat(vars.isEmpty()).isFalse();
                     assertThat(vars.size()).isEqualTo(2);
@@ -245,7 +245,7 @@ class ParallelTests {
 
         Parallel.withThreads(threads)
                 .block((id, vars) -> assertThat(value[0]).isZero())
-                .singleBlock((id, vars) -> value[0] = 1)
+                .singleBlock(false, (id, vars) -> value[0] = 1)
                 .block((id, vars) -> assertThat(value[0]).isOne())
                 .join();
     }
