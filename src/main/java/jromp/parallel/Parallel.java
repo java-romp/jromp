@@ -60,7 +60,7 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public static Parallel defaultConfig() {
-        return new Parallel(Constants.MAX_THREADS);
+        return new Parallel(Constants.DEFAULT_THREADS);
     }
 
     /**

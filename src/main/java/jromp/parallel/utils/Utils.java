@@ -21,7 +21,7 @@ public final class Utils {
      * @return The number of threads.
      */
     public static int checkThreads(int threads) {
-        if (threads <= 0) {
+        if (threads < Constants.MIN_THREADS) {
             throw new IllegalArgumentException("Number of threads must be greater than 0.");
         }
 
