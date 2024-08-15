@@ -254,9 +254,17 @@ public class Parallel {
         return this.sections(nowait, sectionBuilder.build().toArray(Section[]::new));
     }
 
-    public Parallel singleBlock(Task task) {
+    /**
+     * Submits a block that can only be executed by a single thread.
+     *
+     * @param nowait Whether to wait for the threads to finish.
+     * @param task   The task to run in parallel.
+     *
+     * @return The parallel execution block.
+     */
+    public Parallel singleBlock(boolean nowait, Task task) {
         AtomicBoolean executed = new AtomicBoolean(false);
-        Barrier barrier = new Barrier("SingleBlock", this.threads);
+        Optional<Barrier> barrierOpt = Optional.ofNullable(nowait ? null : new Barrier("SingleBlock", this.threads));
 
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
@@ -269,7 +277,7 @@ public class Parallel {
                 }
                 // Other threads will pass through without executing the task.
 
-                barrier.await(); // Wait for all threads to reach the barrier.
+                barrierOpt.ifPresent(Barrier::await);
             });
         }
 
