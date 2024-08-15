@@ -80,6 +80,13 @@ public class Parallel {
         }
     }
 
+    /**
+     * Set the variables to use in the parallel block.
+     *
+     * @param variables The variables to use.
+     *
+     * @return The parallel execution block.
+     */
     public Parallel withVariables(Variables variables) {
         this.variables = variables;
         addNumThreadsToVariables(this.variables);
