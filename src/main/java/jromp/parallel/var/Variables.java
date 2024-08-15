@@ -1,5 +1,6 @@
 package jromp.parallel.var;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class Variables {
      *
      * @return the updated Variables object.
      */
-    public <T> Variables add(String name, Variable<T> variable) {
+    public <T extends Serializable> Variables add(String name, Variable<T> variable) {
         this.variableMap.put(name, variable);
         return this;
     }
@@ -73,7 +74,7 @@ public class Variables {
      * @return the variable with the specified name, or null if it does not exist.
      */
     @SuppressWarnings("unchecked")
-    public <T> Variable<T> get(String name) {
+    public <T extends Serializable> Variable<T> get(String name) {
         return (Variable<T>) this.variableMap.get(name);
     }
 

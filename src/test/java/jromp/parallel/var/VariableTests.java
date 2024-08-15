@@ -1,5 +1,6 @@
 package jromp.parallel.var;
 
+import jromp.parallel.operation.Operations;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -127,5 +128,13 @@ class VariableTests {
         vars.add("sum1", new PrivateVariable<>(0));
 
         assertThat(vars.contains("sum2")).isFalse();
+    }
+
+    @Test
+    void testUpdateOperation() {
+        SharedVariable<Integer> sum = new SharedVariable<>(0);
+        sum.update(Operations.add(1));
+
+        assertThat(sum.value()).isEqualTo(1);
     }
 }

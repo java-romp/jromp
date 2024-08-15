@@ -2,6 +2,8 @@ package jromp.parallel.var.reduction;
 
 import jromp.parallel.var.Variable;
 
+import java.io.Serializable;
+
 /**
  * Interface for reduction operations.
  * <p>
@@ -12,7 +14,7 @@ import jromp.parallel.var.Variable;
  *
  * @param <T> the type of the reduction operation.
  */
-public interface ReductionOperation<T> {
+public interface ReductionOperation<T extends Serializable> {
     /**
      * Returns the identifier of the reduction operation.
      *
