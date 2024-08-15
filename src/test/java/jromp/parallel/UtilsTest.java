@@ -42,4 +42,9 @@ class UtilsTest {
         assertThat(Utils.isMaster(0)).isTrue();
         assertThat(Utils.isMaster(1)).isFalse();
     }
+
+    @Test
+    void testGetWTime() {
+        assertThat(Utils.getWTime()).isGreaterThan(0.0);
+    }
 }
