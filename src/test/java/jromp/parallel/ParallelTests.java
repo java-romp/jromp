@@ -114,8 +114,8 @@ class ParallelTests {
         Variables variables = Variables.create().add("num", new AtomicVariable<>(0));
 
         Parallel.withThreads(threads)
+                .withVariables(variables)
                 .sections(
-                        variables,
                         false,
                         (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
                         (id, vars) -> vars.<Integer>get("num").update(n -> n + 1),
@@ -158,7 +158,8 @@ class ParallelTests {
         Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
 
         Parallel.withThreads(threads)
-                .block(variables, (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                     assertThat(vars).isNotNull();
                     assertThat(vars.isEmpty()).isFalse();
 
@@ -192,7 +193,8 @@ class ParallelTests {
         Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
 
         Parallel.withThreads(threads)
-                .block(variables, (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                     assertThat(vars).isNotNull();
                     assertThat(vars.isEmpty()).isFalse();
 
@@ -212,7 +214,8 @@ class ParallelTests {
                         countsPerThread[id]++;
                     }
                 })
-                .block(variables, (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                     assertThat(vars).isNotNull();
                     assertThat(vars.isEmpty()).isFalse();
 

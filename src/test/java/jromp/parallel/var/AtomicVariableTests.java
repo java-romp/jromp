@@ -15,7 +15,8 @@ class AtomicVariableTests {
         Variables vars = Variables.create().add("sum", new AtomicVariable<>(0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
+                .withVariables(vars)
+                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         Variable<Integer> insideSum = variables.get("sum");
                         insideSum.update(old -> old + 1);
@@ -37,7 +38,8 @@ class AtomicVariableTests {
         Variables vars = Variables.create().add("sum", outsideSum);
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
+                .withVariables(vars)
+                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         outsideSum.update(old -> old + 1);
                         countsPerThread[id]++;
@@ -56,7 +58,8 @@ class AtomicVariableTests {
         Variables vars = Variables.create().add("sum", new AtomicVariable<>(0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
+                .withVariables(vars)
+                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         Variable<Integer> sum = variables.get("sum");
                         sum.set(1);
@@ -81,7 +84,8 @@ class AtomicVariableTests {
         Variables vars = Variables.create().add("sum", new AtomicVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(vars, (id, variables) -> {
+                .withVariables(vars)
+                .block((id, variables) -> {
                     for (int i = 0; i < 2; i++) {
                         Variable<Integer> sum = variables.get("sum");
 

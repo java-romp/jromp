@@ -14,7 +14,8 @@ class AtomicTests {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables, (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                     Integer value = Atomic.read("x", vars);
 
                     assertThat(((SharedVariable<Integer>) variables.<Integer>get("x")).hasAtomic()).isTrue();
@@ -31,7 +32,8 @@ class AtomicTests {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables, (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                     Atomic.write("x", 1, vars);
 
                     // Only the atomic variable should be updated here
@@ -51,7 +53,8 @@ class AtomicTests {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables, (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                     Atomic.update("x", Operations.add(1), vars);
 
                     // Only the atomic variable should be updated here
