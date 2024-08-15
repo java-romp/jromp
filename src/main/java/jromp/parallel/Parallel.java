@@ -80,6 +80,13 @@ public class Parallel {
         }
     }
 
+    public Parallel withVariables(Variables variables) {
+        this.variables = variables;
+        addNumThreadsToVariables(this.variables);
+
+        return this;
+    }
+
     /**
      * Add the number of threads to the variables.
      *
@@ -130,9 +137,6 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel block(Variables variables, Task task) {
-        this.variables = variables;
-        addNumThreadsToVariables(this.variables);
-
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
             this.variablesList.add(this.variables);
@@ -170,8 +174,6 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel parallelFor(int start, int end, Variables variables, boolean nowait, ForTask forTask) {
-        this.variables = variables;
-        addNumThreadsToVariables(this.variables);
         this.variablesList.add(this.variables);
         Optional<Barrier> barrierOpt = Optional.ofNullable(nowait ? null : new Barrier("ParallelFor", this.threads));
 
@@ -189,7 +191,7 @@ public class Parallel {
             }
 
             final int finalI = i;
-            final Variables finalVariables = variables.copy();
+            final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
             threadExecutor.execute(() -> {
                 forTask.run(finalI, chunkStart, chunkEnd, finalVariables);
