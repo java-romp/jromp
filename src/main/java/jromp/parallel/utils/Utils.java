@@ -39,4 +39,13 @@ public final class Utils {
     public static boolean isMaster(int id) {
         return id == 0;
     }
+
+    /**
+     * Get the elapsed wall clock time.
+     *
+     * @return The elapsed wall clock time.
+     */
+    public static double getWTime() {
+        return System.nanoTime() / 1e9;
+    }
 }
