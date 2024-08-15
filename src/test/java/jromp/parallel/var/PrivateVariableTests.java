@@ -48,7 +48,8 @@ class PrivateVariableTests {
         Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
+                .withVariables(vars)
+                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         Variable<Integer> sum = variables.get("sum");
                         sum.set(sum.value() + 1);
@@ -67,7 +68,8 @@ class PrivateVariableTests {
         Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
         Parallel.withThreads(threads)
-                .parallelFor(0, iterations, vars, false, (id, start, end, variables) -> {
+                .withVariables(vars)
+                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
                     for (int i = start; i < end; i++) {
                         variables.<Integer>get("sum").update(old -> old + 1);
                     }
@@ -92,7 +94,8 @@ class PrivateVariableTests {
         Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(vars, (id, variables) -> {
+                .withVariables(vars)
+                .block((id, variables) -> {
                     for (int i = 0; i < 20; i++) {
                         Variable<Integer> sum = variables.get("sum");
                         sum.update(old -> old + 1);

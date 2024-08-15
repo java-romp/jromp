@@ -14,8 +14,8 @@ class CriticalTests {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables,
-                       (id, vars) -> Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1)))
+                .withVariables(variables)
+                .block((id, vars) -> Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1)))
                 .join();
 
         assertThat(variables.get("x").value()).isEqualTo(4);
@@ -26,8 +26,8 @@ class CriticalTests {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables,
-                       (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                            Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
                            Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
                        })
@@ -43,8 +43,8 @@ class CriticalTests {
                                        .add("y", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables,
-                       (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                            Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
                            Critical.enter("y", id, vars, (i, v) -> v.<Integer>get("y").update(y -> y + 1));
                        })
@@ -61,8 +61,8 @@ class CriticalTests {
                                        .add("y", new SharedVariable<>(0));
 
         Parallel.withThreads(4)
-                .block(variables,
-                       (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                            Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
                            Critical.enter("y", id, vars, (i, v) -> v.<Integer>get("y").update(y -> y + 1));
                            Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
@@ -79,8 +79,8 @@ class CriticalTests {
         Variables variables = Variables.create().add("x", new SharedVariable<>(new StringBuilder()));
 
         Parallel.withThreads(4)
-                .block(variables,
-                       (id, vars) -> {
+                .withVariables(variables)
+                .block((id, vars) -> {
                            Critical.enter("x", id, vars, (i, v) -> {
                                Variable<StringBuilder> variable = v.get("x");
                                variable.update(sb -> sb.append("x"));

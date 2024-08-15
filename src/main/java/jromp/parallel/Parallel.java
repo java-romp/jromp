@@ -34,7 +34,7 @@ public class Parallel {
     /**
      * The variables used in the current block.
      */
-    private Variables variables = Variables.create();
+    private Variables variables;
 
     /**
      * The list of variables used in the current block to perform the
@@ -50,6 +50,8 @@ public class Parallel {
     private Parallel(int threads) {
         this.threads = threads;
         this.threadExecutor = Executors.newFixedThreadPool(threads);
+
+        withVariables(Variables.create());
     }
 
     /**
@@ -78,6 +80,20 @@ public class Parallel {
         } catch (InterruptedException e) {
             // Ignore
         }
+    }
+
+    /**
+     * Set the variables to use in the parallel block.
+     *
+     * @param variables The variables to use.
+     *
+     * @return The parallel execution block.
+     */
+    public Parallel withVariables(Variables variables) {
+        this.variables = variables;
+        addNumThreadsToVariables(this.variables);
+
+        return this;
     }
 
     /**
@@ -118,21 +134,6 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel block(Task task) {
-        return this.block(Variables.create(), task);
-    }
-
-    /**
-     * Executes a task in a parallel block, using the given variables.
-     *
-     * @param variables The variables to use.
-     * @param task      The task to run.
-     *
-     * @return The parallel execution block.
-     */
-    public Parallel block(Variables variables, Task task) {
-        this.variables = variables;
-        addNumThreadsToVariables(this.variables);
-
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
             this.variablesList.add(this.variables);
@@ -144,7 +145,8 @@ public class Parallel {
     }
 
     /**
-     * Executes a for loop in parallel with the given start and end indices, using a task implementation.
+     * Executes a for loop in parallel with the given start and end indices, using
+     * a task implementation.
      *
      * @param start  The start index of the for loop.
      * @param end    The end index of the for loop.
@@ -154,24 +156,6 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel parallelFor(int start, int end, boolean nowait, ForTask task) {
-        return this.parallelFor(start, end, Variables.create(), nowait, task);
-    }
-
-    /**
-     * Executes a for loop in parallel with the given start and end indices, using a
-     * task implementation and variables.
-     *
-     * @param start     The start index of the for loop.
-     * @param end       The end index of the for loop.
-     * @param variables The variables to use in the task.
-     * @param nowait    Whether to wait for the threads to finish.
-     * @param forTask   The task to be executed in parallel.
-     *
-     * @return The parallel execution block.
-     */
-    public Parallel parallelFor(int start, int end, Variables variables, boolean nowait, ForTask forTask) {
-        this.variables = variables;
-        addNumThreadsToVariables(this.variables);
         this.variablesList.add(this.variables);
         Optional<Barrier> barrierOpt = Optional.ofNullable(nowait ? null : new Barrier("ParallelFor", this.threads));
 
@@ -189,10 +173,10 @@ public class Parallel {
             }
 
             final int finalI = i;
-            final Variables finalVariables = variables.copy();
+            final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
             threadExecutor.execute(() -> {
-                forTask.run(finalI, chunkStart, chunkEnd, finalVariables);
+                task.run(finalI, chunkStart, chunkEnd, finalVariables);
                 barrierOpt.ifPresent(Barrier::await);
             });
         }
@@ -209,23 +193,10 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel sections(boolean nowait, Task... tasks) {
-        return this.sections(Variables.create(), nowait, tasks);
-    }
-
-    /**
-     * Executes the given tasks in separate sections.
-     *
-     * @param variables The variables to use.
-     * @param nowait    Whether to wait for the threads to finish.
-     * @param tasks     The tasks to run in parallel.
-     *
-     * @return The parallel execution block.
-     */
-    public Parallel sections(Variables variables, boolean nowait, Task... tasks) {
         List<Section> sections = new ArrayList<>();
 
         for (Task task : tasks) {
-            sections.add(new Section(task, variables));
+            sections.add(new Section(task, this.variables));
         }
 
         return this.sections(nowait, sections.toArray(Section[]::new));
