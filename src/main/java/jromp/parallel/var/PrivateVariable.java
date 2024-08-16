@@ -7,7 +7,7 @@ import java.util.function.UnaryOperator;
 
 /**
  * A variable that is not shared between threads.
- * It is initialized with the default value of the given type.
+ * It is initialized with the given value.
  *
  * @param <T> the type of the variable.
  */
@@ -18,11 +18,12 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
     private T value;
 
     /**
-     * Constructs a new private variable with the default value of the given type.
+     * Constructs a new private variable with the given value.
+     *
+     * @param value the value of the variable.
      */
-    @SuppressWarnings("unchecked")
     public PrivateVariable(T value) {
-        this.value = (T) InitialValues.getInitialValue(value.getClass());
+        this.value = value;
     }
 
     @Override
@@ -41,14 +42,15 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public PrivateVariable<T> copy() {
-        return new PrivateVariable<>(SerializationUtils.clone(this.value));
+        T defaultValue = (T) InitialValues.getInitialValue(value.getClass());
+        return new PrivateVariable<>(SerializationUtils.clone(defaultValue));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void end() {
-        this.value = (T) InitialValues.getInitialValue(value.getClass());
+        // Do nothing
     }
 
     @Override

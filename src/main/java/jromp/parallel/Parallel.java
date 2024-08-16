@@ -136,9 +136,10 @@ public class Parallel {
     public Parallel block(Task task) {
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
-            this.variablesList.add(this.variables);
+            final Variables finalVariables = this.variables.copy();
+            this.variablesList.add(finalVariables);
 
-            threadExecutor.execute(() -> task.run(finalI, this.variables));
+            threadExecutor.execute(() -> task.run(finalI, finalVariables));
         }
 
         return this;
@@ -156,7 +157,6 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel parallelFor(int start, int end, boolean nowait, ForTask task) {
-        this.variablesList.add(this.variables);
         Optional<Barrier> barrierOpt = Optional.ofNullable(nowait ? null : new Barrier("ParallelFor", this.threads));
 
         for (int i = 0; i < this.threads; i++) {

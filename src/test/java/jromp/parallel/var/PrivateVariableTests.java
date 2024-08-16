@@ -15,7 +15,7 @@ class PrivateVariableTests {
     @Test
     void testValueConstructedWithNonZero() {
         PrivateVariable<Integer> privateVariable = new PrivateVariable<>(10);
-        assertThat(privateVariable.value()).isZero();
+        assertThat(privateVariable.value()).isEqualTo(10);
     }
 
     @Test
@@ -57,8 +57,7 @@ class PrivateVariableTests {
                 })
                 .join();
 
-        // The value is zero because each thread has its own copy of the variable
-        assertThat(vars.get("sum").value()).isEqualTo(0);
+        assertThat(vars.<Integer>get("sum").value()).isZero();
     }
 
     @Test
@@ -76,8 +75,7 @@ class PrivateVariableTests {
                 })
                 .join();
 
-        // The value is zero because each thread has its own copy of the variable
-        assertThat(vars.get("sum").value()).isEqualTo(0);
+        assertThat(vars.<Integer>get("sum").value()).isZero();
     }
 
     @Test
@@ -91,19 +89,24 @@ class PrivateVariableTests {
 
     @Test
     void testDontKeepValueAfterExecution() {
-        Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
+        PrivateVariable<Integer> privateVariable = new PrivateVariable<>(10);
+        Variables vars = Variables.create().add("sum", privateVariable);
+        privateVariable.set(12);
 
         Parallel.withThreads(4)
                 .withVariables(vars)
                 .block((id, variables) -> {
+                    assertThat(variables.<Integer>get("sum").value()).isZero();
+
                     for (int i = 0; i < 20; i++) {
                         Variable<Integer> sum = variables.get("sum");
                         sum.update(old -> old + 1);
                     }
+
+                    assertThat(variables.<Integer>get("sum").value()).isEqualTo(20);
                 })
                 .join();
 
-        // The value is zero because each thread has its own copy of the variable
-        assertThat(vars.get("sum").value()).isEqualTo(0);
+        assertThat(vars.<Integer>get("sum").value()).isEqualTo(12);
     }
 }
