@@ -18,18 +18,12 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     private T value;
 
     /**
-     * The initial value of the variable.
-     */
-    private final T initialValue;
-
-    /**
      * Constructs a new private variable with the given value.
      *
      * @param value the value of the variable.
      */
     public FirstPrivateVariable(T value) {
         this.value = value;
-        this.initialValue = value;
     }
 
     @Override
@@ -54,11 +48,11 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 
     @Override
     public void end() {
-        this.value = this.initialValue;
+        // Do nothing
     }
 
     @Override
     public String toString() {
-        return "FirstPrivateVariable{value=%s, initialValue=%s}".formatted(this.value, this.initialValue);
+        return "FirstPrivateVariable{value=%s}".formatted(value);
     }
 }
