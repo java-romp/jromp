@@ -3,12 +3,12 @@ package jromp.parallel.var;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
  * A variable that is not shared between threads.
- * It is initialized with the default value and keeps the last value set.
+ * It is initialized with the given value.
  *
  * @param <T> the type of the variable.
  */
@@ -23,7 +23,10 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
      */
     private T lastValue;
 
-    private transient Function<T, Void> endCallback;
+    /**
+     * Callback to set the value of the variable when the block ends.
+     */
+    private transient Consumer<T> endCallback;
 
     /**
      * Constructs a new private variable with the default value.
@@ -51,14 +54,14 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Variable<T> copy() {
         T defaultValue = (T) InitialValues.getInitialValue(value.getClass());
         LastPrivateVariable<T> lastPrivateVariable = new LastPrivateVariable<>(SerializationUtils.clone(defaultValue));
 
-        lastPrivateVariable.endCallback = (T val) -> {
+        lastPrivateVariable.endCallback = val -> {
             this.value = val;
             this.lastValue = val;
-            return null;
         };
 
         return lastPrivateVariable;
@@ -69,7 +72,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
         this.value = this.lastValue;
 
         if (this.endCallback != null) {
-            this.endCallback.apply(this.value);
+            this.endCallback.accept(this.value);
         }
     }
 
