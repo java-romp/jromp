@@ -1,7 +1,6 @@
 package jromp.parallel.var;
 
 import jromp.parallel.Parallel;
-import jromp.parallel.utils.Utils;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +15,7 @@ class LastPrivateVariableTest {
     @Test
     void testValueConstructedWithNonZero() {
         LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(10);
-        assertThat(lastPrivateVariable.value()).isZero();
+        assertThat(lastPrivateVariable.value()).isEqualTo(10);
     }
 
     @Test
@@ -90,30 +89,43 @@ class LastPrivateVariableTest {
 
     @Test
     void testKeepLastValueAfterExecution() {
-        Variables vars = Variables.create().add("sum", new LastPrivateVariable<>(0));
+        LastPrivateVariable<Integer> variable = new LastPrivateVariable<>(0);
+        Variables vars = Variables.create().add("sum", variable);
+        variable.set(2);
 
         Parallel.withThreads(4)
                 .withVariables(vars)
                 .block((id, variables) -> {
+                    Variable<Integer> sum = variables.get("sum");
+                    assertThat(sum.value()).isZero();
+
                     for (int i = 0; i < 2; i++) {
-                        Variable<Integer> sum = variables.get("sum");
-
-                        // The master thread will sleep for a while to end up with a different value
-                        if (Utils.isMaster(id)) {
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                            sum.set(200);
-                        } else {
-                            sum.update(old -> old + 1);
-                        }
+                        sum.update(old -> old + 1);
                     }
+
+                    assertThat(sum.value()).isEqualTo(2);
                 })
                 .join();
 
-        assertThat(vars.get("sum").value()).isEqualTo(200);
+        assertThat(vars.get("sum").value()).isEqualTo(2);
+    }
+
+    @Test
+    void testChainedEnd() {
+        Variable<Integer> var1 = new LastPrivateVariable<>(0);
+        Variable<Integer> var2 = var1.copy();
+        Variable<Integer> var3 = var2.copy();
+
+        var1.set(1);
+        var2.set(2);
+        var3.set(3);
+
+        var1.end();
+        var2.end();
+        var3.end();
+
+        assertThat(var1.value()).isEqualTo(2);
+        assertThat(var2.value()).isEqualTo(3);
+        assertThat(var3.value()).isEqualTo(3);
     }
 }

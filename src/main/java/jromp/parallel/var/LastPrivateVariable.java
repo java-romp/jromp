@@ -28,9 +28,8 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     /**
      * Constructs a new private variable with the default value.
      */
-    @SuppressWarnings("unchecked")
     public LastPrivateVariable(T value) {
-        this.value = (T) InitialValues.getInitialValue(value.getClass());
+        this.value = value;
         this.lastValue = this.value;
     }
 
@@ -53,7 +52,8 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 
     @Override
     public Variable<T> copy() {
-        LastPrivateVariable<T> lastPrivateVariable = new LastPrivateVariable<>(SerializationUtils.clone(this.value));
+        T defaultValue = (T) InitialValues.getInitialValue(value.getClass());
+        LastPrivateVariable<T> lastPrivateVariable = new LastPrivateVariable<>(SerializationUtils.clone(defaultValue));
 
         lastPrivateVariable.endCallback = (T val) -> {
             this.value = val;
