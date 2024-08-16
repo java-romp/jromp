@@ -115,6 +115,8 @@ public class Parallel {
             waitForFinish();
         }
 
+        variablesList.add(this.variables);
+
         // Perform the last operation on all variables.
         for (Variables vars : variablesList) {
             // Merge all reduction variables after the parallel block has ended.
