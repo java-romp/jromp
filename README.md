@@ -32,8 +32,6 @@ using Java's `ThreadPoolExecutor` and designed to be efficient and scalable.
 - `reduction` - Reduction variable (it accumulates the value of each thread depending on the operation).
 - `atomic` - Atomic variable (it is updated atomically).
 
-## Getting Started
-
 ## Installation
 
 To use JROMP in your project, you can add the dependency using the following code snippets:
