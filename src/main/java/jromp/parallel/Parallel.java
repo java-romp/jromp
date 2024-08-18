@@ -186,14 +186,15 @@ public class Parallel {
     }
 
     /**
-     * Executes the given tasks in separate sections.
+     * Executes the given tasks in separate sections with the given variables.
      *
-     * @param nowait Whether to wait for the threads to finish.
-     * @param tasks  The tasks to run in parallel.
+     * @param nowait    Whether to wait for the threads to finish.
+     * @param variables The variables to use in the sections block.
+     * @param tasks     The tasks to run in parallel.
      *
      * @return The parallel execution block.
      */
-    public Parallel sections(boolean nowait, Task... tasks) {
+    private Parallel sections(boolean nowait, Variables variables, Task... tasks) {
         if (tasks.length <= this.threads) {
             Optional<Barrier> barrierOpt = Optional.ofNullable(
                     nowait ? null : new Barrier("Sections", tasks.length));
@@ -201,11 +202,9 @@ public class Parallel {
             for (int i = 0; i < tasks.length; i++) {
                 final int finalI = i;
                 Task task = tasks[i];
-                final Variables vars = this.variables.copy();
-                this.variablesList.add(vars);
 
                 threadExecutor.execute(() -> {
-                    task.run(finalI, vars);
+                    task.run(finalI, variables);
                     barrierOpt.ifPresent(Barrier::await);
                 });
             }
@@ -217,13 +216,36 @@ public class Parallel {
                 Task[] batch = new Task[batchSize];
 
                 System.arraycopy(tasks, i, batch, 0, batchSize);
-                this.sections(nowait, batch);
+                this.sections(nowait, variables, batch);
             }
         }
 
         return this;
     }
 
+    /**
+     * Executes the given tasks in separate sections.
+     *
+     * @param nowait Whether to wait for the threads to finish.
+     * @param tasks  The tasks to run in parallel.
+     *
+     * @return The parallel execution block.
+     */
+    public Parallel sections(boolean nowait, Task... tasks) {
+        Variables vars = this.variables.copy();
+        this.variablesList.add(vars);
+
+        return sections(nowait, vars, tasks);
+    }
+
+    /**
+     * Executes the given tasks in separate sections.
+     *
+     * @param nowait Whether to wait for the threads to finish.
+     * @param tasks  The tasks to run in parallel.
+     *
+     * @return The parallel execution block.
+     */
     public Parallel sections(boolean nowait, List<Task> tasks) {
         return sections(nowait, tasks.toArray(Task[]::new));
     }

@@ -4,7 +4,6 @@ import jromp.parallel.operation.Operations;
 import jromp.parallel.task.Task;
 import jromp.parallel.var.LastPrivateVariable;
 import jromp.parallel.var.Variables;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionTests {
     @Test
-    @Disabled("LastPrivateVariable is not working correctly")
     void testBasicSection() {
         List<LastPrivateVariable<Integer>> counters = List.of(new LastPrivateVariable<>(0),
                                                               new LastPrivateVariable<>(0),
@@ -40,7 +38,6 @@ class SectionTests {
     }
 
     @Test
-    @Disabled("LastPrivateVariable is not working correctly")
     void testBasicSectionWithFor() {
         List<LastPrivateVariable<Integer>> counters = List.of(new LastPrivateVariable<>(0),
                                                               new LastPrivateVariable<>(0),
