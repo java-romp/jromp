@@ -43,15 +43,6 @@ public class Variables {
     }
 
     /**
-     * Retrieves the map of variables.
-     *
-     * @return the map of variables.
-     */
-    public Map<String, Variable<?>> getVariables() {
-        return this.variableMap;
-    }
-
-    /**
      * Adds a variable with the specified name to the map of variables.
      *
      * @param name     the name of the variable.
