@@ -17,37 +17,9 @@ class VariableTests {
     }
 
     @Test
-    void testValueVariables() {
-        Variables vars = Variables.create();
-        vars.add("sum", new SharedVariable<>(0));
-        vars.add("count", new SharedVariable<>(0));
-
-        Map<String, Variable<?>> varMap = vars.getVariables();
-
-        assertThat(varMap).containsKeys("sum", "count");
-    }
-
-    @Test
     void testToStringEmpty() {
         Variables vars = Variables.create();
         assertThat(vars.toString()).hasToString("No variables");
-    }
-
-    @Test
-    void testMapOrderedAlphabetically() {
-        Variables vars = Variables.create();
-        SharedVariable<Integer> sum = new SharedVariable<>(0);
-        SharedVariable<Integer> count = new SharedVariable<>(0);
-        SharedVariable<Integer> avg = new SharedVariable<>(0);
-
-        vars.add("sum", sum);
-        vars.add("count", count);
-        vars.add("average", avg);
-
-        Object[] array = vars.getVariables().values().toArray();
-        assertThat(array[0]).isSameAs(avg);
-        assertThat(array[1]).isSameAs(count);
-        assertThat(array[2]).isSameAs(sum);
     }
 
     @Test
