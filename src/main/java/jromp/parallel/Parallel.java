@@ -133,7 +133,7 @@ public class Parallel {
         for (Variables vars : variablesList) {
             // Merge all reduction variables after the parallel block has ended.
             vars.getVariablesOfType(ReductionVariable.class)
-                .forEach(variable -> ((ReductionVariable<?>) variable).merge());
+                .forEach(ReductionVariable::merge);
 
             // End all variables.
             vars.end();
