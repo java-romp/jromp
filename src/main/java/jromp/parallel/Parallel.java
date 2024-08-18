@@ -123,7 +123,7 @@ public class Parallel {
                 .forEach(variable -> ((ReductionVariable<?>) variable).merge());
 
             // End all variables.
-            vars.getVariables().values().forEach(Variable::end);
+            vars.end();
         }
     }
 

@@ -166,4 +166,11 @@ public class Variables {
 
         return variables;
     }
+
+    /**
+     * Ends all variables in the variable map.
+     */
+    public void end() {
+        this.variableMap.values().forEach(Variable::end);
+    }
 }
