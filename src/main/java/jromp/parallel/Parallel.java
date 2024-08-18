@@ -1,7 +1,6 @@
 package jromp.parallel;
 
 import jromp.Constants;
-import jromp.parallel.builder.SectionBuilder;
 import jromp.parallel.task.ForTask;
 import jromp.parallel.task.Task;
 import jromp.parallel.utils.Utils;
@@ -195,33 +194,14 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel sections(boolean nowait, Task... tasks) {
-        List<Section> sections = new ArrayList<>();
-
-        for (Task task : tasks) {
-            sections.add(new Section(task, this.variables));
-        }
-
-        return this.sections(nowait, sections.toArray(Section[]::new));
-    }
-
-    /**
-     * Executes the given sections in parallel.
-     *
-     * @param nowait   Whether to wait for the threads to finish.
-     * @param sections The sections to run in parallel.
-     *
-     * @return The parallel execution block.
-     */
-    public Parallel sections(boolean nowait, Section... sections) {
-        if (sections.length <= this.threads) {
+        if (tasks.length <= this.threads) {
             Optional<Barrier> barrierOpt = Optional.ofNullable(
-                    nowait ? null : new Barrier("Sections", sections.length));
+                    nowait ? null : new Barrier("Sections", tasks.length));
 
-            for (int i = 0; i < sections.length; i++) {
+            for (int i = 0; i < tasks.length; i++) {
                 final int finalI = i;
-                Task task = sections[i].task();
-                Variables vars = sections[i].variables();
-                addNumThreadsToVariables(vars);
+                Task task = tasks[i];
+                final Variables vars = this.variables.copy();
                 this.variablesList.add(vars);
 
                 threadExecutor.execute(() -> {
@@ -231,12 +211,12 @@ public class Parallel {
             }
         } else {
             // If there are more sections than threads, submit the tasks in batches of threads.
-            for (int i = 0; i < sections.length; i += this.threads) {
-                int end = Math.min(i + this.threads, sections.length);
+            for (int i = 0; i < tasks.length; i += this.threads) {
+                int end = Math.min(i + this.threads, tasks.length);
                 int batchSize = end - i;
-                Section[] batch = new Section[batchSize];
+                Task[] batch = new Task[batchSize];
 
-                System.arraycopy(sections, i, batch, 0, batchSize);
+                System.arraycopy(tasks, i, batch, 0, batchSize);
                 this.sections(nowait, batch);
             }
         }
@@ -244,16 +224,8 @@ public class Parallel {
         return this;
     }
 
-    /**
-     * Executes the given sections in parallel.
-     *
-     * @param nowait         Whether to wait for the threads to finish.
-     * @param sectionBuilder The builder for parallel sections.
-     *
-     * @return The parallel execution block.
-     */
-    public Parallel sections(boolean nowait, SectionBuilder sectionBuilder) {
-        return this.sections(nowait, sectionBuilder.build().toArray(Section[]::new));
+    public Parallel sections(boolean nowait, List<Task> tasks) {
+        return sections(nowait, tasks.toArray(Task[]::new));
     }
 
     /**
