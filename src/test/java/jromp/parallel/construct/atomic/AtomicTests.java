@@ -38,7 +38,7 @@ class AtomicTests {
 
                     // Only the atomic variable should be updated here
                     assertThat(((SharedVariable<Integer>) variables.<Integer>get("x")).hasAtomic()).isTrue();
-                    assertThat(variables.get("x").value()).isEqualTo(0);
+                    assertThat(variables.<Integer>get("x").value()).isZero();
                 })
                 .join();
 
@@ -59,7 +59,7 @@ class AtomicTests {
 
                     // Only the atomic variable should be updated here
                     assertThat(((SharedVariable<Integer>) variables.<Integer>get("x")).hasAtomic()).isTrue();
-                    assertThat(variables.get("x").value()).isEqualTo(0);
+                    assertThat(variables.<Integer>get("x").value()).isZero();
                 })
                 .join();
 
