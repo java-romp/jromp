@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version [1.1.1](https://github.com/java-romp/jromp/releases/tag/1.1.1) (2024-08-25)
+
+[1.1.0...1.1.1](https://github.com/java-romp/jromp/compare/1.1.0...1.1.1)
+
+### 🐞 Fixes
+
+* remove redundant exception in `ReductionVariable::merge` in [#50](https://github.com/java-romp/jromp/pull/50).
+
+### 📚 Documentation
+
+* updated developer contact information in the `pom.xml` file.
+
 ## Version [1.1.0](https://github.com/java-romp/jromp/releases/tag/1.1.0) (2024-08-25)
 
 [1.0.0...1.1.0](https://github.com/java-romp/jromp/compare/1.0.0...1.1.0)
