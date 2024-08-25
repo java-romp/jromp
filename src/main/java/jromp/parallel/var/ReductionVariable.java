@@ -92,7 +92,7 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     public void merge() {
         if (merged) {
-            throw new IllegalStateException("ReductionVariable has already been merged.");
+            return;
         }
 
         operation.initialize(result);
