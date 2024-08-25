@@ -103,7 +103,8 @@ class ReductionVariableTests {
     void testAlreadyMerged() {
         ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
         sum.merge();
-        assertThatThrownBy(sum::merge).isInstanceOf(IllegalStateException.class);
+        sum.merge();
+        assertThat(sum.value()).isZero();
     }
 
     @Test
