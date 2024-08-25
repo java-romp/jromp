@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version [1.1.0](https://github.com/java-romp/jromp/releases/tag/1.1.0) (2024-08-25)
+
+[1.0.0...1.1.0](https://github.com/java-romp/jromp/compare/1.0.0...1.1.0)
+
+### ✨ Features
+
+* add `update` method with `Operation` parameter to `Variable` interface
+  in [#35](https://github.com/java-romp/jromp/pull/35).
+* add `getWTime` method in [#36](https://github.com/java-romp/jromp/pull/36).
+* variables are set for the whole parallel construct in [#37](https://github.com/java-romp/jromp/pull/37).
+* add `nowait` parameter to `single` construct in [#38](https://github.com/java-romp/jromp/pull/38).
+
+### 🐞 Fixes
+
+* private var initial value is kept after the execution of parallel blocks
+  in [#39](https://github.com/java-romp/jromp/pull/39).
+* update parallel sections to handle single variables in [#43](https://github.com/java-romp/jromp/pull/43).
+* remove `getVariables` from `Variables` in [#45](https://github.com/java-romp/jromp/pull/45).
+
+### 🛠️ Refactor
+
+* remove SectionBuilder and Section classes in [#41](https://github.com/java-romp/jromp/pull/41).
+
+### 📚 Documentation
+
+* add detailed Javadoc comments to Barrier class in [#47](https://github.com/java-romp/jromp/pull/47).
+
 ## Version [1.0.0](https://github.com/java-romp/jromp/releases/tag/1.0.0) (2024-08-12)
 
 [1.0.0...0.0.1](https://github.com/java-romp/jromp/compare/1.0.0...0.0.1)
