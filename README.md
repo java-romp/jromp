@@ -81,6 +81,6 @@ number of threads.
 ## More examples
 
 If you want to see more examples of how to use JROMP, you can check all the available examples
-(with its equivalent code written in C) in the [jromp-examples](https://github.com/scastd/jromp-examples)
+(with its equivalent code written in C) in the [jromp-examples](https://github.com/java-romp/jromp-examples)
 repository.
 
