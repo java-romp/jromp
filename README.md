@@ -43,7 +43,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 <dependency>
   <groupId>io.github.java-romp</groupId>
   <artifactId>jromp</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 <!-- @formatter:on -->
@@ -51,7 +51,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 ### Gradle
 
 ```groovy
-implementation 'io.github.java-romp:jromp:1.0.0'
+implementation 'io.github.java-romp:jromp:1.1.1'
 ```
 
 If your package manager is not listed here, you can check the latest version on
