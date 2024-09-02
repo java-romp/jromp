@@ -1,6 +1,7 @@
 package jromp.parallel.var;
 
 import jromp.parallel.Parallel;
+import jromp.parallel.var.reduction.Operation;
 import jromp.parallel.var.reduction.Sum;
 import org.junit.jupiter.api.Test;
 
@@ -109,7 +110,7 @@ class ReductionVariableTests {
 
     @Test
     void testToString() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(Operation.SUM, 0);
 
         assertThat(sum.toString()).hasToString(
                 "ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    \n  ],\n  result=PrivateVariable{value=0},\n  merged=false}");
