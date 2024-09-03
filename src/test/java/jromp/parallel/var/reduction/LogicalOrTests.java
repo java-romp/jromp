@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogicalOrTests {
     @Test
     void testIdentifier() {
-        LogicalOr logicalOr = new LogicalOr();
+        ReductionOperation<Boolean> logicalOr = ReductionOperations.lor();
         assertThat(logicalOr.identifier()).isEqualTo("||");
     }
 
     @Test
     void testInitialize() {
-        LogicalOr logicalOr = new LogicalOr();
+        ReductionOperation<Boolean> logicalOr = ReductionOperations.lor();
         Variable<Boolean> variable = new PrivateVariable<>(false);
         logicalOr.initialize(variable);
         assertThat(variable.value()).isFalse();
@@ -23,7 +23,7 @@ class LogicalOrTests {
 
     @Test
     void testCombine() {
-        LogicalOr logicalOr = new LogicalOr();
+        ReductionOperation<Boolean> logicalOr = ReductionOperations.lor();
         assertThat(logicalOr.combine(true, true)).isTrue();
         assertThat(logicalOr.combine(true, false)).isTrue();
         assertThat(logicalOr.combine(false, true)).isTrue();

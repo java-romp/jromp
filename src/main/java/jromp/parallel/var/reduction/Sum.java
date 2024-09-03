@@ -11,6 +11,9 @@ import static jromp.parallel.utils.NumberUtils.getT;
  * @param <T> the type of the reduction operation.
  */
 public class Sum<T extends Number> implements ReductionOperation<T> {
+    Sum() {
+    }
+
     @Override
     public String identifier() {
         return "+";

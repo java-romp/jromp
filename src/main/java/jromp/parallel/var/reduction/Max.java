@@ -11,6 +11,9 @@ import static jromp.parallel.utils.NumberUtils.getT;
  * @param <T> the type of the reduction operation.
  */
 public class Max<T extends Number> implements ReductionOperation<T> {
+    Max() {
+    }
+
     @Override
     public String identifier() {
         return "max";

@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MulTests {
     @Test
     void testIdentifier() {
-        Mul<Integer> mul = new Mul<>();
+        ReductionOperation<Integer> mul = ReductionOperations.mul();
         assertThat(mul.identifier()).isEqualTo("*");
     }
 
     @Test
     void testInitialize() {
-        Mul<Integer> mul = new Mul<>();
+        ReductionOperation<Integer> mul = ReductionOperations.mul();
         Variable<Integer> variable = new PrivateVariable<>(0);
         mul.initialize(variable);
         assertThat(variable.value()).isOne();
@@ -23,7 +23,7 @@ class MulTests {
 
     @Test
     void testCombine() {
-        Mul<Integer> mul = new Mul<>();
+        ReductionOperation<Integer> mul = ReductionOperations.mul();
         assertThat(mul.combine(0, 0)).isZero();
         assertThat(mul.combine(0, 1)).isZero();
         assertThat(mul.combine(1, 0)).isZero();
