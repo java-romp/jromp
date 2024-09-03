@@ -20,7 +20,7 @@ public class BitwiseXorOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to perform the bitwise XOR operation with.
      */
-    public BitwiseXorOperation(T value) {
+    BitwiseXorOperation(T value) {
         this.value = value;
     }
 

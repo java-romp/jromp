@@ -20,7 +20,7 @@ public class MultiplyOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to multiply by.
      */
-    public MultiplyOperation(T value) {
+    MultiplyOperation(T value) {
         this.value = value;
     }
 

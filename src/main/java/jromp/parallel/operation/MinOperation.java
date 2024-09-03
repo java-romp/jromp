@@ -18,7 +18,7 @@ public class MinOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to perform the min operation with.
      */
-    public MinOperation(T value) {
+    MinOperation(T value) {
         this.value = value;
     }
 

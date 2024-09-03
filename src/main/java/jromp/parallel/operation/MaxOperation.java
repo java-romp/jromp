@@ -18,7 +18,7 @@ public class MaxOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to perform the max operation with.
      */
-    public MaxOperation(T value) {
+    MaxOperation(T value) {
         this.value = value;
     }
 

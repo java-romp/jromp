@@ -20,7 +20,7 @@ public class DivideOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to divide by.
      */
-    public DivideOperation(T value) {
+    DivideOperation(T value) {
         this.value = value;
     }
 

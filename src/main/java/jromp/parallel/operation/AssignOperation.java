@@ -18,7 +18,7 @@ public class AssignOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to assign.
      */
-    public AssignOperation(T value) {
+    AssignOperation(T value) {
         this.value = value;
     }
 
