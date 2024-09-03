@@ -11,6 +11,9 @@ import static jromp.parallel.utils.NumberUtils.getT;
  * @param <T> the type of the reduction operation.
  */
 public class BitwiseAnd<T extends Number> implements ReductionOperation<T> {
+    BitwiseAnd() {
+    }
+
     @Override
     public String identifier() {
         return "&";

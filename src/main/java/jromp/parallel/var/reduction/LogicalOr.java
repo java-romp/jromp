@@ -6,6 +6,9 @@ import jromp.parallel.var.Variable;
  * Reduction operation for logical OR.
  */
 public class LogicalOr implements ReductionOperation<Boolean> {
+    LogicalOr() {
+    }
+
     @Override
     public String identifier() {
         return "||";

@@ -1,6 +1,5 @@
 package jromp.parallel.var;
 
-import jromp.parallel.var.reduction.Operation;
 import jromp.parallel.var.reduction.ReductionOperation;
 
 import java.io.Serializable;
@@ -50,16 +49,6 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
         this.operation = operation;
         this.initialValue = initialValue;
         this.result = new PrivateVariable<>(initialValue);
-    }
-
-    /**
-     * Constructs a new reduction variable with the given operation and initial value.
-     *
-     * @param operation    the operation to use for the reduction.
-     * @param initialValue the initial value of the reduction variable.
-     */
-    public ReductionVariable(Operation operation, T initialValue) {
-        this(operation.getOp(), initialValue);
     }
 
     @Override

@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BitwiseOrTests {
     @Test
     void testIdentifier() {
-        BitwiseOr<Integer> bitwiseOr = new BitwiseOr<>();
+        ReductionOperation<Integer> bitwiseOr = ReductionOperations.bor();
         assertThat(bitwiseOr.identifier()).isEqualTo("|");
     }
 
     @Test
     void testInitialize() {
-        BitwiseOr<Integer> bitwiseOr = new BitwiseOr<>();
+        ReductionOperation<Integer> bitwiseOr = ReductionOperations.bor();
         Variable<Integer> variable = new PrivateVariable<>(0);
         bitwiseOr.initialize(variable);
         assertThat(variable.value()).isZero();
@@ -23,7 +23,7 @@ class BitwiseOrTests {
 
     @Test
     void testCombine() {
-        BitwiseOr<Integer> bitwiseOr = new BitwiseOr<>();
+        ReductionOperation<Integer> bitwiseOr = ReductionOperations.bor();
         assertThat(bitwiseOr.combine(0, 0)).isZero();
         assertThat(bitwiseOr.combine(0, 1)).isOne();
         assertThat(bitwiseOr.combine(1, 0)).isOne();

@@ -1,8 +1,7 @@
 package jromp.parallel.var;
 
 import jromp.parallel.Parallel;
-import jromp.parallel.var.reduction.Operation;
-import jromp.parallel.var.reduction.Sum;
+import jromp.parallel.var.reduction.ReductionOperations;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +13,7 @@ class ReductionVariableTests {
     void testReductionVariableAndKeepValueAfterExecution() {
         int threads = 4;
         int iterations = 1000;
-        Variables vars = Variables.create().add("sum", new ReductionVariable<>(new Sum<>(), 0));
+        Variables vars = Variables.create().add("sum", new ReductionVariable<>(ReductionOperations.sum(), 0));
 
         Parallel.withThreads(threads)
                 .withVariables(vars)
@@ -33,7 +32,7 @@ class ReductionVariableTests {
     void testReductionPi() {
         int threads = 4;
         int n = 1000000;
-        ReductionVariable<Double> result = new ReductionVariable<>(new Sum<>(), 0D);
+        ReductionVariable<Double> result = new ReductionVariable<>(ReductionOperations.sum(), 0D);
         Variables vars = Variables.create().add("pi", result);
         double h = 1.0 / (double) n;
 
@@ -58,25 +57,25 @@ class ReductionVariableTests {
 
     @Test
     void testValueBeforeMerge() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         assertThatThrownBy(sum::value).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void testSet() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         assertThatThrownBy(() -> sum.set(1)).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     void testUpdate() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         assertThatThrownBy(() -> sum.update($ -> 1)).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     void testCopy() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         Variable<Integer> copy = sum.copy();
         assertThat(copy.value()).isZero();
         assertThat(copy).isInstanceOf(PrivateVariable.class);
@@ -84,7 +83,7 @@ class ReductionVariableTests {
 
     @Test
     void testMerge() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         sum.copy().update($ -> 1);
         sum.copy().update($ -> 2);
         sum.copy().update($ -> 3);
@@ -94,7 +93,7 @@ class ReductionVariableTests {
 
     @Test
     void testIsMerged() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         assertThat(sum.isMerged()).isFalse();
         sum.merge();
         assertThat(sum.isMerged()).isTrue();
@@ -102,7 +101,7 @@ class ReductionVariableTests {
 
     @Test
     void testAlreadyMerged() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(new Sum<>(), 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         sum.merge();
         sum.merge();
         assertThat(sum.value()).isZero();
@@ -110,7 +109,7 @@ class ReductionVariableTests {
 
     @Test
     void testToString() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(Operation.SUM, 0);
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
 
         assertThat(sum.toString()).hasToString(
                 "ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    \n  ],\n  result=PrivateVariable{value=0},\n  merged=false}");

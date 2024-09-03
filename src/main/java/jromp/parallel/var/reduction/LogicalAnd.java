@@ -6,6 +6,9 @@ import jromp.parallel.var.Variable;
  * Reduction operation for logical AND.
  */
 public class LogicalAnd implements ReductionOperation<Boolean> {
+    LogicalAnd() {
+    }
+
     @Override
     public String identifier() {
         return "&&";
