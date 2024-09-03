@@ -20,7 +20,7 @@ public class AddOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to add.
      */
-    public AddOperation(T value) {
+    AddOperation(T value) {
         this.value = value;
     }
 

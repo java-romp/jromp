@@ -20,7 +20,7 @@ public class ShiftRightOperation<T extends Number> implements Operation<T> {
      *
      * @param value the number of bits to shift to the right.
      */
-    public ShiftRightOperation(T value) {
+    ShiftRightOperation(T value) {
         this.value = value;
     }
 

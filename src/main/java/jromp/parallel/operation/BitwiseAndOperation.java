@@ -20,7 +20,7 @@ public class BitwiseAndOperation<T extends Number> implements Operation<T> {
      *
      * @param value the value to perform the bitwise AND operation with.
      */
-    public BitwiseAndOperation(T value) {
+    BitwiseAndOperation(T value) {
         this.value = value;
     }
 
