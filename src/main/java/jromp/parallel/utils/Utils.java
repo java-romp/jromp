@@ -26,7 +26,6 @@ public final class Utils {
         }
 
         return Math.min(threads, Constants.MAX_THREADS);
-
     }
 
     /**
