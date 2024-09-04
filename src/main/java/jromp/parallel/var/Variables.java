@@ -1,7 +1,6 @@
 package jromp.parallel.var;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -145,17 +144,12 @@ public class Variables {
      *
      * @return a list of variables of the specified type.
      */
-    @SuppressWarnings("unchecked")
     public <T extends Variable<?>> List<T> getVariablesOfType(Class<T> type) {
-        List<T> variables = new ArrayList<>();
-
-        this.variableMap.forEach((key, value) -> {
-            if (type.isInstance(value)) {
-                variables.add((T) value);
-            }
-        });
-
-        return variables;
+        return this.variableMap.values()
+                               .stream()
+                               .filter(type::isInstance)
+                               .map(type::cast)
+                               .toList();
     }
 
     /**
