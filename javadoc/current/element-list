@@ -1,6 +1,5 @@
 jromp
 jromp.parallel
-jromp.parallel.builder
 jromp.parallel.construct.atomic
 jromp.parallel.construct.critical
 jromp.parallel.operation
