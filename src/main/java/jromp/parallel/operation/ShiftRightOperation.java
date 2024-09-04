@@ -1,6 +1,6 @@
 package jromp.parallel.operation;
 
-import jromp.parallel.utils.NumberUtils;
+import jromp.parallel.utils.Utils.NumberUtils;
 
 import java.util.function.UnaryOperator;
 

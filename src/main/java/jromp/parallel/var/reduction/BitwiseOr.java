@@ -3,7 +3,7 @@ package jromp.parallel.var.reduction;
 import jromp.parallel.operation.Operations;
 import jromp.parallel.var.Variable;
 
-import static jromp.parallel.utils.NumberUtils.getT;
+import static jromp.parallel.utils.Utils.NumberUtils.getT;
 
 /**
  * Reduction operation for bitwise OR.
