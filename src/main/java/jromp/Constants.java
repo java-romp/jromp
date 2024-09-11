@@ -1,7 +1,5 @@
 package jromp;
 
-import jromp.parallel.utils.Utils;
-
 /**
  * Constants used in the library.
  */
@@ -46,7 +44,7 @@ public final class Constants {
 
         if (threads != null) {
             try {
-                MAX_THREADS = Utils.checkThreads(Integer.parseInt(threads));
+                MAX_THREADS = Integer.parseInt(threads);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid number of threads specified in the environment.");
             }
