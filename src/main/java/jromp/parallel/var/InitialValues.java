@@ -49,7 +49,7 @@ public class InitialValues {
      */
     public static <T> void registerInitialValue(Class<T> clazz, T value) {
         if (clazz == null) {
-            throw new IllegalArgumentException("clazz cannot be null");
+            throw new IllegalArgumentException("'clazz' cannot be null");
         }
 
         if (INITIAL_VALUES_MAP.containsKey(clazz)) {

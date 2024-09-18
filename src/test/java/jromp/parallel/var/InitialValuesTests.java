@@ -36,7 +36,7 @@ class InitialValuesTests {
     void testRegisterNullType() {
         assertThatThrownBy(() -> InitialValues.registerInitialValue(null, 1))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("clazz cannot be null");
+                .hasMessage("'clazz' cannot be null");
     }
 
     @Test
