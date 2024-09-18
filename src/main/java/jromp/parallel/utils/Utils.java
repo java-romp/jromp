@@ -63,21 +63,20 @@ public final class Utils {
          *
          * @throws IllegalArgumentException if the type is not supported.
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "unused" })
         public static <T extends Number> T getT(T value, double num) {
             if (value == null) {
                 throw new IllegalArgumentException("Unsupported type (null)");
             }
 
-            String name = value.getClass().getName();
-            return switch (name) {
-                case "java.lang.Double" -> (T) Double.valueOf(num);
-                case "java.lang.Integer" -> (T) Integer.valueOf((int) num);
-                case "java.lang.Long" -> (T) Long.valueOf((long) num);
-                case "java.lang.Float" -> (T) Float.valueOf((float) num);
-                case "java.lang.Short" -> (T) Short.valueOf((short) num);
-                case "java.lang.Byte" -> (T) Byte.valueOf((byte) num);
-                default -> throw new IllegalArgumentException("Unsupported type (" + name + ")");
+            return switch (value) {
+                case Double d -> (T) Double.valueOf(num);
+                case Integer i -> (T) Integer.valueOf((int) num);
+                case Long l -> (T) Long.valueOf((long) num);
+                case Float f -> (T) Float.valueOf((float) num);
+                case Short s -> (T) Short.valueOf((short) num);
+                case Byte b -> (T) Byte.valueOf((byte) num);
+                default -> throw new IllegalArgumentException("Unsupported type (" + value.getClass().getName() + ")");
             };
         }
     }
