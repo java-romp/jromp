@@ -1,5 +1,7 @@
 package jromp.parallel.var;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,5 +59,14 @@ public class InitialValues {
         }
 
         INITIAL_VALUES_MAP.put(clazz, value);
+    }
+
+    /**
+     * Registers the initial values for big numbers ({@link BigInteger} and {@link BigDecimal}), with
+     * initial values of {@link BigInteger#ZERO} and {@link BigDecimal#ZERO} respectively.
+     */
+    public static void registerBigNumbers() {
+        registerInitialValue(BigInteger.class, BigInteger.ZERO);
+        registerInitialValue(BigDecimal.class, BigDecimal.ZERO);
     }
 }

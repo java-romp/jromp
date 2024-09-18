@@ -25,8 +25,7 @@ class InitialValuesTests {
 
     @Test
     void testRegisterValues() {
-        InitialValues.registerInitialValue(BigInteger.class, BigInteger.ZERO);
-        InitialValues.registerInitialValue(BigDecimal.class, BigDecimal.ZERO);
+        InitialValues.registerBigNumbers();
 
         assertThat(InitialValues.getInitialValue(BigInteger.class)).isEqualTo(BigInteger.ZERO);
         assertThat(InitialValues.getInitialValue(BigDecimal.class)).isEqualTo(BigDecimal.ZERO);
