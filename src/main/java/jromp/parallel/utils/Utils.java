@@ -69,14 +69,15 @@ public final class Utils {
                 throw new IllegalArgumentException("Unsupported type (null)");
             }
 
-            return switch (value.getClass().getName()) {
+            String name = value.getClass().getName();
+            return switch (name) {
                 case "java.lang.Double" -> (T) Double.valueOf(num);
                 case "java.lang.Integer" -> (T) Integer.valueOf((int) num);
                 case "java.lang.Long" -> (T) Long.valueOf((long) num);
                 case "java.lang.Float" -> (T) Float.valueOf((float) num);
                 case "java.lang.Short" -> (T) Short.valueOf((short) num);
                 case "java.lang.Byte" -> (T) Byte.valueOf((byte) num);
-                default -> throw new IllegalArgumentException("Unsupported type (" + value.getClass().getName() + ")");
+                default -> throw new IllegalArgumentException("Unsupported type (" + name + ")");
             };
         }
     }
