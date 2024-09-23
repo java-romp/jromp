@@ -114,13 +114,10 @@ public class Variables {
 
         StringBuilder sb = new StringBuilder();
 
-        this.variableMap.forEach((key, value) -> sb.append(key)
-                                                   .append(" -> ")
-                                                   .append(value)
-                                                   .append("\n"));
+        this.variableMap.forEach((key, value) -> sb.append(String.format("%s -> %s%n", key, value)));
 
-        return sb.delete(sb.length() - 1, sb.length())
-                 .toString();
+        int length = sb.length();
+        return sb.delete(length - 1, length).toString();
     }
 
     /**
