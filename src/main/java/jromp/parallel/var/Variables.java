@@ -10,8 +10,7 @@ import java.util.TreeMap;
  */
 public class Variables {
     /**
-     * The map of variables. The map is sorted by the keys in ascending
-     * order (lexicographical order) when adding variables.
+     * The map of variables. The map is sorted by the keys in natural order.
      */
     private final Map<String, Variable<?>> variableMap = new TreeMap<>();
 
