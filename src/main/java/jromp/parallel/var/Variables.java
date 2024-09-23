@@ -1,18 +1,18 @@
 package jromp.parallel.var;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Represents a collection of variables.
  */
 public class Variables {
     /**
-     * The map of variables. The map is sorted by the keys in natural order.
+     * The map of variables.
      */
-    private final Map<String, Variable<?>> variableMap = new TreeMap<>();
+    private final Map<String, Variable<?>> variableMap = new HashMap<>();
 
     private Variables() {
         // Prevent instantiation.
