@@ -11,7 +11,6 @@ import jromp.parallel.var.Variables;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -105,19 +104,6 @@ public class Parallel {
     }
 
     /**
-     * Create a barrier if nowait is not set.
-     *
-     * @param nowait Whether to wait for the threads to finish.
-     * @param name   The name of the barrier.
-     * @param count  The number of threads to wait for.
-     *
-     * @return The barrier if nowait is not set, otherwise null.
-     */
-    private Optional<Barrier> createBarrier(boolean nowait, String name, int count) {
-        return Optional.ofNullable(nowait ? null : new Barrier(name, count));
-    }
-
-    /**
      * Wait for all threads to finish.
      */
     public void join() {
@@ -171,7 +157,8 @@ public class Parallel {
      * @return The parallel execution block.
      */
     public Parallel parallelFor(int start, int end, boolean nowait, ForTask task) {
-        Optional<Barrier> barrierOpt = createBarrier(nowait, "ParallelFor", this.threads);
+        Barrier barrier = new Barrier("ParallelFor", this.threads);
+        barrier.setNowait(nowait);
 
         for (int i = 0; i < this.threads; i++) {
             // Calculate the start and end indices for the current thread.
@@ -191,7 +178,7 @@ public class Parallel {
             this.variablesList.add(finalVariables);
             threadExecutor.execute(() -> {
                 task.run(finalI, chunkStart, chunkEnd, finalVariables);
-                barrierOpt.ifPresent(Barrier::await);
+                barrier.await();
             });
         }
 
@@ -209,7 +196,8 @@ public class Parallel {
      */
     private Parallel sections(boolean nowait, Variables variables, Task... tasks) {
         if (tasks.length <= this.threads) {
-            Optional<Barrier> barrierOpt = createBarrier(nowait, "Sections", tasks.length);
+            Barrier barrier = new Barrier("Sections", tasks.length);
+            barrier.setNowait(nowait);
 
             for (int i = 0; i < tasks.length; i++) {
                 final int finalI = i;
@@ -217,7 +205,7 @@ public class Parallel {
 
                 threadExecutor.execute(() -> {
                     task.run(finalI, variables);
-                    barrierOpt.ifPresent(Barrier::await);
+                    barrier.await();
                 });
             }
         } else {
@@ -272,7 +260,8 @@ public class Parallel {
      */
     public Parallel singleBlock(boolean nowait, Task task) {
         AtomicBoolean executed = new AtomicBoolean(false);
-        Optional<Barrier> barrierOpt = createBarrier(nowait, "SingleBlock", this.threads);
+        Barrier barrier = new Barrier("SingleBlock", this.threads);
+        barrier.setNowait(nowait);
 
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
@@ -285,7 +274,7 @@ public class Parallel {
                 }
                 // Other threads will pass through without executing the task.
 
-                barrierOpt.ifPresent(Barrier::await);
+                barrier.await();
             });
         }
 

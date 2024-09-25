@@ -31,6 +31,11 @@ public class Barrier {
     private final Object lock = new Object();
 
     /**
+     * A flag to indicate whether the threads should wait (or not) at the barrier.
+     */
+    private boolean nowait = false;
+
+    /**
      * Constructs a barrier with the specified name and count.
      *
      * @param name  the name of the barrier.
@@ -78,6 +83,24 @@ public class Barrier {
     }
 
     /**
+     * Returns a flag to indicate whether the threads should wait (or not) at the barrier.
+     *
+     * @return a flag to indicate whether the threads should wait (or not) at the barrier.
+     */
+    public boolean isNowait() {
+        return nowait;
+    }
+
+    /**
+     * Sets the nowait flag.
+     *
+     * @param nowait the nowait flag to set.
+     */
+    public void setNowait(boolean nowait) {
+        this.nowait = nowait;
+    }
+
+    /**
      * Resets the barrier. This method is called after all threads have reached the barrier.
      * It resets the current count and the waiting flag.
      */
@@ -90,6 +113,10 @@ public class Barrier {
      * Causes the current thread to wait until all threads have reached the barrier.
      */
     public void await() {
+        if (nowait) {
+            return;
+        }
+
         synchronized (lock) {
             currentCount++;
 
