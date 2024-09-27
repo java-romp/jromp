@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+---
+
+## Version [1.2.0](https://github.com/java-romp/jromp/releases/tag/1.2.0) (2024-09-27)
+
+[1.1.1...1.2.0](https://github.com/java-romp/jromp/compare/1.1.1...1.2.0)
+
+### ✨ Features
+
+* ReductionVariable constructor with Operation variable in [#54](https://github.com/java-romp/jromp/pull/54)
+* improved reduction operation creation in [#55](https://github.com/java-romp/jromp/pull/55)
+* package visibility for all operations in [#57](https://github.com/java-romp/jromp/pull/57)
+* environment variable to set max threads in [#59](https://github.com/java-romp/jromp/pull/59)
+* added `BigNumbers` to `InitialValues` in [#61](https://github.com/java-romp/jromp/pull/61)
+* implemented `masked` directive in [#69](https://github.com/java-romp/jromp/pull/69)
+
+### 🛠️ Refactor
+
+* simplify `add` method in `Variables` class in [#63](https://github.com/java-romp/jromp/pull/63)
+* replace `TreeMap` with `HashMap` in [#65](https://github.com/java-romp/jromp/pull/65)
+* improve Barrier to include nowait inside it in [#67](https://github.com/java-romp/jromp/pull/67)
+
 ## Version [1.1.1](https://github.com/java-romp/jromp/releases/tag/1.1.1) (2024-08-25)
 
 [1.1.0...1.1.1](https://github.com/java-romp/jromp/compare/1.1.0...1.1.1)
