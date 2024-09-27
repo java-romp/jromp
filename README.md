@@ -22,6 +22,7 @@ using Java's `ThreadPoolExecutor` and designed to be efficient and scalable.
 - `critical` - Executes a block of code in a critical section.
 - `atomic` - Executes a block of code atomically.
 - `reduction` - Performs a reduction operation.
+- (NEW) `masked` - Executes a block of code in the specified thread.
 
 ### Supported variables
 
@@ -43,7 +44,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 <dependency>
   <groupId>io.github.java-romp</groupId>
   <artifactId>jromp</artifactId>
-  <version>1.1.1</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 <!-- @formatter:on -->
@@ -51,7 +52,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 ### Gradle
 
 ```groovy
-implementation 'io.github.java-romp:jromp:1.1.1'
+implementation 'io.github.java-romp:jromp:1.2.0'
 ```
 
 If your package manager is not listed here, you can check the latest version on
