@@ -10,10 +10,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 [1.1.1...1.2.0](https://github.com/java-romp/jromp/compare/1.1.1...1.2.0)
 
+### ⚠️ Breaking Changes
+
+* improved reduction operation creation in [#55](https://github.com/java-romp/jromp/pull/55)
+
 ### ✨ Features
 
 * ReductionVariable constructor with Operation variable in [#54](https://github.com/java-romp/jromp/pull/54)
-* improved reduction operation creation in [#55](https://github.com/java-romp/jromp/pull/55)
 * package visibility for all operations in [#57](https://github.com/java-romp/jromp/pull/57)
 * environment variable to set max threads in [#59](https://github.com/java-romp/jromp/pull/59)
 * added `BigNumbers` to `InitialValues` in [#61](https://github.com/java-romp/jromp/pull/61)
