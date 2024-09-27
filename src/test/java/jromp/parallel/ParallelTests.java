@@ -249,4 +249,28 @@ class ParallelTests {
                 .block((id, vars) -> assertThat(value[0]).isOne())
                 .join();
     }
+
+    @Test
+    void testMaskedMaster() {
+        int threads = 4;
+        int[] values = new int[threads];
+
+        Parallel.withThreads(threads)
+                .masked((id, vars) -> values[id] = 1)
+                .join();
+
+        assertThat(values).containsExactly(1, 0, 0, 0);
+    }
+
+    @Test
+    void testMaskedOtherThread() {
+        int threads = 4;
+        int[] values = new int[threads];
+
+        Parallel.withThreads(threads)
+                .masked(2, (id, vars) -> values[id] = 1)
+                .join();
+
+        assertThat(values).containsExactly(0, 0, 1, 0);
+    }
 }

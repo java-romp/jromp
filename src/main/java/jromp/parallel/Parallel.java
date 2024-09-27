@@ -280,4 +280,39 @@ public class Parallel {
 
         return this;
     }
+
+    /**
+     * Executes the given task in the specified thread.
+     *
+     * @param filter The thread to run the task in.
+     * @param task   The task to run in parallel.
+     *
+     * @return The parallel execution block.
+     */
+    public Parallel masked(int filter, Task task) {
+        for (int i = 0; i < this.threads; i++) {
+            final int finalI = i;
+            final Variables finalVariables = this.variables.copy();
+            this.variablesList.add(finalVariables);
+
+            threadExecutor.execute(() -> {
+                if (finalI == filter) {
+                    task.run(finalI, finalVariables);
+                }
+            });
+        }
+
+        return this;
+    }
+
+    /**
+     * Executes the given task in the master thread.
+     *
+     * @param task The task to run in parallel.
+     *
+     * @return The parallel execution block.
+     */
+    public Parallel masked(Task task) {
+        return masked(0, task);
+    }
 }
