@@ -1,6 +1,6 @@
 package jromp.operation;
 
-import jromp.Parallel;
+import jromp.JROMP;
 import jromp.construct.atomic.Atomic;
 import jromp.var.SharedVariable;
 import jromp.var.Variables;
@@ -13,10 +13,10 @@ class AllOperationsTests {
     void testAssign() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.assign(1), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.assign(1), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(1);
     }
@@ -25,10 +25,10 @@ class AllOperationsTests {
     void testAdd() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.add(1), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.add(1), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(4);
     }
@@ -37,10 +37,10 @@ class AllOperationsTests {
     void testMultiply() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(1));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.multiply(2), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.multiply(2), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(16);
     }
@@ -49,10 +49,10 @@ class AllOperationsTests {
     void testSubtract() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(10));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.subtract(2), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.subtract(2), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(2);
     }
@@ -61,10 +61,10 @@ class AllOperationsTests {
     void testDivide() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(10.0f));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.divide(2.0f), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.divide(2.0f), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0.625f);
     }
@@ -73,10 +73,10 @@ class AllOperationsTests {
     void testBitwiseAnd() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(10));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.bitwiseAnd(2), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.bitwiseAnd(2), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(2);
     }
@@ -85,10 +85,10 @@ class AllOperationsTests {
     void testBitwiseOr() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(10));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.bitwiseOr(2), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.bitwiseOr(2), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(10);
     }
@@ -97,10 +97,10 @@ class AllOperationsTests {
     void testBitwiseXor() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(10));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.bitwiseXor(2), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.bitwiseXor(2), vars))
+             .join();
 
         // Since there are 4 threads, the result will be
         // 10 ^ 2 (= 8) ^ 2 (= 10) ^ 2 (= 8) ^ 2 (= 10) = 10
@@ -111,10 +111,10 @@ class AllOperationsTests {
     void testShiftLeft() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0b00001010));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.shiftLeft(1), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.shiftLeft(1), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0b10100000);
     }
@@ -123,10 +123,10 @@ class AllOperationsTests {
     void testShiftRight() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(0b00001010));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.shiftRight(1), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.shiftRight(1), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0);
     }
@@ -135,10 +135,10 @@ class AllOperationsTests {
     void testMax() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(5));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.max(10), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.max(10), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(10);
     }
@@ -147,10 +147,10 @@ class AllOperationsTests {
     void testMin() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(5));
 
-        Parallel.withThreads(4)
-                .withVariables(variables)
-                .block((id, vars) -> Atomic.update("x", Operations.min(10), vars))
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .block((id, vars) -> Atomic.update("x", Operations.min(10), vars))
+             .join();
 
         assertThat(variables.get("x").value()).isEqualTo(5);
     }

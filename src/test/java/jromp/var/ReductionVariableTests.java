@@ -1,6 +1,6 @@
 package jromp.var;
 
-import jromp.Parallel;
+import jromp.JROMP;
 import jromp.var.reduction.ReductionOperations;
 import org.junit.jupiter.api.Test;
 
@@ -15,15 +15,15 @@ class ReductionVariableTests {
         int iterations = 1000;
         Variables vars = Variables.create().add("sum", new ReductionVariable<>(ReductionOperations.sum(), 0));
 
-        Parallel.withThreads(threads)
-                .withVariables(vars)
-                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
-                    for (int i = start; i < end; i++) {
-                        Variable<Integer> insideSum = variables.get("sum");
-                        insideSum.update(old -> old + 1);
-                    }
-                })
-                .join();
+        JROMP.withThreads(threads)
+             .withVariables(vars)
+             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+                 for (int i = start; i < end; i++) {
+                     Variable<Integer> insideSum = variables.get("sum");
+                     insideSum.update(old -> old + 1);
+                 }
+             })
+             .join();
 
         assertThat(vars.get("sum").value()).isEqualTo(iterations);
     }
@@ -36,20 +36,20 @@ class ReductionVariableTests {
         Variables vars = Variables.create().add("pi", result);
         double h = 1.0 / (double) n;
 
-        Parallel.withThreads(threads)
-                .withVariables(vars)
-                .parallelFor(0, n, false, (id, start, end, variables) -> {
-                    double x, sum = 0.0;
+        JROMP.withThreads(threads)
+             .withVariables(vars)
+             .parallelFor(0, n, false, (id, start, end, variables) -> {
+                 double x, sum = 0.0;
 
-                    for (int i = start; i < end; i++) {
-                        x = h * ((double) i - 0.5);
-                        sum += 4.0 / (1.0 + x * x);
-                    }
+                 for (int i = start; i < end; i++) {
+                     x = h * ((double) i - 0.5);
+                     sum += 4.0 / (1.0 + x * x);
+                 }
 
-                    final double finalSum = sum;
-                    variables.<Double>get("pi").update(old -> old + finalSum);
-                })
-                .join();
+                 final double finalSum = sum;
+                 variables.<Double>get("pi").update(old -> old + finalSum);
+             })
+             .join();
 
         double finalResult = h * result.value();
         assertThat(finalResult).isCloseTo(Math.PI, offset(1e-5));

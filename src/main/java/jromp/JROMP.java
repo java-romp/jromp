@@ -15,11 +15,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Parallel execution block.
+ * The main class for the parallel runtime.
  */
-public class Parallel {
+public class JROMP {
     /**
-     * The number of threads used in the current block.
+     * The number of threads used in the current parallel block.
      */
     private final int threads;
 
@@ -29,22 +29,22 @@ public class Parallel {
     private final ExecutorService threadExecutor;
 
     /**
-     * The variables used in the current block.
+     * The variables used in the current parallel block.
      */
     private Variables variables;
 
     /**
-     * The list of variables used in the current block to perform the
+     * The list of variables used in all blocks to perform the
      * {@link Variable#end()} operation when joining the threads.
      */
     private final List<Variables> variablesList = new ArrayList<>();
 
     /**
-     * Create a new parallel execution block.
+     * Create a new instance for the parallel runtime.
      *
      * @param threads The number of threads.
      */
-    private Parallel(int threads) {
+    private JROMP(int threads) {
         this.threads = threads;
         this.threadExecutor = Executors.newFixedThreadPool(threads);
 
@@ -52,25 +52,28 @@ public class Parallel {
     }
 
     /**
-     * Create a new parallel execution block with the default number of threads.
+     * Configures the parallel runtime with the default number of threads.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public static Parallel defaultConfig() {
-        return new Parallel(Constants.DEFAULT_THREADS);
+    public static JROMP allThreads() {
+        return new JROMP(Constants.DEFAULT_THREADS);
     }
 
     /**
-     * Create a new parallel execution block with the given number of threads.
+     * Configures the parallel runtime with the specified number of threads.
      *
      * @param threads The number of threads to use.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public static Parallel withThreads(int threads) {
-        return new Parallel(Utils.checkThreads(threads));
+    public static JROMP withThreads(int threads) {
+        return new JROMP(Utils.checkThreads(threads));
     }
 
+    /**
+     * Wait for the current thread to finish.
+     */
     private static void waitForFinish() {
         try {
             Thread.sleep(0);
@@ -80,13 +83,13 @@ public class Parallel {
     }
 
     /**
-     * Set the variables to use in the parallel block.
+     * Set the variables to use in a parallel block.
      *
      * @param variables The variables to use.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel withVariables(Variables variables) {
+    public JROMP withVariables(Variables variables) {
         this.variables = variables;
         addNumThreadsToVariables(this.variables);
 
@@ -103,7 +106,7 @@ public class Parallel {
     }
 
     /**
-     * Wait for all threads to finish.
+     * Wait for all threads to finish and perform the necessary operations.
      */
     public void join() {
         threadExecutor.shutdown();
@@ -126,13 +129,13 @@ public class Parallel {
     }
 
     /**
-     * Executes a task in a parallel block, using the default variables.
+     * Executes a task in a parallel block, using the current variables.
      *
      * @param task The task to run.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel block(Task task) {
+    public JROMP block(Task task) {
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
             final Variables finalVariables = this.variables.copy();
@@ -153,9 +156,9 @@ public class Parallel {
      * @param nowait Whether to wait for the threads to finish.
      * @param task   The task to be executed in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel parallelFor(int start, int end, boolean nowait, ForTask task) {
+    public JROMP parallelFor(int start, int end, boolean nowait, ForTask task) {
         Barrier barrier = new Barrier("ParallelFor", this.threads);
         barrier.setNowait(nowait);
 
@@ -191,9 +194,9 @@ public class Parallel {
      * @param variables The variables to use in the sections block.
      * @param tasks     The tasks to run in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    private Parallel sections(boolean nowait, Variables variables, Task... tasks) {
+    private JROMP sections(boolean nowait, Variables variables, Task... tasks) {
         if (tasks.length <= this.threads) {
             Barrier barrier = new Barrier("Sections", tasks.length);
             barrier.setNowait(nowait);
@@ -228,9 +231,9 @@ public class Parallel {
      * @param nowait Whether to wait for the threads to finish.
      * @param tasks  The tasks to run in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel sections(boolean nowait, Task... tasks) {
+    public JROMP sections(boolean nowait, Task... tasks) {
         Variables vars = this.variables.copy();
         this.variablesList.add(vars);
 
@@ -243,9 +246,9 @@ public class Parallel {
      * @param nowait Whether to wait for the threads to finish.
      * @param tasks  The tasks to run in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel sections(boolean nowait, List<Task> tasks) {
+    public JROMP sections(boolean nowait, List<Task> tasks) {
         return sections(nowait, tasks.toArray(Task[]::new));
     }
 
@@ -255,9 +258,9 @@ public class Parallel {
      * @param nowait Whether to wait for the threads to finish.
      * @param task   The task to run in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel singleBlock(boolean nowait, Task task) {
+    public JROMP singleBlock(boolean nowait, Task task) {
         AtomicBoolean executed = new AtomicBoolean(false);
         Barrier barrier = new Barrier("SingleBlock", this.threads);
         barrier.setNowait(nowait);
@@ -286,9 +289,9 @@ public class Parallel {
      * @param filter The thread to run the task in.
      * @param task   The task to run in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel masked(int filter, Task task) {
+    public JROMP masked(int filter, Task task) {
         for (int i = 0; i < this.threads; i++) {
             final int finalI = i;
             final Variables finalVariables = this.variables.copy();
@@ -309,9 +312,9 @@ public class Parallel {
      *
      * @param task The task to run in parallel.
      *
-     * @return The parallel execution block.
+     * @return The parallel runtime.
      */
-    public Parallel masked(Task task) {
+    public JROMP masked(Task task) {
         return masked(0, task);
     }
 }

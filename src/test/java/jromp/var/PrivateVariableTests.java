@@ -1,6 +1,6 @@
 package jromp.var;
 
-import jromp.Parallel;
+import jromp.JROMP;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,15 +47,15 @@ class PrivateVariableTests {
         int iterations = 100;
         Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
-        Parallel.withThreads(threads)
-                .withVariables(vars)
-                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
-                    for (int i = start; i < end; i++) {
-                        Variable<Integer> sum = variables.get("sum");
-                        sum.set(sum.value() + 1);
-                    }
-                })
-                .join();
+        JROMP.withThreads(threads)
+             .withVariables(vars)
+             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+                 for (int i = start; i < end; i++) {
+                     Variable<Integer> sum = variables.get("sum");
+                     sum.set(sum.value() + 1);
+                 }
+             })
+             .join();
 
         assertThat(vars.<Integer>get("sum").value()).isZero();
     }
@@ -66,14 +66,14 @@ class PrivateVariableTests {
         int iterations = 100;
         Variables vars = Variables.create().add("sum", new PrivateVariable<>(0));
 
-        Parallel.withThreads(threads)
-                .withVariables(vars)
-                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
-                    for (int i = start; i < end; i++) {
-                        variables.<Integer>get("sum").update(old -> old + 1);
-                    }
-                })
-                .join();
+        JROMP.withThreads(threads)
+             .withVariables(vars)
+             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+                 for (int i = start; i < end; i++) {
+                     variables.<Integer>get("sum").update(old -> old + 1);
+                 }
+             })
+             .join();
 
         assertThat(vars.<Integer>get("sum").value()).isZero();
     }
@@ -93,19 +93,19 @@ class PrivateVariableTests {
         Variables vars = Variables.create().add("sum", privateVariable);
         privateVariable.set(12);
 
-        Parallel.withThreads(4)
-                .withVariables(vars)
-                .block((id, variables) -> {
-                    assertThat(variables.<Integer>get("sum").value()).isZero();
+        JROMP.withThreads(4)
+             .withVariables(vars)
+             .block((id, variables) -> {
+                 assertThat(variables.<Integer>get("sum").value()).isZero();
 
-                    for (int i = 0; i < 20; i++) {
-                        Variable<Integer> sum = variables.get("sum");
-                        sum.update(old -> old + 1);
-                    }
+                 for (int i = 0; i < 20; i++) {
+                     Variable<Integer> sum = variables.get("sum");
+                     sum.update(old -> old + 1);
+                 }
 
-                    assertThat(variables.<Integer>get("sum").value()).isEqualTo(20);
-                })
-                .join();
+                 assertThat(variables.<Integer>get("sum").value()).isEqualTo(20);
+             })
+             .join();
 
         assertThat(vars.<Integer>get("sum").value()).isEqualTo(12);
     }

@@ -29,10 +29,10 @@ class SectionTests {
                                   .add("counter2", counters.get(1))
                                   .add("counter3", counters.get(2))
                                   .add("counter4", counters.get(3));
-        Parallel.withThreads(4)
-                .withVariables(vars)
-                .sections(false, tasks)
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(vars)
+             .sections(false, tasks)
+             .join();
 
         assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4);
     }
@@ -63,10 +63,10 @@ class SectionTests {
                                   .add("counter4", counters.get(3))
                                   .add("counter5", counters.get(4));
 
-        Parallel.withThreads(4)
-                .withVariables(vars)
-                .sections(false, tasks)
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(vars)
+             .sections(false, tasks)
+             .join();
 
         assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4, 10);
     }

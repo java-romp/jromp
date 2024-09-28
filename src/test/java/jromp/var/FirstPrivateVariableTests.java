@@ -1,6 +1,6 @@
 package jromp.var;
 
-import jromp.Parallel;
+import jromp.JROMP;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,15 +45,15 @@ class FirstPrivateVariableTests {
         int iterations = 100;
         Variables vars = Variables.create().add("sum", new FirstPrivateVariable<>(0));
 
-        Parallel.withThreads(threads)
-                .withVariables(vars)
-                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
-                    for (int i = start; i < end; i++) {
-                        Variable<Integer> sum = variables.get("sum");
-                        sum.set(sum.value() + 1);
-                    }
-                })
-                .join();
+        JROMP.withThreads(threads)
+             .withVariables(vars)
+             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+                 for (int i = start; i < end; i++) {
+                     Variable<Integer> sum = variables.get("sum");
+                     sum.set(sum.value() + 1);
+                 }
+             })
+             .join();
 
         // The value is zero because each thread has its own copy of the variable
         assertThat(vars.<Integer>get("sum").value()).isZero();
@@ -65,14 +65,14 @@ class FirstPrivateVariableTests {
         int iterations = 100;
         Variables vars = Variables.create().add("sum", new FirstPrivateVariable<>(0));
 
-        Parallel.withThreads(threads)
-                .withVariables(vars)
-                .parallelFor(0, iterations, false, (id, start, end, variables) -> {
-                    for (int i = start; i < end; i++) {
-                        variables.<Integer>get("sum").update(old -> old + 1);
-                    }
-                })
-                .join();
+        JROMP.withThreads(threads)
+             .withVariables(vars)
+             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+                 for (int i = start; i < end; i++) {
+                     variables.<Integer>get("sum").update(old -> old + 1);
+                 }
+             })
+             .join();
 
         // The value is zero because each thread has its own copy of the variable
         assertThat(vars.<Integer>get("sum").value()).isZero();
@@ -91,15 +91,15 @@ class FirstPrivateVariableTests {
     void testDontKeepValueAfterExecution() {
         Variables vars = Variables.create().add("sum", new FirstPrivateVariable<>(0));
 
-        Parallel.withThreads(4)
-                .withVariables(vars)
-                .block((id, variables) -> {
-                    for (int i = 0; i < 20; i++) {
-                        Variable<Integer> sum = variables.get("sum");
-                        sum.update(old -> old + 1);
-                    }
-                })
-                .join();
+        JROMP.withThreads(4)
+             .withVariables(vars)
+             .block((id, variables) -> {
+                 for (int i = 0; i < 20; i++) {
+                     Variable<Integer> sum = variables.get("sum");
+                     sum.update(old -> old + 1);
+                 }
+             })
+             .join();
 
         // The value is zero because each thread has its own copy of the variable
         assertThat(vars.<Integer>get("sum").value()).isZero();
@@ -111,19 +111,19 @@ class FirstPrivateVariableTests {
         Variables vars = Variables.create().add("sum", variable);
         variable.set(15);
 
-        Parallel.withThreads(4)
-                .withVariables(vars)
-                .block((id, variables) -> {
-                    assertThat(variables.<Integer>get("sum").value()).isEqualTo(15);
+        JROMP.withThreads(4)
+             .withVariables(vars)
+             .block((id, variables) -> {
+                 assertThat(variables.<Integer>get("sum").value()).isEqualTo(15);
 
-                    for (int i = 0; i < 20; i++) {
-                        Variable<Integer> sum = variables.get("sum");
-                        sum.update(old -> old + 1);
-                    }
+                 for (int i = 0; i < 20; i++) {
+                     Variable<Integer> sum = variables.get("sum");
+                     sum.update(old -> old + 1);
+                 }
 
-                    assertThat(variables.<Integer>get("sum").value()).isEqualTo(35);
-                })
-                .join();
+                 assertThat(variables.<Integer>get("sum").value()).isEqualTo(35);
+             })
+             .join();
 
         assertThat(vars.<Integer>get("sum").value()).isEqualTo(15);
     }
