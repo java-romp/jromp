@@ -64,7 +64,7 @@ Here is an example of how to use JROMP to execute a simple parallel task in all 
 
 ```java
 import jromp.Constants;
-import jromp.parallel.Parallel;
+import jromp.Parallel;
 
 public class BasicUsage {
   public static void main(String[] args) {
