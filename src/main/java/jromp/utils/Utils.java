@@ -28,6 +28,22 @@ public final class Utils {
         return Math.min(threads, Constants.MAX_THREADS);
     }
 
+    public static int checkThreadsPerTeam(int threads, int threadsPerTeam) {
+        if (threadsPerTeam < Constants.MIN_THREADS) {
+            throw new IllegalArgumentException("Number of threads per team must be greater than 0.");
+        }
+
+        if (threads < threadsPerTeam) {
+            throw new IllegalArgumentException("Number of threads per team must be less than or equal to the number of threads.");
+        }
+
+        if (threads % threadsPerTeam != 0) {
+            throw new IllegalArgumentException("Number of threads must be divisible by the number of threads per team.");
+        }
+
+        return threadsPerTeam;
+    }
+
     /**
      * Check if the thread is the master thread.
      *

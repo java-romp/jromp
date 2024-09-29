@@ -29,6 +29,33 @@ class JROMPTests {
     }
 
     @Test
+    void testWithThreadsPerTeamValid() {
+        JROMP p = JROMP.withThreads(4, 2);
+        assertThat(p).isNotNull();
+    }
+
+    @Test
+    void testWithThreadsLessThanMinimumPerTeam() {
+        assertThatThrownBy(() -> JROMP.withThreads(4, 0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Number of threads per team must be greater than 0.");
+    }
+
+    @Test
+    void testWithThreadsTeamGreaterThanThreads() {
+        assertThatThrownBy(() -> JROMP.withThreads(4, 5))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Number of threads per team must be less than or equal to the number of threads.");
+    }
+
+    @Test
+    void testWithThreadsNotDivisible() {
+        assertThatThrownBy(() -> JROMP.withThreads(4, 3))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Number of threads must be divisible by the number of threads per team.");
+    }
+
+    @Test
     void testParallelForWithoutVariables() {
         int threads = 4;
         int iterations = 1000;

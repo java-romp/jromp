@@ -1,8 +1,8 @@
 package jromp;
 
+import jromp.concurrent.JrompThread;
 import jromp.task.ForTask;
 import jromp.task.Task;
-import jromp.utils.Utils;
 import jromp.var.ReductionVariable;
 import jromp.var.SharedVariable;
 import jromp.var.Variable;
@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static jromp.utils.Utils.checkThreads;
+import static jromp.utils.Utils.checkThreadsPerTeam;
 
 /**
  * The main class for the parallel runtime.
@@ -42,11 +45,12 @@ public class JROMP {
     /**
      * Create a new instance for the parallel runtime.
      *
-     * @param threads The number of threads.
+     * @param threads        The number of threads.
+     * @param threadsPerTeam The number of threads per team.
      */
-    private JROMP(int threads) {
+    private JROMP(int threads, int threadsPerTeam) {
         this.threads = threads;
-        this.threadExecutor = Executors.newFixedThreadPool(threads);
+        this.threadExecutor = Executors.newFixedThreadPool(threads, JrompThread.newThreadFactory(threadsPerTeam));
 
         withVariables(Variables.create());
     }
@@ -57,7 +61,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public static JROMP allThreads() {
-        return new JROMP(Constants.DEFAULT_THREADS);
+        return new JROMP(Constants.DEFAULT_THREADS, Constants.DEFAULT_THREADS);
     }
 
     /**
@@ -68,7 +72,19 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public static JROMP withThreads(int threads) {
-        return new JROMP(Utils.checkThreads(threads));
+        return new JROMP(checkThreads(threads), threads);
+    }
+
+    /**
+     * Configures the parallel runtime with the specified number of threads and threads per team.
+     *
+     * @param threads        The number of threads to use.
+     * @param threadsPerTeam The number of threads per team.
+     *
+     * @return The parallel runtime.
+     */
+    public static JROMP withThreads(int threads, int threadsPerTeam) {
+        return new JROMP(checkThreads(threads), checkThreadsPerTeam(threads, threadsPerTeam));
     }
 
     /**
