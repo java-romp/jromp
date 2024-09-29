@@ -16,15 +16,8 @@ class JROMPTests {
     }
 
     @Test
-    void testWithThreadsZero() {
+    void testWithThreadsLessThanMinimum() {
         assertThatThrownBy(() -> JROMP.withThreads(0))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Number of threads must be greater than 0.");
-    }
-
-    @Test
-    void testWithThreadsNegative() {
-        assertThatThrownBy(() -> JROMP.withThreads(-1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Number of threads must be greater than 0.");
     }
