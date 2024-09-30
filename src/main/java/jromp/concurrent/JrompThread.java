@@ -1,5 +1,6 @@
 package jromp.concurrent;
 
+import java.util.ArrayList;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -12,9 +13,9 @@ public class JrompThread extends Thread {
     private final int tid;
 
     /**
-     * The team ID.
+     * The team of this thread.
      */
-    private final int team;
+    private final ThreadTeam team;
 
     /**
      * The thread name.
@@ -22,15 +23,15 @@ public class JrompThread extends Thread {
     private final String threadName;
 
     /**
-     * Constructs a new {@link JrompThread} with the given {@link Runnable}, thread ID, and team ID.
+     * Constructs a new {@link JrompThread} with the given {@link Runnable}, thread ID, and team.
      *
      * @param runnable the {@link Runnable} to be executed by this thread.
      * @param tid      the thread ID.
-     * @param team     the team ID.
+     * @param team     the team of this thread.
      *
-     * @see #generateThreadName(int, int)
+     * @see #generateThreadName(ThreadTeam, int)
      */
-    public JrompThread(Runnable runnable, int tid, int team) {
+    public JrompThread(Runnable runnable, int tid, ThreadTeam team) {
         super(runnable);
 
         this.tid = tid;
@@ -44,7 +45,7 @@ public class JrompThread extends Thread {
         return tid;
     }
 
-    public int getTeam() {
+    public ThreadTeam getTeam() {
         return team;
     }
 
@@ -53,15 +54,15 @@ public class JrompThread extends Thread {
     }
 
     /**
-     * Generates a thread name with the given team ID and thread ID.
+     * Generates a thread name with the given team and thread ID.
      *
-     * @param team the team ID.
+     * @param team the team of the thread.
      * @param tid  the thread ID.
      *
      * @return the generated thread name.
      */
-    private static String generateThreadName(int team, int tid) {
-        return "%s-%d-%d".formatted(JrompThread.class.getSimpleName(), team, tid);
+    private static String generateThreadName(ThreadTeam team, int tid) {
+        return "%s-%d-%d".formatted(JrompThread.class.getSimpleName(), team.getTeamId(), tid);
     }
 
     @Override
@@ -89,9 +90,14 @@ public class JrompThread extends Thread {
         private int tid = 0;
 
         /**
-         * The team ID.
+         * The team of the thread.
          */
-        private int team = 0;
+        private ThreadTeam team = new ThreadTeam(0);
+
+        /**
+         * The list of thread teams.
+         */
+        private final ArrayList<ThreadTeam> threadTeams = new ArrayList<>();
 
         /**
          * Constructs a new {@link JrompThreadFactory} with the given number of threads per team.
@@ -100,6 +106,7 @@ public class JrompThread extends Thread {
          */
         public JrompThreadFactory(int threadsPerTeam) {
             this.threadsPerTeam = threadsPerTeam;
+            this.threadTeams.add(team);
         }
 
         @Override
@@ -108,7 +115,8 @@ public class JrompThread extends Thread {
 
             if (tid == threadsPerTeam) {
                 tid = 0;
-                team++;
+                team = new ThreadTeam(threadTeams.size());
+                threadTeams.add(team);
             }
 
             return thread;

@@ -3,6 +3,7 @@ package jromp;
 import jromp.var.AtomicVariable;
 import jromp.var.PrivateVariable;
 import jromp.var.Variables;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -291,5 +292,13 @@ class JROMPTests {
              .join();
 
         assertThat(values).containsExactly(0, 0, 1, 0);
+    }
+
+    @Test
+    @Disabled
+    void testPrintThreadName() {
+        JROMP.withThreads(12, 3)
+             .block((id, vars) -> System.out.println(Thread.currentThread().getName()))
+             .join();
     }
 }
