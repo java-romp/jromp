@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadFactory;
  * A thread class that extends {@link Thread} and provides additional information about the thread.
  */
 public class JrompThread extends Thread {
+    public static final String CLASS_NAME = JrompThread.class.getSimpleName();
+
     /**
      * The thread ID.
      */
@@ -62,7 +64,7 @@ public class JrompThread extends Thread {
      * @return the generated thread name.
      */
     private static String generateThreadName(ThreadTeam team, int tid) {
-        return "%s-%d-%d".formatted(JrompThread.class.getSimpleName(), team.getTeamId(), tid);
+        return "%s-%d-%d".formatted(CLASS_NAME, team.getTeamId(), tid);
     }
 
     @Override
