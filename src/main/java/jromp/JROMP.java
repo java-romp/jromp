@@ -1,5 +1,6 @@
 package jromp;
 
+import jromp.concurrent.JrompExecutorWrapper;
 import jromp.concurrent.JrompThread;
 import jromp.task.ForTask;
 import jromp.task.Task;
@@ -10,8 +11,6 @@ import jromp.var.Variables;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jromp.utils.Utils.checkThreads;
@@ -29,7 +28,7 @@ public class JROMP {
     /**
      * The thread executor used to execute the tasks.
      */
-    private final ExecutorService threadExecutor;
+    private final JrompExecutorWrapper executor;
 
     /**
      * The variables used in the current parallel block.
@@ -50,7 +49,7 @@ public class JROMP {
      */
     private JROMP(int threads, int threadsPerTeam) {
         this.threads = threads;
-        this.threadExecutor = Executors.newFixedThreadPool(threads, JrompThread.newThreadFactory(threadsPerTeam));
+        this.executor = new JrompExecutorWrapper(threads, JrompThread.newThreadFactory(threadsPerTeam));
 
         withVariables(Variables.create());
     }
@@ -125,9 +124,9 @@ public class JROMP {
      * Wait for all threads to finish and perform the necessary operations.
      */
     public void join() {
-        threadExecutor.shutdown();
+        executor.shutdown();
 
-        while (!threadExecutor.isTerminated()) {
+        while (!executor.isTerminated()) {
             waitForFinish();
         }
 
@@ -157,7 +156,7 @@ public class JROMP {
             final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
 
-            threadExecutor.execute(() -> task.run(finalI, finalVariables));
+            executor.execute(() -> task.run(finalI, finalVariables));
         }
 
         return this;
@@ -194,7 +193,7 @@ public class JROMP {
             final int finalI = i;
             final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
-            threadExecutor.execute(() -> {
+            executor.execute(() -> {
                 task.run(finalI, chunkStart, chunkEnd, finalVariables);
                 barrier.await();
             });
@@ -221,7 +220,7 @@ public class JROMP {
                 final int finalI = i;
                 Task task = tasks[i];
 
-                threadExecutor.execute(() -> {
+                executor.execute(() -> {
                     task.run(finalI, variables);
                     barrier.await();
                 });
@@ -285,7 +284,7 @@ public class JROMP {
             final int finalI = i;
             this.variablesList.add(this.variables);
 
-            threadExecutor.execute(() -> {
+            executor.execute(() -> {
                 if (executed.compareAndSet(false, true)) {
                     // Only execute the task once.
                     task.run(finalI, this.variables);
@@ -313,7 +312,7 @@ public class JROMP {
             final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
 
-            threadExecutor.execute(() -> {
+            executor.execute(() -> {
                 if (finalI == filter) {
                     task.run(finalI, finalVariables);
                 }
