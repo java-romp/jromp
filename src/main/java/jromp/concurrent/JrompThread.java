@@ -41,6 +41,7 @@ public class JrompThread extends Thread {
         this.threadName = generateThreadName(team, tid);
 
         setName(threadName);
+        this.team.addThread(this);
     }
 
     public int getTid() {
