@@ -3,7 +3,6 @@ package jromp;
 import jromp.var.AtomicVariable;
 import jromp.var.PrivateVariable;
 import jromp.var.Variables;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -295,10 +294,9 @@ class JROMPTests {
     }
 
     @Test
-    @Disabled
-    void testPrintThreadName() {
-        JROMP.withThreads(12, 3)
-             .block((id, vars) -> System.out.println(Thread.currentThread().getName()))
+    void testThreadNameString() {
+        JROMP.withThreads(4)
+             .masked((id, vars) -> assertThat(Thread.currentThread().getName()).isEqualTo("JrompThread-0-0"))
              .join();
     }
 }
