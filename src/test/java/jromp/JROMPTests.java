@@ -233,7 +233,6 @@ class JROMPTests {
                      countsPerThread[id]++;
                  }
              })
-             .withVariables(variables)
              .block((id, vars) -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
