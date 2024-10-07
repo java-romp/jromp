@@ -64,14 +64,14 @@ Here is an example of how to use JROMP to execute a simple parallel task in all 
 
 ```java
 import jromp.Constants;
-import jromp.parallel.Parallel;
+import jromp.JROMP;
 
 public class BasicUsage {
   public static void main(String[] args) {
-    Parallel.defaultConfig()
-            .block((id, variables) -> System.out.printf("Hello World from thread %d of %d%n", id,
-                    variables.<Integer>get(Constants.NUM_THREADS).value()))
-            .join();
+    JROMP.allThreads()
+         .block((id, variables) -> System.out.printf("Hello World from thread %d of %d%n", id,
+                 variables.<Integer>get(Constants.NUM_THREADS).value()))
+         .join();
   }
 }
 ```
