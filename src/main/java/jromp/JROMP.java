@@ -215,9 +215,7 @@ public class JROMP {
             Barrier barrier = new Barrier("Sections", tasks.length);
             barrier.setNowait(nowait);
 
-            for (int i = 0; i < tasks.length; i++) {
-                Task task = tasks[i];
-
+            for (Task task : tasks) {
                 executor.execute(() -> {
                     task.run(variables);
                     barrier.await();
