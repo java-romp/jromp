@@ -314,4 +314,15 @@ class JROMPTests {
     void testGetThreadNum() {
         assertThat(JROMP.getThreadNum()).isZero();
     }
+
+    @Test
+    void testGetThreadTeam() {
+        assertThat(JROMP.getThreadTeam()).isNull();
+
+        JROMP.withThreads(4, 2)
+             .block((id, vars) -> assertThat(JROMP.getThreadTeam()).isNotNull())
+             .join();
+
+        assertThat(JROMP.getThreadTeam()).isNull();
+    }
 }

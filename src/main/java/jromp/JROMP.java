@@ -2,6 +2,7 @@ package jromp;
 
 import jromp.concurrent.JrompExecutorWrapper;
 import jromp.concurrent.JrompThread;
+import jromp.concurrent.ThreadTeam;
 import jromp.task.ForTask;
 import jromp.task.Task;
 import jromp.var.ReductionVariable;
@@ -356,7 +357,7 @@ public class JROMP {
     }
 
     /**
-     * Get the thread number.
+     * Get the current thread number.
      *
      * @return The thread number.
      */
@@ -366,5 +367,18 @@ public class JROMP {
         }
 
         return 0;
+    }
+
+    /**
+     * Get the team of the current thread.
+     *
+     * @return The team of the current thread or <code>null</code> if the thread is not a JROMP thread.
+     */
+    public static ThreadTeam getThreadTeam() {
+        if (Thread.currentThread() instanceof JrompThread jt) {
+            return jt.getTeam();
+        }
+
+        return null;
     }
 }
