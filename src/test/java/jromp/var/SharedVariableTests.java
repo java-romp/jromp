@@ -1,7 +1,6 @@
 package jromp.var;
 
 import jromp.JROMP;
-import jromp.utils.Utils;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
@@ -97,7 +96,7 @@ class SharedVariableTests {
                      Variable<Integer> sum = variables.get("sum");
 
                      // The master thread will sleep for a while to end up with a different value
-                     if (Utils.isMaster(id)) {
+                     if (JROMP.isMaster(id)) {
                          try {
                              Thread.sleep(100);
                          } catch (InterruptedException e) {

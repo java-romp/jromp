@@ -3,7 +3,7 @@ package jromp.var.reduction;
 import jromp.operation.Operations;
 import jromp.var.Variable;
 
-import static jromp.utils.Utils.NumberUtils.getT;
+import static jromp.Utils.NumberUtils.getT;
 
 /**
  * Reduction operation for bitwise AND.

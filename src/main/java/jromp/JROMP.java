@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static jromp.utils.Utils.checkThreads;
-import static jromp.utils.Utils.checkThreadsPerTeam;
+import static jromp.Utils.checkThreads;
+import static jromp.Utils.checkThreadsPerTeam;
 
 /**
  * The main class for the parallel runtime.
@@ -331,5 +331,27 @@ public class JROMP {
      */
     public JROMP masked(Task task) {
         return masked(0, task);
+    }
+
+    // Utility methods
+
+    /**
+     * Check if the thread is the master thread.
+     *
+     * @param id The thread ID.
+     *
+     * @return <code>true</code> if the thread is the master thread, <code>false</code> otherwise.
+     */
+    public static boolean isMaster(int id) {
+        return id == 0;
+    }
+
+    /**
+     * Get the elapsed wall clock time.
+     *
+     * @return The elapsed wall clock time.
+     */
+    public static double getWTime() {
+        return System.nanoTime() / 1e9;
     }
 }
