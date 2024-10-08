@@ -4,6 +4,5 @@ jromp.construct.atomic
 jromp.construct.critical
 jromp.operation
 jromp.task
-jromp.utils
 jromp.var
 jromp.var.reduction
