@@ -18,10 +18,10 @@ class SectionTests {
                                                               new LastPrivateVariable<>(0),
                                                               new LastPrivateVariable<>(0));
         List<Task> tasks = List.of(
-                (id, variables) -> variables.<Integer>get("counter1").update(Operations.add(1)),
-                (id, variables) -> variables.<Integer>get("counter2").update(Operations.add(2)),
-                (id, variables) -> variables.<Integer>get("counter3").update(Operations.add(3)),
-                (id, variables) -> variables.<Integer>get("counter4").update(Operations.add(4))
+                variables -> variables.<Integer>get("counter1").update(Operations.add(1)),
+                variables -> variables.<Integer>get("counter2").update(Operations.add(2)),
+                variables -> variables.<Integer>get("counter3").update(Operations.add(3)),
+                variables -> variables.<Integer>get("counter4").update(Operations.add(4))
         );
 
         Variables vars = Variables.create()
@@ -45,11 +45,11 @@ class SectionTests {
                                                               new LastPrivateVariable<>(0),
                                                               new LastPrivateVariable<>(0));
         List<Task> tasks = List.of(
-                (id, variables) -> variables.<Integer>get("counter1").update(Operations.add(1)),
-                (id, variables) -> variables.<Integer>get("counter2").update(Operations.add(2)),
-                (id, variables) -> variables.<Integer>get("counter3").update(Operations.add(3)),
-                (id, variables) -> variables.<Integer>get("counter4").update(Operations.add(4)),
-                (id, variables) -> {
+                variables -> variables.<Integer>get("counter1").update(Operations.add(1)),
+                variables -> variables.<Integer>get("counter2").update(Operations.add(2)),
+                variables -> variables.<Integer>get("counter3").update(Operations.add(3)),
+                variables -> variables.<Integer>get("counter4").update(Operations.add(4)),
+                variables -> {
                     for (int i = 0; i < 10; i++) {
                         variables.<Integer>get("counter5").update(Operations.add(1));
                     }

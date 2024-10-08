@@ -15,7 +15,7 @@ class CriticalTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((id, vars) -> Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1)))
+             .block(vars -> Critical.enter("x", vars, v -> v.<Integer>get("x").update(x -> x + 1)))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(4);
@@ -27,9 +27,9 @@ class CriticalTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((id, vars) -> {
-                 Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
-                 Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
+             .block(vars -> {
+                 Critical.enter("x", vars, v -> v.<Integer>get("x").update(x -> x + 1));
+                 Critical.enter("x", vars, v -> v.<Integer>get("x").update(x -> x + 1));
              })
              .join();
 
@@ -44,9 +44,9 @@ class CriticalTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((id, vars) -> {
-                 Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
-                 Critical.enter("y", id, vars, (i, v) -> v.<Integer>get("y").update(y -> y + 1));
+             .block(vars -> {
+                 Critical.enter("x", vars, v -> v.<Integer>get("x").update(x -> x + 1));
+                 Critical.enter("y", vars, v -> v.<Integer>get("y").update(y -> y + 1));
              })
              .join();
 
@@ -62,11 +62,11 @@ class CriticalTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((id, vars) -> {
-                 Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
-                 Critical.enter("y", id, vars, (i, v) -> v.<Integer>get("y").update(y -> y + 1));
-                 Critical.enter("x", id, vars, (i, v) -> v.<Integer>get("x").update(x -> x + 1));
-                 Critical.enter("y", id, vars, (i, v) -> v.<Integer>get("y").update(y -> y + 1));
+             .block(vars -> {
+                 Critical.enter("x", vars, v -> v.<Integer>get("x").update(x -> x + 1));
+                 Critical.enter("y", vars, v -> v.<Integer>get("y").update(y -> y + 1));
+                 Critical.enter("x", vars, v -> v.<Integer>get("x").update(x -> x + 1));
+                 Critical.enter("y", vars, v -> v.<Integer>get("y").update(y -> y + 1));
              })
              .join();
 
@@ -80,8 +80,8 @@ class CriticalTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((id, vars) -> {
-                 Critical.enter("x", id, vars, (i, v) -> {
+             .block(vars -> {
+                 Critical.enter("x", vars, v -> {
                      Variable<StringBuilder> variable = v.get("x");
                      variable.update(sb -> sb.append("x"));
                      variable.update(sb -> sb.append(" "));

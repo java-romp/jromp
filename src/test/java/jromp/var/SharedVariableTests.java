@@ -4,6 +4,7 @@ import jromp.JROMP;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
+import static jromp.JROMP.getThreadNum;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SharedVariableTests {
@@ -16,11 +17,11 @@ class SharedVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+             .parallelFor(0, iterations, false, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      Variable<Integer> insideSum = variables.get("sum");
                      insideSum.update(old -> old + 1);
-                     countsPerThread[id]++;
+                     countsPerThread[getThreadNum()]++;
                  }
              })
              .join();
@@ -42,10 +43,10 @@ class SharedVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+             .parallelFor(0, iterations, false, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      outsideSum.update(old -> old + 1);
-                     countsPerThread[id]++;
+                     countsPerThread[getThreadNum()]++;
                  }
              })
              .join();
@@ -65,7 +66,7 @@ class SharedVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+             .parallelFor(0, iterations, false, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      Variable<Integer> sum = variables.get("sum");
                      sum.set(1);
@@ -91,12 +92,12 @@ class SharedVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block((id, variables) -> {
+             .block(variables -> {
                  for (int i = 0; i < 2; i++) {
                      Variable<Integer> sum = variables.get("sum");
 
                      // The master thread will sleep for a while to end up with a different value
-                     if (JROMP.isMaster(id)) {
+                     if (JROMP.isMaster(getThreadNum())) {
                          try {
                              Thread.sleep(100);
                          } catch (InterruptedException e) {

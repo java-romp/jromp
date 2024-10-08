@@ -47,7 +47,7 @@ class FirstPrivateVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+             .parallelFor(0, iterations, false, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      Variable<Integer> sum = variables.get("sum");
                      sum.set(sum.value() + 1);
@@ -67,7 +67,7 @@ class FirstPrivateVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (id, start, end, variables) -> {
+             .parallelFor(0, iterations, false, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      variables.<Integer>get("sum").update(old -> old + 1);
                  }
@@ -93,7 +93,7 @@ class FirstPrivateVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block((id, variables) -> {
+             .block(variables -> {
                  for (int i = 0; i < 20; i++) {
                      Variable<Integer> sum = variables.get("sum");
                      sum.update(old -> old + 1);
@@ -113,7 +113,7 @@ class FirstPrivateVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block((id, variables) -> {
+             .block(variables -> {
                  assertThat(variables.<Integer>get("sum").value()).isEqualTo(15);
 
                  for (int i = 0; i < 20; i++) {
