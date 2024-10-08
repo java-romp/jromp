@@ -354,4 +354,17 @@ public class JROMP {
     public static double getWTime() {
         return System.nanoTime() / 1e9;
     }
+
+    /**
+     * Get the thread number.
+     *
+     * @return The thread number.
+     */
+    public static int getThreadNum() {
+        if (Thread.currentThread() instanceof JrompThread jt) {
+            return jt.getTid();
+        }
+
+        return 0;
+    }
 }

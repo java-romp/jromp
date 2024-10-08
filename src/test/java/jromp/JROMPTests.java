@@ -309,4 +309,9 @@ class JROMPTests {
     void testGetWTime() {
         assertThat(JROMP.getWTime()).isGreaterThan(0.0);
     }
+
+    @Test
+    void testGetThreadNum() {
+        assertThat(JROMP.getThreadNum()).isZero();
+    }
 }
