@@ -9,8 +9,7 @@ public interface Task {
     /**
      * Run the task.
      *
-     * @param id        The thread ID.
      * @param variables The variables to use.
      */
-    void run(int id, Variables variables);
+    void run(Variables variables);
 }

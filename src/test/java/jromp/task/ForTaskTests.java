@@ -9,13 +9,13 @@ class ForTaskTests {
     @Test
     void testDefaultForLoop() {
         PrivateVariable<Integer> count = new PrivateVariable<>(0);
-        ForTask forTask = (id, start, end, variables) -> {
+        ForTask forTask = (start, end, variables) -> {
             for (int i = start; i < end; i++) {
                 count.update(old -> old + 1);
             }
         };
 
-        forTask.run(0, 0, 10);
+        forTask.run(0, 10);
 
         assertThat(count.value()).isEqualTo(10);
     }
@@ -23,13 +23,13 @@ class ForTaskTests {
     @Test
     void testDefaultForLoopWithVariables() {
         PrivateVariable<Integer> count = new PrivateVariable<>(0);
-        ForTask forTask = (id, start, end, variables) -> {
+        ForTask forTask = (start, end, variables) -> {
             for (int i = start; i < end; i++) {
                 count.update(old -> old + 1);
             }
         };
 
-        forTask.run(0, 0, 10, null);
+        forTask.run(0, 10, null);
 
         assertThat(count.value()).isEqualTo(10);
     }

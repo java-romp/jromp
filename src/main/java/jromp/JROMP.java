@@ -153,11 +153,10 @@ public class JROMP {
      */
     public JROMP block(Task task) {
         for (int i = 0; i < this.threads; i++) {
-            final int finalI = i;
             final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
 
-            executor.execute(() -> task.run(finalI, finalVariables));
+            executor.execute(() -> task.run(finalVariables));
         }
 
         return this;
@@ -191,11 +190,10 @@ public class JROMP {
                 chunkEnd = chunkStart + chunkSize;
             }
 
-            final int finalI = i;
             final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
             executor.execute(() -> {
-                task.run(finalI, chunkStart, chunkEnd, finalVariables);
+                task.run(chunkStart, chunkEnd, finalVariables);
                 barrier.await();
             });
         }
@@ -218,11 +216,10 @@ public class JROMP {
             barrier.setNowait(nowait);
 
             for (int i = 0; i < tasks.length; i++) {
-                final int finalI = i;
                 Task task = tasks[i];
 
                 executor.execute(() -> {
-                    task.run(finalI, variables);
+                    task.run(variables);
                     barrier.await();
                 });
             }
@@ -282,13 +279,12 @@ public class JROMP {
         barrier.setNowait(nowait);
 
         for (int i = 0; i < this.threads; i++) {
-            final int finalI = i;
             this.variablesList.add(this.variables);
 
             executor.execute(() -> {
                 if (executed.compareAndSet(false, true)) {
                     // Only execute the task once.
-                    task.run(finalI, this.variables);
+                    task.run(this.variables);
                 }
                 // Other threads will pass through without executing the task.
 
@@ -315,7 +311,7 @@ public class JROMP {
 
             executor.execute(() -> {
                 if (finalI == filter) {
-                    task.run(finalI, finalVariables);
+                    task.run(finalVariables);
                 }
             });
         }
