@@ -1,6 +1,4 @@
-package jromp.utils;
-
-import jromp.Constants;
+package jromp;
 
 /**
  * Utility methods.
@@ -20,7 +18,7 @@ public final class Utils {
      *
      * @return The number of threads.
      */
-    public static int checkThreads(int threads) {
+    static int checkThreads(int threads) {
         if (threads < Constants.MIN_THREADS) {
             throw new IllegalArgumentException("Number of threads must be greater than 0.");
         }
@@ -28,7 +26,7 @@ public final class Utils {
         return Math.min(threads, Constants.MAX_THREADS);
     }
 
-    public static int checkThreadsPerTeam(int threads, int threadsPerTeam) {
+    static int checkThreadsPerTeam(int threads, int threadsPerTeam) {
         if (threadsPerTeam < Constants.MIN_THREADS) {
             throw new IllegalArgumentException("Number of threads per team must be greater than 0.");
         }
@@ -42,26 +40,6 @@ public final class Utils {
         }
 
         return threadsPerTeam;
-    }
-
-    /**
-     * Check if the thread is the master thread.
-     *
-     * @param id The thread ID.
-     *
-     * @return <code>true</code> if the thread is the master thread, <code>false</code> otherwise.
-     */
-    public static boolean isMaster(int id) {
-        return id == 0;
-    }
-
-    /**
-     * Get the elapsed wall clock time.
-     *
-     * @return The elapsed wall clock time.
-     */
-    public static double getWTime() {
-        return System.nanoTime() / 1e9;
     }
 
     public static class NumberUtils {

@@ -298,4 +298,15 @@ class JROMPTests {
              .masked((id, vars) -> assertThat(Thread.currentThread().getName()).isEqualTo("JrompThread-0-0"))
              .join();
     }
+
+    @Test
+    void testIsMaster() {
+        assertThat(JROMP.isMaster(0)).isTrue();
+        assertThat(JROMP.isMaster(1)).isFalse();
+    }
+
+    @Test
+    void testGetWTime() {
+        assertThat(JROMP.getWTime()).isGreaterThan(0.0);
+    }
 }
