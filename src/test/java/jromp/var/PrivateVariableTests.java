@@ -95,7 +95,7 @@ class PrivateVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block((variables) -> {
+             .block(variables -> {
                  assertThat(variables.<Integer>get("sum").value()).isZero();
 
                  for (int i = 0; i < 20; i++) {

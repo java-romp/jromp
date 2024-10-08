@@ -92,7 +92,7 @@ class SharedVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block((variables) -> {
+             .block(variables -> {
                  for (int i = 0; i < 2; i++) {
                      Variable<Integer> sum = variables.get("sum");
 

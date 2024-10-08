@@ -15,7 +15,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.assign(1), vars))
+             .block(vars -> Atomic.update("x", Operations.assign(1), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(1);
@@ -27,7 +27,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.add(1), vars))
+             .block(vars -> Atomic.update("x", Operations.add(1), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(4);
@@ -39,7 +39,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.multiply(2), vars))
+             .block(vars -> Atomic.update("x", Operations.multiply(2), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(16);
@@ -51,7 +51,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.subtract(2), vars))
+             .block(vars -> Atomic.update("x", Operations.subtract(2), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(2);
@@ -63,7 +63,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.divide(2.0f), vars))
+             .block(vars -> Atomic.update("x", Operations.divide(2.0f), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0.625f);
@@ -75,7 +75,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.bitwiseAnd(2), vars))
+             .block(vars -> Atomic.update("x", Operations.bitwiseAnd(2), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(2);
@@ -87,7 +87,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.bitwiseOr(2), vars))
+             .block(vars -> Atomic.update("x", Operations.bitwiseOr(2), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(10);
@@ -99,7 +99,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.bitwiseXor(2), vars))
+             .block(vars -> Atomic.update("x", Operations.bitwiseXor(2), vars))
              .join();
 
         // Since there are 4 threads, the result will be
@@ -113,7 +113,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.shiftLeft(1), vars))
+             .block(vars -> Atomic.update("x", Operations.shiftLeft(1), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0b10100000);
@@ -125,7 +125,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.shiftRight(1), vars))
+             .block(vars -> Atomic.update("x", Operations.shiftRight(1), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(0);
@@ -137,7 +137,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.max(10), vars))
+             .block(vars -> Atomic.update("x", Operations.max(10), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(10);
@@ -149,7 +149,7 @@ class AllOperationsTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block((vars) -> Atomic.update("x", Operations.min(10), vars))
+             .block(vars -> Atomic.update("x", Operations.min(10), vars))
              .join();
 
         assertThat(variables.get("x").value()).isEqualTo(5);
