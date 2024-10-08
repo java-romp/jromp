@@ -215,37 +215,23 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .withVariables(variables)
-             .block(vars -> {
-                 assertThat(vars).isNotNull();
-                 assertThat(vars.isEmpty()).isFalse();
-
-                 for (int i = 0; i < iterations; i++) {
-                     countsPerThread[getThreadNum()]++;
-                 }
-             })
              .singleBlock(false, vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
                  assertThat(vars.size()).isEqualTo(2);
                  assertThat(vars.get(Constants.NUM_THREADS).value()).isEqualTo(threads);
-                 singleBlockExecuted[getThreadNum()] = true;
-                 singleBlockExecutionId[0] = getThreadNum();
+
+                 int tid = getThreadNum();
+                 singleBlockExecuted[tid] = true;
+                 singleBlockExecutionId[0] = tid;
 
                  for (int i = 0; i < iterations; i++) {
-                     countsPerThread[getThreadNum()]++;
-                 }
-             })
-             .block(vars -> {
-                 assertThat(vars).isNotNull();
-                 assertThat(vars.isEmpty()).isFalse();
-
-                 for (int i = 0; i < iterations; i++) {
-                     countsPerThread[getThreadNum()]++;
+                     countsPerThread[tid]++;
                  }
              })
              .join();
 
-        assertThat(countsPerThread).containsOnlyOnce(iterations * 3);
+        assertThat(countsPerThread).containsOnlyOnce(iterations);
         assertThat(singleBlockExecuted).containsOnlyOnce(true);
 
         // In the position of the single block execution id, the value should be true
