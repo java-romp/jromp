@@ -303,12 +303,11 @@ public class JROMP {
      */
     public JROMP masked(int filter, Task task) {
         for (int i = 0; i < this.threads; i++) {
-            final int finalI = i;
             final Variables finalVariables = this.variables.copy();
             this.variablesList.add(finalVariables);
 
             executor.execute(() -> {
-                if (finalI == filter) {
+                if (getThreadNum() == filter) {
                     task.run(finalVariables);
                 }
             });
