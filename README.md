@@ -22,7 +22,7 @@ using Java's `ThreadPoolExecutor` and designed to be efficient and scalable.
 - `critical` - Executes a block of code in a critical section.
 - `atomic` - Executes a block of code atomically.
 - `reduction` - Performs a reduction operation.
-- (NEW) `masked` - Executes a block of code in the specified thread.
+- `masked` - Executes a block of code in the specified thread.
 
 ### Supported variables
 
@@ -44,7 +44,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 <dependency>
   <groupId>io.github.java-romp</groupId>
   <artifactId>jromp</artifactId>
-  <version>1.2.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 <!-- @formatter:on -->
@@ -52,7 +52,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 ### Gradle
 
 ```groovy
-implementation 'io.github.java-romp:jromp:1.2.0'
+implementation 'io.github.java-romp:jromp:2.0.0'
 ```
 
 If your package manager is not listed here, you can check the latest version on
@@ -66,10 +66,12 @@ Here is an example of how to use JROMP to execute a simple parallel task in all 
 import jromp.Constants;
 import jromp.JROMP;
 
+import static jromp.JROMP.getThreadNum;
+
 public class BasicUsage {
   public static void main(String[] args) {
     JROMP.allThreads()
-         .block((id, variables) -> System.out.printf("Hello World from thread %d of %d%n", id,
+            .block(variables -> System.out.printf("Hello World from thread %d of %d%n", getThreadNum(),
                  variables.<Integer>get(Constants.NUM_THREADS).value()))
          .join();
   }

@@ -6,6 +6,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## Version [2.0.0](https://github.com/java-romp/jromp/releases/tag/2.0.0) (2024-10-10)
+
+[1.2.0...2.0.0](https://github.com/java-romp/jromp/compare/1.2.0...2.0.0)
+
+### ⚠️ Breaking Changes
+
+* naming and thread groups refactor in [#72](https://github.com/java-romp/jromp/pull/72)
+* id removal in [#79](https://github.com/java-romp/jromp/pull/79)
+
+### ✨ Features
+
+* move `Utils` to base package and some methods to `JROMP` class in [#74](https://github.com/java-romp/jromp/pull/74)
+* added more utility functions in [#76](https://github.com/java-romp/jromp/pull/76)
+* `masked` method sends tasks to corresponding thread in the teams in [#80](https://github.com/java-romp/jromp/pull/80)
+* implemented `barrier` as a method in [#82](https://github.com/java-romp/jromp/pull/82)
+
 ## Version [1.2.0](https://github.com/java-romp/jromp/releases/tag/1.2.0) (2024-09-27)
 
 [1.1.1...1.2.0](https://github.com/java-romp/jromp/compare/1.1.1...1.2.0)
