@@ -327,6 +327,21 @@ public class JROMP {
         return masked(0, task);
     }
 
+    /**
+     * Blocks the execution of the threads until all threads reach the barrier.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP barrier() {
+        Barrier barrier = new Barrier("Barrier", this.threads);
+
+        for (int i = 0; i < this.threads; i++) {
+            executor.execute(barrier::await);
+        }
+
+        return this;
+    }
+
     // Utility methods
 
     /**
