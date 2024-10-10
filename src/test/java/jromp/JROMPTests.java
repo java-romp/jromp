@@ -258,26 +258,30 @@ class JROMPTests {
 
     @Test
     void testMaskedMaster() {
-        int threads = 4;
-        int[] values = new int[threads];
-
-        JROMP.withThreads(threads)
-             .masked(vars -> values[getThreadNum()] = 1)
+        JROMP.withThreads(4)
+             .masked(vars -> assertThat(getThreadNum()).isZero())
              .join();
-
-        assertThat(values).containsExactly(1, 0, 0, 0);
     }
 
     @Test
     void testMaskedOtherThread() {
+        JROMP.withThreads(4)
+             .masked(1, vars -> assertThat(getThreadNum()).isEqualTo(1))
+             .masked(2, vars -> assertThat(getThreadNum()).isEqualTo(2))
+             .join();
+    }
+
+    @Test
+    void testMaskedTwoTeams() {
         int threads = 4;
+        int threadsPerTeam = 2;
         int[] values = new int[threads];
 
-        JROMP.withThreads(threads)
-             .masked(2, vars -> values[getThreadNum()] = 1)
+        JROMP.withThreads(threads, threadsPerTeam)
+             .masked(1, vars -> values[getThreadNum()]++)
              .join();
 
-        assertThat(values).containsExactly(0, 0, 1, 0);
+        assertThat(values).containsExactly(0, 2, 0, 0);
     }
 
     @Test
