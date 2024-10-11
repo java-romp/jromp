@@ -71,7 +71,7 @@ import static jromp.JROMP.getThreadNum;
 public class BasicUsage {
   public static void main(String[] args) {
     JROMP.allThreads()
-            .block(variables -> System.out.printf("Hello World from thread %d of %d%n", getThreadNum(),
+         .block(variables -> System.out.printf("Hello World from thread %d of %d%n", getThreadNum(),
                  variables.<Integer>get(Constants.NUM_THREADS).value()))
          .join();
   }
