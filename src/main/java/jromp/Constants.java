@@ -12,11 +12,6 @@ public final class Constants {
     }
 
     /**
-     * The name of the variable that specifies the number of threads.
-     */
-    public static final String NUM_THREADS = "numThreads";
-
-    /**
      * The maximum number of threads that can be used.
      */
     public static final int MAX_THREADS;
