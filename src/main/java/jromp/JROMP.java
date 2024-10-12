@@ -6,7 +6,6 @@ import jromp.concurrent.ThreadTeam;
 import jromp.task.ForTask;
 import jromp.task.Task;
 import jromp.var.ReductionVariable;
-import jromp.var.SharedVariable;
 import jromp.var.Variable;
 import jromp.var.Variables;
 
@@ -102,18 +101,7 @@ public class JROMP {
      */
     public JROMP withVariables(Variables variables) {
         context.variables = variables;
-        addNumThreadsToVariables(variables);
-
         return this;
-    }
-
-    /**
-     * Add the number of threads to the variables.
-     *
-     * @param variables The variables to add the number of threads to.
-     */
-    private void addNumThreadsToVariables(Variables variables) {
-        variables.add(Constants.NUM_THREADS, new SharedVariable<>(context.threads));
     }
 
     /**
@@ -383,6 +371,25 @@ public class JROMP {
         }
 
         return null;
+    }
+
+    /**
+     * Get the number of threads used in the current parallel block. If not in a parallel context,
+     * the number of threads is 1.
+     *
+     * @return The number of threads.
+     */
+    public static int getNumThreads() {
+        return isInParallelContext() ? context.threads : 1;
+    }
+
+    /**
+     * Check if the current thread is in a parallel context.
+     *
+     * @return <code>true</code> if the thread is in a parallel context, <code>false</code> otherwise.
+     */
+    private static boolean isInParallelContext() {
+        return getThreadTeam() != null;
     }
 
     /**
