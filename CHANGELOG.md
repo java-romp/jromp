@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## Version [2.0.1](https://github.com/java-romp/jromp/releases/tag/2.0.1) (2024-10-12)
+
+[2.0.0...2.0.1](https://github.com/java-romp/jromp/compare/2.0.0...2.0.1)
+
+### ✨ Features
+
+* implemented a new function to get the number of threads in the current parallel region in [#85](https://github.com/java-romp/jromp/pull/85)
+
 ## Version [2.0.0](https://github.com/java-romp/jromp/releases/tag/2.0.0) (2024-10-10)
 
 [1.2.0...2.0.0](https://github.com/java-romp/jromp/compare/1.2.0...2.0.0)
