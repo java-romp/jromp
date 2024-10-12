@@ -5,6 +5,7 @@ import jromp.var.PrivateVariable;
 import jromp.var.Variables;
 import org.junit.jupiter.api.Test;
 
+import static jromp.JROMP.getNumThreads;
 import static jromp.JROMP.getThreadNum;
 import static jromp.JROMP.getThreadTeam;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -158,9 +159,8 @@ class JROMPTests {
         JROMP.withThreads(threads)
              .block(vars -> {
                  assertThat(vars).isNotNull();
-                 assertThat(vars.isEmpty()).isFalse();
-                 assertThat(vars.size()).isEqualTo(1);
-                 assertThat(vars.get(Constants.NUM_THREADS).value()).isEqualTo(threads);
+                 assertThat(vars.isEmpty()).isTrue();
+                 assertThat(vars.size()).isZero();
 
                  for (int i = 0; i < iterations; i++) {
                      countsPerThread[getThreadNum()]++;
@@ -183,6 +183,7 @@ class JROMPTests {
              .block(vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
+                 assertThat(vars.size()).isEqualTo(1);
 
                  for (int i = 0; i < iterations; i++) {
                      countsPerThread[getThreadNum()]++;
@@ -218,8 +219,7 @@ class JROMPTests {
              .singleBlock(false, vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
-                 assertThat(vars.size()).isEqualTo(2);
-                 assertThat(vars.get(Constants.NUM_THREADS).value()).isEqualTo(threads);
+                 assertThat(vars.size()).isEqualTo(1);
 
                  int tid = getThreadNum();
                  singleBlockExecuted[tid] = true;
@@ -316,5 +316,16 @@ class JROMPTests {
              .join();
 
         assertThat(getThreadTeam()).isNull();
+    }
+
+    @Test
+    void testGetNumThreads() {
+        assertThat(getNumThreads()).isEqualTo(1);
+
+        JROMP.withThreads(4, 2)
+             .block(vars -> assertThat(getNumThreads()).isEqualTo(4))
+             .join();
+
+        assertThat(getNumThreads()).isEqualTo(1);
     }
 }
