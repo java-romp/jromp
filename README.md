@@ -63,7 +63,6 @@ the [Maven Central Repository](https://central.sonatype.com/artifact/io.github.j
 Here is an example of how to use JROMP to execute a simple parallel task in all available threads:
 
 ```java
-import jromp.Constants;
 import jromp.JROMP;
 
 import static jromp.JROMP.getNumThreads;
