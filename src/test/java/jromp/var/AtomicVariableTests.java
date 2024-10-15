@@ -85,7 +85,7 @@ class AtomicVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block(variables -> {
+             .parallel(variables -> {
                  for (int i = 0; i < 2; i++) {
                      Variable<Integer> sum = variables.get("sum");
 

@@ -15,7 +15,7 @@ class AtomicTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block(vars -> {
+             .parallel(vars -> {
                  Integer value = Atomic.read("x", vars);
 
                  assertThat(((SharedVariable<Integer>) variables.<Integer>get("x")).hasAtomic()).isTrue();
@@ -33,7 +33,7 @@ class AtomicTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block(vars -> {
+             .parallel(vars -> {
                  Atomic.write("x", 1, vars);
 
                  // Only the atomic variable should be updated here
@@ -54,7 +54,7 @@ class AtomicTests {
 
         JROMP.withThreads(4)
              .withVariables(variables)
-             .block(vars -> {
+             .parallel(vars -> {
                  Atomic.update("x", Operations.add(1), vars);
 
                  // Only the atomic variable should be updated here

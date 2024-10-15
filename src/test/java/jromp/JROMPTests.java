@@ -151,13 +151,13 @@ class JROMPTests {
     }
 
     @Test
-    void testParallelBlockWithDefaultVariables() {
+    void testParallelWithDefaultVariables() {
         int threads = 4;
         int iterations = 1000;
         int[] countsPerThread = new int[threads];
 
         JROMP.withThreads(threads)
-             .block(vars -> {
+             .parallel(vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isTrue();
                  assertThat(vars.size()).isZero();
@@ -172,7 +172,7 @@ class JROMPTests {
     }
 
     @Test
-    void testParallelBlockWithVariables() {
+    void testParallelWithVariables() {
         int threads = 4;
         int iterations = 1000;
         int[] countsPerThread = new int[threads];
@@ -180,7 +180,7 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .withVariables(variables)
-             .block(vars -> {
+             .parallel(vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
                  assertThat(vars.size()).isEqualTo(1);
@@ -199,7 +199,7 @@ class JROMPTests {
         String[] result = new String[Constants.MAX_THREADS];
 
         JROMP.allThreads()
-             .block(vars -> result[getThreadNum()] = "Hello, world!")
+             .parallel(vars -> result[getThreadNum()] = "Hello, world!")
              .join();
 
         assertThat(result).containsOnly("Hello, world!");
@@ -250,9 +250,9 @@ class JROMPTests {
         int[] value = new int[1];
 
         JROMP.withThreads(threads)
-             .block(vars -> assertThat(value[0]).isZero())
+             .parallel(vars -> assertThat(value[0]).isZero())
              .singleBlock(false, vars -> value[0] = 1)
-             .block(vars -> assertThat(value[0]).isOne())
+             .parallel(vars -> assertThat(value[0]).isOne())
              .join();
     }
 
@@ -312,7 +312,7 @@ class JROMPTests {
         assertThat(getThreadTeam()).isNull();
 
         JROMP.withThreads(4, 2)
-             .block(vars -> assertThat(getThreadTeam()).isNotNull())
+             .parallel(vars -> assertThat(getThreadTeam()).isNotNull())
              .join();
 
         assertThat(getThreadTeam()).isNull();
@@ -323,7 +323,7 @@ class JROMPTests {
         assertThat(getNumThreads()).isEqualTo(1);
 
         JROMP.withThreads(4, 2)
-             .block(vars -> assertThat(getNumThreads()).isEqualTo(4))
+             .parallel(vars -> assertThat(getNumThreads()).isEqualTo(4))
              .join();
 
         assertThat(getNumThreads()).isEqualTo(1);
