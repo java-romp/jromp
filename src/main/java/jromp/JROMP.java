@@ -134,7 +134,7 @@ public class JROMP {
      *
      * @return The parallel runtime.
      */
-    public JROMP block(Task task) {
+    public JROMP parallel(Task task) {
         for (int i = 0; i < context.threads; i++) {
             final Variables finalVariables = context.variables.copy();
             this.variablesList.add(finalVariables);

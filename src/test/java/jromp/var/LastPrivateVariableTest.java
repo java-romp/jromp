@@ -95,7 +95,7 @@ class LastPrivateVariableTest {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block(variables -> {
+             .parallel(variables -> {
                  Variable<Integer> sum = variables.get("sum");
                  assertThat(sum.value()).isZero();
 

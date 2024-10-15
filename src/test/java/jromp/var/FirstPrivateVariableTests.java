@@ -93,7 +93,7 @@ class FirstPrivateVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block(variables -> {
+             .parallel(variables -> {
                  for (int i = 0; i < 20; i++) {
                      Variable<Integer> sum = variables.get("sum");
                      sum.update(old -> old + 1);
@@ -113,7 +113,7 @@ class FirstPrivateVariableTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .block(variables -> {
+             .parallel(variables -> {
                  assertThat(variables.<Integer>get("sum").value()).isEqualTo(15);
 
                  for (int i = 0; i < 20; i++) {
