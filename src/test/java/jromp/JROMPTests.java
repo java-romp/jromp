@@ -216,7 +216,7 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .withVariables(variables)
-             .singleBlock(false, vars -> {
+             .single(false, vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
                  assertThat(vars.size()).isEqualTo(1);
@@ -251,7 +251,7 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .parallel(vars -> assertThat(value[0]).isZero())
-             .singleBlock(false, vars -> value[0] = 1)
+             .single(false, vars -> value[0] = 1)
              .parallel(vars -> assertThat(value[0]).isOne())
              .join();
     }
