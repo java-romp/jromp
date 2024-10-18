@@ -65,7 +65,7 @@ class JROMPTests {
         int[] countsPerThread = new int[threads];
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, false, (start, end, vars) -> {
+             .parallelFor(0, iterations, (start, end, vars) -> {
                  assertThat(vars).isNotNull();
 
                  for (int i = start; i < end; i++) {
@@ -83,7 +83,6 @@ class JROMPTests {
 
         JROMP.withThreads(4)
              .sections(
-                     false,
                      vars -> result[getThreadNum()] = 1,
                      vars -> result[getThreadNum()] = 2,
                      vars -> result[getThreadNum()] = 3,
@@ -101,7 +100,6 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .sections(
-                     false,
                      vars -> result[getThreadNum()] = 1,
                      vars -> result[getThreadNum()] = 2,
                      vars -> result[getThreadNum()] = 3
@@ -118,7 +116,6 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .sections(
-                     false,
                      vars -> result[getThreadNum()] = 1,
                      vars -> result[getThreadNum()] = 2,
                      vars -> result[getThreadNum()] = 3,
@@ -138,7 +135,6 @@ class JROMPTests {
         JROMP.withThreads(threads)
              .withVariables(variables)
              .sections(
-                     false,
                      vars -> vars.<Integer>get("num").update(n -> n + 1),
                      vars -> vars.<Integer>get("num").update(n -> n + 1),
                      vars -> vars.<Integer>get("num").update(n -> n + 1),
@@ -216,7 +212,7 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .withVariables(variables)
-             .single(false, vars -> {
+             .single(vars -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isFalse();
                  assertThat(vars.size()).isEqualTo(1);
@@ -251,7 +247,7 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .parallel(vars -> assertThat(value[0]).isZero())
-             .single(false, vars -> value[0] = 1)
+             .single(vars -> value[0] = 1)
              .parallel(vars -> assertThat(value[0]).isOne())
              .join();
     }

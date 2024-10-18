@@ -185,6 +185,20 @@ public class JROMP {
     }
 
     /**
+     * Executes a for loop in parallel with the given start and end indices, using
+     * a task implementation.
+     *
+     * @param start The start index of the for loop.
+     * @param end   The end index of the for loop.
+     * @param task  The task to be executed in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP parallelFor(int start, int end, ForTask task) {
+        return parallelFor(start, end, false, task);
+    }
+
+    /**
      * Executes the given tasks in separate sections with the given variables.
      *
      * @param nowait    Whether to wait for the threads to finish.
@@ -237,6 +251,17 @@ public class JROMP {
     /**
      * Executes the given tasks in separate sections.
      *
+     * @param tasks The tasks to run in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP sections(Task... tasks) {
+        return sections(false, tasks);
+    }
+
+    /**
+     * Executes the given tasks in separate sections.
+     *
      * @param nowait Whether to wait for the threads to finish.
      * @param tasks  The tasks to run in parallel.
      *
@@ -244,6 +269,17 @@ public class JROMP {
      */
     public JROMP sections(boolean nowait, List<Task> tasks) {
         return sections(nowait, tasks.toArray(Task[]::new));
+    }
+
+    /**
+     * Executes the given tasks in separate sections.
+     *
+     * @param tasks The tasks to run in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP sections(List<Task> tasks) {
+        return sections(false, tasks);
     }
 
     /**
@@ -274,6 +310,17 @@ public class JROMP {
         }
 
         return this;
+    }
+
+    /**
+     * Submits a block that can only be executed by a single thread.
+     *
+     * @param task The task to run in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP single(Task task) {
+        return single(false, task);
     }
 
     /**

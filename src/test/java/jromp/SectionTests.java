@@ -31,7 +31,7 @@ class SectionTests {
                                   .add("counter4", counters.get(3));
         JROMP.withThreads(4)
              .withVariables(vars)
-             .sections(false, tasks)
+             .sections(tasks)
              .join();
 
         assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4);
@@ -65,7 +65,7 @@ class SectionTests {
 
         JROMP.withThreads(4)
              .withVariables(vars)
-             .sections(false, tasks)
+             .sections(tasks)
              .join();
 
         assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4, 10);

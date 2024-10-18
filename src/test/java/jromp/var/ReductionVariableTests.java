@@ -17,7 +17,7 @@ class ReductionVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      Variable<Integer> insideSum = variables.get("sum");
                      insideSum.update(old -> old + 1);
@@ -38,7 +38,7 @@ class ReductionVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, n, false, (start, end, variables) -> {
+             .parallelFor(0, n, (start, end, variables) -> {
                  double x, sum = 0.0;
 
                  for (int i = start; i < end; i++) {
