@@ -292,7 +292,7 @@ public class JROMP {
      */
     public JROMP single(boolean nowait, Task task) {
         AtomicBoolean executed = new AtomicBoolean(false);
-        Barrier barrier = new Barrier("SingleBlock", context.threads);
+        Barrier barrier = new Barrier("Single", context.threads);
         barrier.setNowait(nowait);
 
         for (int i = 0; i < context.threads; i++) {
