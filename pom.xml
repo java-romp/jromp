@@ -4,7 +4,7 @@
 
   <groupId>io.github.java-romp</groupId>
   <artifactId>jromp</artifactId>
-  <version>2.1.1-SNAPSHOT</version>
+  <version>2.2.0</version>
 
   <name>jromp</name>
   <description>Java Runtime implementation of OpenMP.</description>
@@ -44,7 +44,7 @@
     <url>https://github.com/java-romp/jromp</url>
     <connection>scm:git:https://github.com/java-romp/jromp.git</connection>
     <developerConnection>scm:git:https://github.com/java-romp/jromp.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>2.2.0</tag>
   </scm>
 
   <issueManagement>
