@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## Version [2.2.0](https://github.com/java-romp/jromp/releases/tag/2.2.0) (2024-10-16)
+
+[2.1.0...2.2.0](https://github.com/java-romp/jromp/compare/2.1.0...2.2.0)
+
+### ⚠️ Breaking Changes
+
+* renamed `singleBlock` to `single` in [#91](https://github.com/java-romp/jromp/pull/91)
+
+> [!IMPORTANT]
+> I don't want to publish new major versions for every small change (otherwise I will end up with a version
+> like 100.0.0), so this issue is included in a minor version.
+
 ## Version [2.1.0](https://github.com/java-romp/jromp/releases/tag/2.1.0) (2024-10-16)
 
 [2.0.1...2.1.0](https://github.com/java-romp/jromp/compare/2.0.1...2.1.0)
