@@ -16,7 +16,7 @@ class AtomicVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      Variable<Integer> insideSum = variables.get("sum");
                      insideSum.update(old -> old + 1);
@@ -39,7 +39,7 @@ class AtomicVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      outsideSum.update(old -> old + 1);
                      countsPerThread[getThreadNum()]++;
@@ -59,7 +59,7 @@ class AtomicVariableTests {
 
         JROMP.withThreads(threads)
              .withVariables(vars)
-             .parallelFor(0, iterations, false, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end, variables) -> {
                  for (int i = start; i < end; i++) {
                      Variable<Integer> sum = variables.get("sum");
                      sum.set(1);
