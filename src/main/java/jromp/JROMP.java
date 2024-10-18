@@ -254,7 +254,7 @@ public class JROMP {
      *
      * @return The parallel runtime.
      */
-    public JROMP singleBlock(boolean nowait, Task task) {
+    public JROMP single(boolean nowait, Task task) {
         AtomicBoolean executed = new AtomicBoolean(false);
         Barrier barrier = new Barrier("SingleBlock", context.threads);
         barrier.setNowait(nowait);
