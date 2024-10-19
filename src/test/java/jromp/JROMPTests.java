@@ -29,7 +29,9 @@ class JROMPTests {
     @Test
     void testWithThreadsTooMany() {
         int availableProcessors = Constants.MAX_THREADS;
-        assertThat(JROMP.withThreads(availableProcessors + 10)).isNotNull();
+        assertThatThrownBy(() -> JROMP.withThreads(availableProcessors + 10))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Number of threads must be less than or equal to " + availableProcessors + ".");
     }
 
     @Test
