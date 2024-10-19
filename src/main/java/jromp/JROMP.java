@@ -43,8 +43,12 @@ public class JROMP {
      * @param threadsPerTeam The number of threads per team.
      */
     private JROMP(int threads, int threadsPerTeam) {
-        context.threads = threads;
-        this.executor = new JrompExecutorWrapper(threads, JrompThread.newThreadFactory(threadsPerTeam));
+        context.threads = checkThreads(threads);
+        context.threadsPerTeam = checkThreadsPerTeam(context.threads, threadsPerTeam);
+        this.executor = new JrompExecutorWrapper(
+                context.threads,
+                JrompThread.newThreadFactory(context.threadsPerTeam)
+        );
 
         withVariables(Variables.create());
     }
@@ -66,7 +70,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public static JROMP withThreads(int threads) {
-        return new JROMP(checkThreads(threads), threads);
+        return new JROMP(threads, threads);
     }
 
     /**
@@ -78,7 +82,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public static JROMP withThreads(int threads, int threadsPerTeam) {
-        return new JROMP(checkThreads(threads), checkThreadsPerTeam(threads, threadsPerTeam));
+        return new JROMP(threads, threadsPerTeam);
     }
 
     /**
@@ -431,6 +435,16 @@ public class JROMP {
     }
 
     /**
+     * Get the number of threads per team used in the current parallel block. If not in a parallel context,
+     * the number of threads per team is 1.
+     *
+     * @return The number of threads per team.
+     */
+    public static int getNumThreadsPerTeam() {
+        return isInParallelContext() ? context.threadsPerTeam : 1;
+    }
+
+    /**
      * Check if the current thread is in a parallel context.
      *
      * @return <code>true</code> if the thread is in a parallel context, <code>false</code> otherwise.
@@ -448,6 +462,11 @@ public class JROMP {
          * The number of threads used in the current parallel block.
          */
         private int threads;
+
+        /**
+         * The number of threads per team used in the current parallel block.
+         */
+        private int threadsPerTeam;
 
         /**
          * The variables used in the current parallel block.

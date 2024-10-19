@@ -17,31 +17,56 @@ public final class Utils {
      * @param threads The number of threads.
      *
      * @return The number of threads.
+     *
+     * @throws IllegalArgumentException if the number of threads is less than 1 or greater
+     *                                  than the maximum number of threads.
      */
     static int checkThreads(int threads) {
         if (threads < Constants.MIN_THREADS) {
             throw new IllegalArgumentException("Number of threads must be greater than 0.");
         }
 
-        return Math.min(threads, Constants.MAX_THREADS);
+        if (threads > Constants.MAX_THREADS) {
+            throw new IllegalArgumentException(
+                    "Number of threads must be less than or equal to " + Constants.MAX_THREADS + ".");
+        }
+
+        return threads;
     }
 
+    /**
+     * Check the number of threads per team.
+     *
+     * @param threads        The number of threads.
+     * @param threadsPerTeam The number of threads per team.
+     *
+     * @return The number of threads per team.
+     *
+     * @throws IllegalArgumentException if <code>threadsPerTeam</code> is less than 1, greater
+     *                                  than the number of threads, or the number of threads is not
+     *                                  divisible by <code>threadsPerTeam</code>.
+     */
     static int checkThreadsPerTeam(int threads, int threadsPerTeam) {
         if (threadsPerTeam < Constants.MIN_THREADS) {
             throw new IllegalArgumentException("Number of threads per team must be greater than 0.");
         }
 
         if (threads < threadsPerTeam) {
-            throw new IllegalArgumentException("Number of threads per team must be less than or equal to the number of threads.");
+            throw new IllegalArgumentException(
+                    "Number of threads per team must be less than or equal to the number of threads.");
         }
 
         if (threads % threadsPerTeam != 0) {
-            throw new IllegalArgumentException("Number of threads must be divisible by the number of threads per team.");
+            throw new IllegalArgumentException(
+                    "Number of threads must be divisible by the number of threads per team.");
         }
 
         return threadsPerTeam;
     }
 
+    /**
+     * Utility class for number conversions.
+     */
     public static class NumberUtils {
         private NumberUtils() {
         }

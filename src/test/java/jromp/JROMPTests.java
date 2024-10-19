@@ -6,6 +6,7 @@ import jromp.var.Variables;
 import org.junit.jupiter.api.Test;
 
 import static jromp.JROMP.getNumThreads;
+import static jromp.JROMP.getNumThreadsPerTeam;
 import static jromp.JROMP.getThreadNum;
 import static jromp.JROMP.getThreadTeam;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,9 @@ class JROMPTests {
     @Test
     void testWithThreadsTooMany() {
         int availableProcessors = Constants.MAX_THREADS;
-        assertThat(JROMP.withThreads(availableProcessors + 10)).isNotNull();
+        assertThatThrownBy(() -> JROMP.withThreads(availableProcessors + 10))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Number of threads must be less than or equal to " + availableProcessors + ".");
     }
 
     @Test
@@ -323,5 +326,16 @@ class JROMPTests {
              .join();
 
         assertThat(getNumThreads()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetNumThreadsPerTeam() {
+        assertThat(getNumThreadsPerTeam()).isEqualTo(1);
+
+        JROMP.withThreads(4, 2)
+             .parallel(vars -> assertThat(getNumThreadsPerTeam()).isEqualTo(2))
+             .join();
+
+        assertThat(getNumThreadsPerTeam()).isEqualTo(1);
     }
 }
