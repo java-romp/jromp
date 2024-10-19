@@ -71,6 +71,28 @@ public class Operations {
     }
 
     /**
+     * Creates a logical AND operation.
+     *
+     * @param value the value to AND.
+     *
+     * @return the logical AND operation.
+     */
+    public static Operation<Boolean> logicalAnd(Boolean value) {
+        return new LogicalAndOperation(value);
+    }
+
+    /**
+     * Creates a logical OR operation.
+     *
+     * @param value the value to OR.
+     *
+     * @return the logical OR operation.
+     */
+    public static Operation<Boolean> logicalOr(Boolean value) {
+        return new LogicalOrOperation(value);
+    }
+
+    /**
      * Creates a bitwise AND operation.
      *
      * @param value the value to AND.
