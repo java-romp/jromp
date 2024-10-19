@@ -70,6 +70,30 @@ class AllOperationsTests {
     }
 
     @Test
+    void testLogicalAnd() {
+        Variables variables = Variables.create().add("x", new SharedVariable<>(true));
+
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .parallel(vars -> Atomic.update("x", Operations.logicalAnd(false), vars))
+             .join();
+
+        assertThat(variables.<Boolean>get("x").value()).isFalse();
+    }
+
+    @Test
+    void testLogicalOr() {
+        Variables variables = Variables.create().add("x", new SharedVariable<>(false));
+
+        JROMP.withThreads(4)
+             .withVariables(variables)
+             .parallel(vars -> Atomic.update("x", Operations.logicalOr(true), vars))
+             .join();
+
+        assertThat(variables.<Boolean>get("x").value()).isTrue();
+    }
+
+    @Test
     void testBitwiseAnd() {
         Variables variables = Variables.create().add("x", new SharedVariable<>(10));
 
