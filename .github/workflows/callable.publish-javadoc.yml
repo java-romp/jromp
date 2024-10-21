@@ -33,7 +33,7 @@ jobs:
 
       - name: zip javadoc folder
         run: |
-          cd target/site/apidocs
+          cd target/reports/apidocs
           zip -r ../../../javadoc.zip .
 
       - name: Upload artifact
