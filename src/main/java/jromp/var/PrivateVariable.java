@@ -15,7 +15,7 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
     /**
      * The value of the variable.
      */
-    private T value;
+    private final transient ThreadLocal<T> value;
 
     /**
      * Constructs a new private variable with the given value.
@@ -23,38 +23,39 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
      * @param value the value of the variable.
      */
     public PrivateVariable(T value) {
-        this.value = value;
+        this.value = ThreadLocal.withInitial(() -> value);
     }
 
     @Override
     public T value() {
-        return this.value;
+        return this.value.get();
     }
 
     @Override
     public void set(T value) {
-        this.value = value;
+        this.value.set(value);
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        this.value = operator.apply(this.value);
+        this.value.set(operator.apply(this.value.get()));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public PrivateVariable<T> copy() {
+        // Todo: revise if this functionality is needed
         T defaultValue = (T) InitialValues.getInitialValue(value.getClass());
         return new PrivateVariable<>(SerializationUtils.clone(defaultValue));
     }
 
     @Override
     public void end() {
-        // Do nothing
+        this.value.remove();
     }
 
     @Override
     public String toString() {
-        return "PrivateVariable{value=%s}".formatted(value);
+        return "PrivateVariable{value=%s}".formatted(this.value.get());
     }
 }

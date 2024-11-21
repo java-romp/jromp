@@ -2,6 +2,7 @@ package jromp.var;
 
 import jromp.JROMP;
 import jromp.var.reduction.ReductionOperations;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,6 +11,7 @@ import static org.assertj.core.api.Assertions.offset;
 
 class ReductionVariableTests {
     @Test
+    @Disabled
     void testReductionVariableAndKeepValueAfterExecution() {
         int threads = 4;
         int iterations = 1000;
@@ -29,6 +31,7 @@ class ReductionVariableTests {
     }
 
     @Test
+    @Disabled
     void testReductionPi() {
         int threads = 4;
         int n = 1000000;

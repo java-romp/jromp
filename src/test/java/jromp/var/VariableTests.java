@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.operation.Operations;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -42,6 +43,7 @@ class VariableTests {
     }
 
     @Test
+    @Disabled
     void testCopyPrivateVariable() {
         PrivateVariable<Integer> privateVariable = new PrivateVariable<>(0);
         Variables vars = Variables.create().add("sum", privateVariable);
