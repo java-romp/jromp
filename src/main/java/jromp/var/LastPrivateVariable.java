@@ -16,7 +16,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     /**
      * The value of the variable.
      */
-    private T value;
+    private final transient ThreadLocal<T> value;
 
     /**
      * The last value set.
@@ -32,8 +32,8 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
      * Constructs a new private variable with the default value.
      */
     public LastPrivateVariable(T value) {
-        this.value = value;
-        this.lastValue = this.value;
+        this.value = ThreadLocal.withInitial(() -> value);
+        this.lastValue = value;
     }
 
     @Override
@@ -43,24 +43,25 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 
     @Override
     public void set(T value) {
-        this.value = value;
+        this.value.set(value);
         this.lastValue = value;
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        this.value = operator.apply(this.value);
-        this.lastValue = this.value;
+        this.value.set(operator.apply(this.value.get()));
+        this.lastValue = this.value.get();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Variable<T> copy() {
+        // Todo: revise if this functionality is needed
         T defaultValue = (T) InitialValues.getInitialValue(value.getClass());
         LastPrivateVariable<T> lastPrivateVariable = new LastPrivateVariable<>(SerializationUtils.clone(defaultValue));
 
         lastPrivateVariable.endCallback = val -> {
-            this.value = val;
+            this.value.set(val);
             this.lastValue = val;
         };
 
@@ -69,15 +70,15 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 
     @Override
     public void end() {
-        this.value = this.lastValue;
-
         if (this.endCallback != null) {
-            this.endCallback.accept(this.value);
+            this.endCallback.accept(this.lastValue);
         }
+
+        this.value.remove();
     }
 
     @Override
     public String toString() {
-        return "LastPrivateVariable{value=%s, lastValue=%s}".formatted(this.value, this.lastValue);
+        return "LastPrivateVariable{value=%s, lastValue=%s}".formatted(this.value.get(), this.lastValue);
     }
 }

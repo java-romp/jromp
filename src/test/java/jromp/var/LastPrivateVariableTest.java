@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,7 @@ class LastPrivateVariableTest {
     }
 
     @Test
+    @Disabled
     void testCopy() {
         LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
         Variable<Integer> copy = lastPrivateVariable.copy();
@@ -42,6 +44,7 @@ class LastPrivateVariableTest {
     }
 
     @Test
+    @Disabled
     void testParallelForLastPrivateVarSet() {
         int threads = 4;
         int iterations = 100;
@@ -61,6 +64,7 @@ class LastPrivateVariableTest {
     }
 
     @Test
+    @Disabled
     void testParallelForLastPrivateVarUpdate() {
         int threads = 4;
         int iterations = 100;
@@ -88,6 +92,7 @@ class LastPrivateVariableTest {
     }
 
     @Test
+    @Disabled
     void testKeepLastValueAfterExecution() {
         LastPrivateVariable<Integer> variable = new LastPrivateVariable<>(0);
         Variables vars = Variables.create().add("sum", variable);

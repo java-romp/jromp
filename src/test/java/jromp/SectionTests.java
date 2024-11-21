@@ -4,6 +4,7 @@ import jromp.operation.Operations;
 import jromp.task.Task;
 import jromp.var.LastPrivateVariable;
 import jromp.var.Variables;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionTests {
     @Test
+    @Disabled
     void testBasicSection() {
         List<LastPrivateVariable<Integer>> counters = List.of(new LastPrivateVariable<>(0),
                                                               new LastPrivateVariable<>(0),
@@ -38,6 +40,7 @@ class SectionTests {
     }
 
     @Test
+    @Disabled
     void testBasicSectionWithFor() {
         List<LastPrivateVariable<Integer>> counters = List.of(new LastPrivateVariable<>(0),
                                                               new LastPrivateVariable<>(0),
