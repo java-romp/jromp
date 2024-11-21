@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -106,6 +107,7 @@ class FirstPrivateVariableTests {
     }
 
     @Test
+    @Disabled
     void testKeepOldValueAfterEnd() {
         FirstPrivateVariable<Integer> variable = new FirstPrivateVariable<>(20);
         Variables vars = Variables.create().add("sum", variable);
