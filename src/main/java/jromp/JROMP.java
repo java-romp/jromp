@@ -23,7 +23,7 @@ public class JROMP {
     /**
      * The context for the current parallel block.
      */
-    private static final Context context = new Context();
+    private static final Context context = Context.getInstance();
 
     /**
      * The thread executor used to execute the tasks.
@@ -43,11 +43,11 @@ public class JROMP {
      * @param threadsPerTeam The number of threads per team.
      */
     private JROMP(int threads, int threadsPerTeam) {
-        context.threads = checkThreads(threads);
-        context.threadsPerTeam = checkThreadsPerTeam(context.threads, threadsPerTeam);
+        context.setThreads(checkThreads(threads));
+        context.setThreadsPerTeam(checkThreadsPerTeam(context.getThreads(), threadsPerTeam));
         this.executor = new JrompExecutorWrapper(
-                context.threads,
-                JrompThread.newThreadFactory(context.threadsPerTeam)
+                context.getThreads(),
+                JrompThread.newThreadFactory(context.getThreadsPerTeam())
         );
 
         withVariables(Variables.create());
@@ -104,7 +104,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP withVariables(Variables variables) {
-        context.variables = variables;
+        context.setVariables(variables);
         return this;
     }
 
@@ -118,7 +118,7 @@ public class JROMP {
             waitForFinish();
         }
 
-        variablesList.add(context.variables);
+        variablesList.add(context.getVariables());
 
         // Perform the last operation on all variables.
         for (Variables vars : variablesList) {
@@ -139,8 +139,8 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP parallel(Task task) {
-        for (int i = 0; i < context.threads; i++) {
-            final Variables finalVariables = context.variables.copy();
+        for (int i = 0; i < context.getThreads(); i++) {
+            final Variables finalVariables = context.getVariables().copy();
             this.variablesList.add(finalVariables);
 
             executor.execute(() -> task.run(finalVariables));
@@ -161,23 +161,23 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP parallelFor(int start, int end, boolean nowait, ForTask task) {
-        Barrier barrier = new Barrier("ParallelFor", context.threads);
+        Barrier barrier = new Barrier("ParallelFor", context.getThreads());
         barrier.setNowait(nowait);
 
-        for (int i = 0; i < context.threads; i++) {
+        for (int i = 0; i < context.getThreads(); i++) {
             // Calculate the start and end indices for the current thread.
-            int chunkSize = (end - start) / context.threads;
+            int chunkSize = (end - start) / context.getThreads();
             int chunkStart = start + i * chunkSize;
             int chunkEnd;
 
             // If this is the last thread, make sure to include the remaining elements.
-            if (i == context.threads - 1) {
+            if (i == context.getThreads() - 1) {
                 chunkEnd = end;
             } else {
                 chunkEnd = chunkStart + chunkSize;
             }
 
-            final Variables finalVariables = context.variables.copy();
+            final Variables finalVariables = context.getVariables().copy();
             this.variablesList.add(finalVariables);
             executor.execute(() -> {
                 task.run(chunkStart, chunkEnd, finalVariables);
@@ -212,7 +212,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     private JROMP sections(boolean nowait, Variables variables, Task... tasks) {
-        if (tasks.length <= context.threads) {
+        if (tasks.length <= context.getThreads()) {
             Barrier barrier = new Barrier("Sections", tasks.length);
             barrier.setNowait(nowait);
 
@@ -224,8 +224,8 @@ public class JROMP {
             }
         } else {
             // If there are more sections than threads, submit the tasks in batches of threads.
-            for (int i = 0; i < tasks.length; i += context.threads) {
-                int end = Math.min(i + context.threads, tasks.length);
+            for (int i = 0; i < tasks.length; i += context.getThreads()) {
+                int end = Math.min(i + context.getThreads(), tasks.length);
                 int batchSize = end - i;
                 Task[] batch = new Task[batchSize];
 
@@ -246,7 +246,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP sections(boolean nowait, Task... tasks) {
-        Variables vars = context.variables.copy();
+        Variables vars = context.getVariables().copy();
         this.variablesList.add(vars);
 
         return sections(nowait, vars, tasks);
@@ -296,16 +296,16 @@ public class JROMP {
      */
     public JROMP single(boolean nowait, Task task) {
         AtomicBoolean executed = new AtomicBoolean(false);
-        Barrier barrier = new Barrier("Single", context.threads);
+        Barrier barrier = new Barrier("Single", context.getThreads());
         barrier.setNowait(nowait);
 
-        for (int i = 0; i < context.threads; i++) {
-            this.variablesList.add(context.variables);
+        for (int i = 0; i < context.getThreads(); i++) {
+            this.variablesList.add(context.getVariables());
 
             executor.execute(() -> {
                 if (executed.compareAndSet(false, true)) {
                     // Only execute the task once.
-                    task.run(context.variables);
+                    task.run(context.getVariables());
                 }
                 // Other threads will pass through without executing the task.
 
@@ -336,8 +336,8 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP masked(int filter, Task task) {
-        for (int i = 0; i < context.threads; i++) {
-            final Variables finalVariables = context.variables.copy();
+        for (int i = 0; i < context.getThreads(); i++) {
+            final Variables finalVariables = context.getVariables().copy();
             this.variablesList.add(finalVariables);
 
             executor.execute(() -> {
@@ -367,9 +367,9 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP barrier() {
-        Barrier barrier = new Barrier("Barrier", context.threads);
+        Barrier barrier = new Barrier("Barrier", context.getThreads());
 
-        for (int i = 0; i < context.threads; i++) {
+        for (int i = 0; i < context.getThreads(); i++) {
             executor.execute(barrier::await);
         }
 
@@ -431,7 +431,7 @@ public class JROMP {
      * @return The number of threads.
      */
     public static int getNumThreads() {
-        return isInParallelContext() ? context.threads : 1;
+        return isInParallelContext() ? context.getThreads() : 1;
     }
 
     /**
@@ -441,7 +441,7 @@ public class JROMP {
      * @return The number of threads per team.
      */
     public static int getNumThreadsPerTeam() {
-        return isInParallelContext() ? context.threadsPerTeam : 1;
+        return isInParallelContext() ? context.getThreadsPerTeam() : 1;
     }
 
     /**
@@ -451,26 +451,5 @@ public class JROMP {
      */
     private static boolean isInParallelContext() {
         return getThreadTeam() != null;
-    }
-
-    /**
-     * The context for the current parallel block. This class is used to store several properties
-     * that has a parallel block.
-     */
-    private static class Context {
-        /**
-         * The number of threads used in the current parallel block.
-         */
-        private int threads;
-
-        /**
-         * The number of threads per team used in the current parallel block.
-         */
-        private int threadsPerTeam;
-
-        /**
-         * The variables used in the current parallel block.
-         */
-        private Variables variables;
     }
 }
