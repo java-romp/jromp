@@ -34,6 +34,7 @@ public class JROMP {
      * The list of variables used in all blocks to perform the
      * {@link Variable#end()} operation when joining the threads.
      */
+    @Deprecated
     private final List<Variables> variablesList = new ArrayList<>();
 
     /**
@@ -103,6 +104,7 @@ public class JROMP {
      *
      * @return The parallel runtime.
      */
+    @Deprecated
     public JROMP withVariables(Variables variables) {
         context.variables = variables;
         return this;

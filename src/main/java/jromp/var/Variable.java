@@ -48,6 +48,7 @@ public interface Variable<T extends Serializable> extends Serializable {
      *
      * @return a copy of the variable.
      */
+    @Deprecated
     Variable<T> copy();
 
     /**

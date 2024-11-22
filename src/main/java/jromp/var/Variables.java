@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Represents a collection of variables.
  */
+@Deprecated
 public class Variables {
     /**
      * The map of variables.
