@@ -3,13 +3,14 @@ package jromp.var;
 import jromp.var.reduction.ReductionOperation;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
- * Represents a reduction variable that its value is reduced from private variables using a reduction operation.
+ * Represents a reduction variable that its value is reduced from "custom" thread-local
+ * variables using a reduction operation.
  *
  * @param <T> the type of the variable.
  */
@@ -26,18 +27,25 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     /**
      * The private variables that are used to reduce the result.
+     * Each thread has its own private variable. Due to this, the hashmap is not needed
+     * to be thread-safe.
      */
-    private final List<PrivateVariable<T>> privateVariables = new ArrayList<>();
+    private final Map<Thread, InternalVariable<T>> threadLocalVariables = new ConcurrentHashMap<>();
 
     /**
      * The result of the reduction operation.
      */
-    private final PrivateVariable<T> result;
+    private final InternalVariable<T> result;
 
     /**
      * Indicates whether the reduction variable has been merged.
      */
     private boolean merged = false;
+
+    /**
+     * The thread that created the reduction variable.
+     */
+    private final transient Thread creatorThread = Thread.currentThread();
 
     /**
      * Constructs a new reduction variable with the given reduction operation and initial value.
@@ -48,42 +56,45 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
     public ReductionVariable(ReductionOperation<T> operation, T initialValue) {
         this.operation = operation;
         this.initialValue = initialValue;
-        this.result = new PrivateVariable<>(initialValue);
+        this.result = new InternalVariable<>(initialValue);
     }
 
     @Override
     public T value() {
-        if (!merged) {
-            throw new IllegalStateException("ReductionVariable must be merged before getting the result.");
-        }
-
         return result.value();
     }
 
     @Override
     public void set(T value) {
-        throw new UnsupportedOperationException("ReductionVariable cannot be set.");
+        if (Thread.currentThread() == creatorThread) {
+            result.set(value); // The creator thread can set the result directly.
+        } else {
+            threadLocalVariables.computeIfAbsent(Thread.currentThread(), k -> new InternalVariable<>(value))
+                                .set(value); // Set the variable of the current thread.
+        }
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        throw new UnsupportedOperationException("ReductionVariable cannot be updated.");
+        if (Thread.currentThread() == creatorThread) {
+            result.update(operator); // The creator thread can update the result directly.
+        } else {
+            threadLocalVariables.computeIfAbsent(Thread.currentThread(), k -> new InternalVariable<>(initialValue))
+                                .update(operator); // Update the variable of the current thread.
+        }
     }
 
     @Override
     public Variable<T> copy() {
         PrivateVariable<T> variable = new PrivateVariable<>(initialValue);
         operation.initialize(variable);
-        privateVariables.add(variable);
         return variable;
     }
 
     @Override
     public void end() {
-        privateVariables.forEach(Variable::end);
-        privateVariables.clear();
-        // Do not end the result variable because it is a PrivateVariable,
-        // and it will be set to the default value of T.
+        threadLocalVariables.values().forEach(Variable::end); // It is a no-op.
+        threadLocalVariables.clear();
     }
 
     public boolean isMerged() {
@@ -96,18 +107,19 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
         }
 
         operation.initialize(result);
-        privateVariables.forEach(
-                variable -> result.update(oldResult -> operation.combine(oldResult, variable.value())));
+        threadLocalVariables.values().forEach(
+                tlVar -> result.update(oldResult -> operation.combine(oldResult, tlVar.value())));
         merged = true;
     }
 
     @Override
     public String toString() {
-        String privateVariablesString = privateVariables.stream()
-                                                        .map(PrivateVariable::toString)
-                                                        .collect(Collectors.joining("\n    "));
+        String privateVariablesString = threadLocalVariables.values()
+                                                            .stream()
+                                                            .map(InternalVariable::toString)
+                                                            .collect(Collectors.joining("\n    "));
 
-        return "ReductionVariable{%n  operation=%s,%n  initialValue=%s,%n  privateVariables=[%n    %s%n  ],%n  result=%s,%n  merged=%s}"
-                .formatted(operation, initialValue, privateVariablesString, result, merged);
+        return "ReductionVariable{%n  operation=%s,%n  initialValue=%s,%n  threadLocalVariables=[%n    %s%n  ],%n  result=%s,%n  merged=%s,%n  creatorThread=%s%n}"
+                .formatted(operation, initialValue, privateVariablesString, result, merged, creatorThread);
     }
 }
