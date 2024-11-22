@@ -24,7 +24,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     /**
      * Callback to set the value of the variable when the block ends.
      */
-    private transient Consumer<T> endCallback;
+    private final transient Consumer<T> endCallback;
 
     /**
      * Constructs a new private variable with the default value.
@@ -32,6 +32,10 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     public LastPrivateVariable(T value) {
         this.value = ThreadLocal.withInitial(() -> value);
         this.lastValue = value;
+        this.endCallback = val -> {
+            this.value.set(val);
+            this.lastValue = val;
+        };
     }
 
     @Override
@@ -53,8 +57,10 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 
     @Override
     public void end() {
+        this.value.set(this.lastValue);
+
         if (this.endCallback != null) {
-            this.endCallback.accept(this.lastValue);
+            this.endCallback.accept(this.value.get());
         }
 
         this.value.remove();
