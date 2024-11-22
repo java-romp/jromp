@@ -5,174 +5,176 @@ import jromp.construct.atomic.Atomic;
 import jromp.var.SharedVariable;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class AllOperationsTests {
     @Test
     void testAssign() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(0));
+        SharedVariable<Integer> x = new SharedVariable<>(0);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.assign(1), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.assign(1)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(1);
+        assertThat(x.value()).isEqualTo(1);
     }
 
     @Test
     void testAdd() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(0));
+        SharedVariable<Integer> x = new SharedVariable<>(0);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.add(1), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.add(1)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(4);
+        assertThat(x.value()).isEqualTo(4);
     }
 
     @Test
     void testMultiply() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(1));
+        SharedVariable<Integer> x = new SharedVariable<>(1);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.multiply(2), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.multiply(2)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(16);
+        assertThat(x.value()).isEqualTo(16);
     }
 
     @Test
     void testSubtract() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(10));
+        SharedVariable<Integer> x = new SharedVariable<>(10);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.subtract(2), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.subtract(2)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(2);
+        assertThat(x.value()).isEqualTo(2);
     }
 
     @Test
     void testDivide() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(10.0f));
+        SharedVariable<Float> x = new SharedVariable<>(10.0f);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.divide(2.0f), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.divide(2.0f)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(0.625f);
+        assertThat(x.value()).isEqualTo(0.625f);
     }
 
     @Test
     void testLogicalAnd() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(true));
+        SharedVariable<Boolean> x = new SharedVariable<>(true);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.logicalAnd(false), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.logicalAnd(false)))
              .join();
 
-        assertThat(variables.<Boolean>get("x").value()).isFalse();
+        assertThat(x.value()).isFalse();
     }
 
     @Test
     void testLogicalOr() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(false));
+        SharedVariable<Boolean> x = new SharedVariable<>(false);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.logicalOr(true), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.logicalOr(true)))
              .join();
 
-        assertThat(variables.<Boolean>get("x").value()).isTrue();
+        assertThat(x.value()).isTrue();
     }
 
     @Test
     void testBitwiseAnd() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(10));
+        SharedVariable<Integer> x = new SharedVariable<>(10);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.bitwiseAnd(2), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.bitwiseAnd(2)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(2);
+        assertThat(x.value()).isEqualTo(2);
     }
 
     @Test
     void testBitwiseOr() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(10));
+        SharedVariable<Integer> x = new SharedVariable<>(10);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.bitwiseOr(2), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.bitwiseOr(2)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(10);
+        assertThat(x.value()).isEqualTo(10);
     }
 
     @Test
     void testBitwiseXor() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(10));
+        SharedVariable<Integer> x = new SharedVariable<>(10);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.bitwiseXor(2), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.bitwiseXor(2)))
              .join();
 
         // Since there are 4 threads, the result will be
         // 10 ^ 2 (= 8) ^ 2 (= 10) ^ 2 (= 8) ^ 2 (= 10) = 10
-        assertThat(variables.get("x").value()).isEqualTo(10);
+        assertThat(x.value()).isEqualTo(10);
     }
 
     @Test
     void testShiftLeft() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(0b00001010));
+        SharedVariable<Integer> x = new SharedVariable<>(0b00001010);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.shiftLeft(1), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.shiftLeft(1)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(0b10100000);
+        assertThat(x.value()).isEqualTo(0b10100000);
     }
 
     @Test
     void testShiftRight() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(0b00001010));
+        SharedVariable<Integer> x = new SharedVariable<>(0b00001010);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.shiftRight(1), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.shiftRight(1)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(0);
+        assertThat(x.value()).isZero();
     }
 
     @Test
     void testMax() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(5));
+        SharedVariable<Integer> x = new SharedVariable<>(5);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.max(10), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.max(10)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(10);
+        assertThat(x.value()).isEqualTo(10);
     }
 
     @Test
     void testMin() {
-        Variables variables = Variables.create().add("x", new SharedVariable<>(5));
+        SharedVariable<Integer> x = new SharedVariable<>(5);
 
         JROMP.withThreads(4)
-             .withVariables(variables)
-             .parallel(vars -> Atomic.update("x", Operations.min(10), vars))
+             .registerVariables(x)
+             .parallel(() -> Atomic.update(x, Operations.min(10)))
              .join();
 
-        assertThat(variables.get("x").value()).isEqualTo(5);
+        assertThat(x.value()).isEqualTo(5);
     }
 }

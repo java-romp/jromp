@@ -23,11 +23,10 @@ public class Critical {
     /**
      * Enters a critical section and executes the provided task.
      *
-     * @param name      the name of the critical section.
-     * @param variables the collection of variables.
-     * @param task      the task to execute.
+     * @param name the name of the critical section.
+     * @param task the task to execute.
      */
-    public static void enter(String name, Variables variables, Task task) {
+    public static void enter(String name, Task task) {
         synchronized (locks.computeIfAbsent(name, k -> new Object())) {
             task.run();
         }
