@@ -97,6 +97,14 @@ public class JROMP {
         }
     }
 
+    public JROMP registerVariables(Variable<?>... vars) {
+        for (Variable<?> variable : vars) {
+            context.registerVariable(variable);
+        }
+
+        return this;
+    }
+
     /**
      * Set the variables to use in a parallel block.
      *
@@ -480,5 +488,11 @@ public class JROMP {
          */
         @Deprecated
         private Variables variables;
+
+        private final List<Variable<?>> variablesList = new ArrayList<>();
+
+        void registerVariable(Variable<?> variable) {
+            variablesList.add(variable);
+        }
     }
 }
