@@ -1,7 +1,6 @@
 package jromp.construct.critical;
 
 import jromp.task.Task;
-import jromp.var.Variables;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +29,7 @@ public class Critical {
      */
     public static void enter(String name, Variables variables, Task task) {
         synchronized (locks.computeIfAbsent(name, k -> new Object())) {
-            task.run(variables);
+            task.run();
         }
     }
 }

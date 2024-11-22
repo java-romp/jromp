@@ -2,7 +2,6 @@ package jromp.construct.atomic;
 
 import jromp.operation.Operation;
 import jromp.var.SharedVariable;
-import jromp.var.Variables;
 
 import java.io.Serializable;
 

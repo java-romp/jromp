@@ -40,7 +40,7 @@ class ThreadPrivateVariableTests {
         ThreadPrivateVariable<Integer> variable = new ThreadPrivateVariable<>(0);
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
                      variable.set(variable.value() + 1);
                      assertThat(variable.value()).isBetween(0, iterations / threads);
@@ -58,7 +58,7 @@ class ThreadPrivateVariableTests {
         ThreadPrivateVariable<Integer> variable = new ThreadPrivateVariable<>(0);
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
                      variable.update(Operations.add(1));
                      assertThat(variable.value()).isBetween(0, iterations / threads);

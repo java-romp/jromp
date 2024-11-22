@@ -6,7 +6,6 @@ import jromp.var.FirstPrivateVariable;
 import jromp.var.LastPrivateVariable;
 import jromp.var.PrivateVariable;
 import jromp.var.ReductionVariable;
-import jromp.var.Variables;
 import jromp.var.reduction.ReductionOperations;
 import org.junit.jupiter.api.Test;
 
@@ -73,7 +72,7 @@ class JROMPTests {
         int[] countsPerThread = new int[threads];
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end, vars) -> {
+             .parallelFor(0, iterations, (start, end) -> {
                  assertThat(vars).isNotNull();
 
                  for (int i = start; i < end; i++) {
@@ -91,10 +90,10 @@ class JROMPTests {
 
         JROMP.withThreads(4)
              .sections(
-                     vars -> result[getThreadNum()] = 1,
-                     vars -> result[getThreadNum()] = 2,
-                     vars -> result[getThreadNum()] = 3,
-                     vars -> result[getThreadNum()] = 4
+                     () -> result[getThreadNum()] = 1,
+                     () -> result[getThreadNum()] = 2,
+                     () -> result[getThreadNum()] = 3,
+                     () -> result[getThreadNum()] = 4
              )
              .join();
 
@@ -108,9 +107,9 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .sections(
-                     vars -> result[getThreadNum()] = 1,
-                     vars -> result[getThreadNum()] = 2,
-                     vars -> result[getThreadNum()] = 3
+                     () -> result[getThreadNum()] = 1,
+                     () -> result[getThreadNum()] = 2,
+                     () -> result[getThreadNum()] = 3
              )
              .join();
 
@@ -124,11 +123,11 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .sections(
-                     vars -> result[getThreadNum()] = 1,
-                     vars -> result[getThreadNum()] = 2,
-                     vars -> result[getThreadNum()] = 3,
-                     vars -> result[getThreadNum()] = 4,
-                     vars -> result[getThreadNum()] = 5
+                     () -> result[getThreadNum()] = 1,
+                     () -> result[getThreadNum()] = 2,
+                     () -> result[getThreadNum()] = 3,
+                     () -> result[getThreadNum()] = 4,
+                     () -> result[getThreadNum()] = 5
              )
              .join();
 
@@ -161,7 +160,7 @@ class JROMPTests {
         int[] countsPerThread = new int[threads];
 
         JROMP.withThreads(threads)
-             .parallel(vars -> {
+             .parallel(() -> {
                  assertThat(vars).isNotNull();
                  assertThat(vars.isEmpty()).isTrue();
                  assertThat(vars.size()).isZero();
@@ -203,7 +202,7 @@ class JROMPTests {
         String[] result = new String[Constants.MAX_THREADS];
 
         JROMP.allThreads()
-             .parallel(vars -> result[getThreadNum()] = "Hello, world!")
+             .parallel(() -> result[getThreadNum()] = "Hello, world!")
              .join();
 
         assertThat(result).containsOnly("Hello, world!");
@@ -254,24 +253,24 @@ class JROMPTests {
         int[] value = new int[1];
 
         JROMP.withThreads(threads)
-             .parallel(vars -> assertThat(value[0]).isZero())
-             .single(vars -> value[0] = 1)
-             .parallel(vars -> assertThat(value[0]).isOne())
+             .parallel(() -> assertThat(value[0]).isZero())
+             .single(() -> value[0] = 1)
+             .parallel(() -> assertThat(value[0]).isOne())
              .join();
     }
 
     @Test
     void testMaskedMaster() {
         JROMP.withThreads(4)
-             .masked(vars -> assertThat(getThreadNum()).isZero())
+             .masked(() -> assertThat(getThreadNum()).isZero())
              .join();
     }
 
     @Test
     void testMaskedOtherThread() {
         JROMP.withThreads(4)
-             .masked(1, vars -> assertThat(getThreadNum()).isEqualTo(1))
-             .masked(2, vars -> assertThat(getThreadNum()).isEqualTo(2))
+             .masked(1, () -> assertThat(getThreadNum()).isEqualTo(1))
+             .masked(2, () -> assertThat(getThreadNum()).isEqualTo(2))
              .join();
     }
 
@@ -282,7 +281,7 @@ class JROMPTests {
         int[] values = new int[threads];
 
         JROMP.withThreads(threads, threadsPerTeam)
-             .masked(1, vars -> values[getThreadNum()]++)
+             .masked(1, () -> values[getThreadNum()]++)
              .join();
 
         assertThat(values).containsExactly(0, 2, 0, 0);
@@ -291,7 +290,7 @@ class JROMPTests {
     @Test
     void testThreadNameString() {
         JROMP.withThreads(4)
-             .masked(vars -> assertThat(Thread.currentThread().getName()).isEqualTo("JrompThread-0-0"))
+             .masked(() -> assertThat(Thread.currentThread().getName()).isEqualTo("JrompThread-0-0"))
              .join();
     }
 
@@ -316,7 +315,7 @@ class JROMPTests {
         assertThat(getThreadTeam()).isNull();
 
         JROMP.withThreads(4, 2)
-             .parallel(vars -> assertThat(getThreadTeam()).isNotNull())
+             .parallel(() -> assertThat(getThreadTeam()).isNotNull())
              .join();
 
         assertThat(getThreadTeam()).isNull();
@@ -327,7 +326,7 @@ class JROMPTests {
         assertThat(getNumThreads()).isEqualTo(1);
 
         JROMP.withThreads(4, 2)
-             .parallel(vars -> assertThat(getNumThreads()).isEqualTo(4))
+             .parallel(() -> assertThat(getNumThreads()).isEqualTo(4))
              .join();
 
         assertThat(getNumThreads()).isEqualTo(1);
@@ -338,7 +337,7 @@ class JROMPTests {
         assertThat(getNumThreadsPerTeam()).isEqualTo(1);
 
         JROMP.withThreads(4, 2)
-             .parallel(vars -> assertThat(getNumThreadsPerTeam()).isEqualTo(2))
+             .parallel(() -> assertThat(getNumThreadsPerTeam()).isEqualTo(2))
              .join();
 
         assertThat(getNumThreadsPerTeam()).isEqualTo(1);
@@ -350,7 +349,7 @@ class JROMPTests {
 
         JROMP.allThreads()
              .registerVariables(privateVariable)
-             .parallel(vars -> {
+             .parallel(() -> {
                  privateVariable.set(getThreadNum());
              })
              .join();
@@ -364,7 +363,7 @@ class JROMPTests {
 
         JROMP.allThreads()
              .registerVariables(firstPrivateVariable)
-             .parallel(vars -> {
+             .parallel(() -> {
                  firstPrivateVariable.set(getThreadNum());
              })
              .join();
@@ -378,7 +377,7 @@ class JROMPTests {
 
         JROMP.allThreads()
              .registerVariables(lastPrivateVariable)
-             .parallel(vars -> {
+             .parallel(() -> {
                  if (getThreadNum() == 1) {
                      try {
                          Thread.sleep(250);
@@ -399,7 +398,7 @@ class JROMPTests {
 
         JROMP.withThreads(8)
              .registerVariables(reductionVariable)
-             .parallel(vars -> {
+             .parallel(() -> {
                  reductionVariable.update(Operations.add(1));
              })
              .join();

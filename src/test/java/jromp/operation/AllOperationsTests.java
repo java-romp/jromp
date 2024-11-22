@@ -3,10 +3,7 @@ package jromp.operation;
 import jromp.JROMP;
 import jromp.construct.atomic.Atomic;
 import jromp.var.SharedVariable;
-import jromp.var.Variables;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class AllOperationsTests {
     @Test
