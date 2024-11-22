@@ -85,13 +85,6 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
     }
 
     @Override
-    public Variable<T> copy() {
-        PrivateVariable<T> variable = new PrivateVariable<>(initialValue);
-        operation.initialize(variable);
-        return variable;
-    }
-
-    @Override
     public void end() {
         threadLocalVariables.values().forEach(Variable::end); // It is a no-op.
         threadLocalVariables.clear();

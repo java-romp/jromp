@@ -1,7 +1,5 @@
 package jromp.var;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
@@ -39,12 +37,6 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     @Override
     public void update(UnaryOperator<T> operator) {
         this.value.set(operator.apply(this.value.get()));
-    }
-
-    @Override
-    public PrivateVariable<T> copy() {
-        // Todo: revise if this functionality is needed
-        return new PrivateVariable<>(SerializationUtils.clone(this.value.get()));
     }
 
     @Override

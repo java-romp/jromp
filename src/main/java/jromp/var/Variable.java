@@ -44,14 +44,6 @@ public interface Variable<T extends Serializable> extends Serializable {
     }
 
     /**
-     * Creates a copy of the variable.
-     *
-     * @return a copy of the variable.
-     */
-    @Deprecated
-    Variable<T> copy();
-
-    /**
      * Performs any cleanup operations that may be required by the variable.
      */
     void end();

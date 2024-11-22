@@ -1,7 +1,5 @@
 package jromp.var;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import java.io.Serializable;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -51,21 +49,6 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     public void update(UnaryOperator<T> operator) {
         this.value.set(operator.apply(this.value.get()));
         this.lastValue = this.value.get();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Variable<T> copy() {
-        // Todo: revise if this functionality is needed
-        T defaultValue = (T) InitialValues.getInitialValue(value.getClass());
-        LastPrivateVariable<T> lastPrivateVariable = new LastPrivateVariable<>(SerializationUtils.clone(defaultValue));
-
-        lastPrivateVariable.endCallback = val -> {
-            this.value.set(val);
-            this.lastValue = val;
-        };
-
-        return lastPrivateVariable;
     }
 
     @Override

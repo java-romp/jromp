@@ -39,11 +39,6 @@ class InternalVariable<T extends Serializable> implements Variable<T> {
     }
 
     @Override
-    public Variable<T> copy() {
-        return this;
-    }
-
-    @Override
     public void end() {
         // Do nothing
     }

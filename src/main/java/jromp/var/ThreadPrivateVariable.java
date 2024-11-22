@@ -26,11 +26,6 @@ public class ThreadPrivateVariable<T extends Serializable> implements Variable<T
     }
 
     @Override
-    public ThreadPrivateVariable<T> copy() {
-        return this;
-    }
-
-    @Override
     public void end() {
         this.value.remove();
     }
