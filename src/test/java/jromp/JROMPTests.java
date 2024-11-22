@@ -73,8 +73,6 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .parallelFor(0, iterations, (start, end) -> {
-                 assertThat(vars).isNotNull();
-
                  for (int i = start; i < end; i++) {
                      countsPerThread[getThreadNum()]++;
                  }
@@ -137,20 +135,20 @@ class JROMPTests {
     @Test
     void testSectionsMoreSectionsThanThreadsKeepLastValueSystemArrayCopy() {
         int threads = 3;
-        Variables variables = Variables.create().add("num", new AtomicVariable<>(0));
+        AtomicVariable<Integer> num = new AtomicVariable<>(0);
 
         JROMP.withThreads(threads)
-             .withVariables(variables)
+             .registerVariables(num)
              .sections(
-                     vars -> vars.<Integer>get("num").update(n -> n + 1),
-                     vars -> vars.<Integer>get("num").update(n -> n + 1),
-                     vars -> vars.<Integer>get("num").update(n -> n + 1),
-                     vars -> vars.<Integer>get("num").update(n -> n + 1),
-                     vars -> vars.<Integer>get("num").update(n -> n + 1)
+                     () -> num.update(n -> n + 1),
+                     () -> num.update(n -> n + 1),
+                     () -> num.update(n -> n + 1),
+                     () -> num.update(n -> n + 1),
+                     () -> num.update(n -> n + 1)
              )
              .join();
 
-        assertThat(variables.<Integer>get("num").value()).isEqualTo(5);
+        assertThat(num.value()).isEqualTo(5);
     }
 
     @Test
@@ -161,33 +159,6 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .parallel(() -> {
-                 assertThat(vars).isNotNull();
-                 assertThat(vars.isEmpty()).isTrue();
-                 assertThat(vars.size()).isZero();
-
-                 for (int i = 0; i < iterations; i++) {
-                     countsPerThread[getThreadNum()]++;
-                 }
-             })
-             .join();
-
-        assertThat(countsPerThread).containsOnly(iterations);
-    }
-
-    @Test
-    void testParallelWithVariables() {
-        int threads = 4;
-        int iterations = 1000;
-        int[] countsPerThread = new int[threads];
-        Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
-
-        JROMP.withThreads(threads)
-             .withVariables(variables)
-             .parallel(vars -> {
-                 assertThat(vars).isNotNull();
-                 assertThat(vars.isEmpty()).isFalse();
-                 assertThat(vars.size()).isEqualTo(1);
-
                  for (int i = 0; i < iterations; i++) {
                      countsPerThread[getThreadNum()]++;
                  }
@@ -215,15 +186,9 @@ class JROMPTests {
         int[] countsPerThread = new int[threads];
         boolean[] singleBlockExecuted = new boolean[threads];
         int[] singleBlockExecutionId = new int[1];
-        Variables variables = Variables.create().add("iterations", new PrivateVariable<>(iterations));
 
         JROMP.withThreads(threads)
-             .withVariables(variables)
-             .single(vars -> {
-                 assertThat(vars).isNotNull();
-                 assertThat(vars.isEmpty()).isFalse();
-                 assertThat(vars.size()).isEqualTo(1);
-
+             .single(() -> {
                  int tid = getThreadNum();
                  singleBlockExecuted[tid] = true;
                  singleBlockExecutionId[0] = tid;

@@ -3,7 +3,6 @@ package jromp;
 import jromp.operation.Operations;
 import jromp.task.Task;
 import jromp.var.LastPrivateVariable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,64 +11,56 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionTests {
     @Test
-    @Disabled
     void testBasicSection() {
-        List<LastPrivateVariable<Integer>> counters = List.of(new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0));
+        LastPrivateVariable<Integer> counter1 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter2 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter3 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter4 = new LastPrivateVariable<>(0);
+
         List<Task> tasks = List.of(
-                () -> variables.<Integer>get("counter1").update(Operations.add(1)),
-                () -> variables.<Integer>get("counter2").update(Operations.add(2)),
-                () -> variables.<Integer>get("counter3").update(Operations.add(3)),
-                () -> variables.<Integer>get("counter4").update(Operations.add(4))
+                () -> counter1.update(Operations.add(1)),
+                () -> counter2.update(Operations.add(2)),
+                () -> counter3.update(Operations.add(3)),
+                () -> counter4.update(Operations.add(4))
         );
 
-        Variables vars = Variables.create()
-                                  .add("counter1", counters.get(0))
-                                  .add("counter2", counters.get(1))
-                                  .add("counter3", counters.get(2))
-                                  .add("counter4", counters.get(3));
         JROMP.withThreads(4)
-             .withVariables(vars)
+             .registerVariables(counter1, counter2, counter3, counter4)
              .sections(tasks)
              .join();
 
-        assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4);
+        assertThat(List.of(counter1, counter2, counter3, counter4))
+                .extracting(LastPrivateVariable::value)
+                .containsExactly(1, 2, 3, 4);
     }
 
     @Test
-    @Disabled
     void testBasicSectionWithFor() {
-        List<LastPrivateVariable<Integer>> counters = List.of(new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0),
-                                                              new LastPrivateVariable<>(0));
+        LastPrivateVariable<Integer> counter1 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter2 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter3 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter4 = new LastPrivateVariable<>(0);
+        LastPrivateVariable<Integer> counter5 = new LastPrivateVariable<>(0);
+
         List<Task> tasks = List.of(
-                () -> variables.<Integer>get("counter1").update(Operations.add(1)),
-                () -> variables.<Integer>get("counter2").update(Operations.add(2)),
-                () -> variables.<Integer>get("counter3").update(Operations.add(3)),
-                () -> variables.<Integer>get("counter4").update(Operations.add(4)),
+                () -> counter1.update(Operations.add(1)),
+                () -> counter2.update(Operations.add(2)),
+                () -> counter3.update(Operations.add(3)),
+                () -> counter4.update(Operations.add(4)),
                 () -> {
                     for (int i = 0; i < 10; i++) {
-                        variables.<Integer>get("counter5").update(Operations.add(1));
+                        counter5.update(Operations.add(1));
                     }
                 }
         );
 
-        Variables vars = Variables.create()
-                                  .add("counter1", counters.get(0))
-                                  .add("counter2", counters.get(1))
-                                  .add("counter3", counters.get(2))
-                                  .add("counter4", counters.get(3))
-                                  .add("counter5", counters.get(4));
-
         JROMP.withThreads(4)
-             .withVariables(vars)
+             .registerVariables(counter1, counter2, counter3, counter4, counter5)
              .sections(tasks)
              .join();
 
-        assertThat(counters).extracting(LastPrivateVariable::value).containsExactly(1, 2, 3, 4, 10);
+        assertThat(List.of(counter1, counter2, counter3, counter4, counter5))
+                .extracting(LastPrivateVariable::value)
+                .containsExactly(1, 2, 3, 4, 10);
     }
 }

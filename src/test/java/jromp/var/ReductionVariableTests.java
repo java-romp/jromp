@@ -2,7 +2,6 @@ package jromp.var;
 
 import jromp.JROMP;
 import jromp.var.reduction.ReductionOperations;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,37 +10,33 @@ import static org.assertj.core.api.Assertions.offset;
 
 class ReductionVariableTests {
     @Test
-    @Disabled
     void testReductionVariableAndKeepValueAfterExecution() {
         int threads = 4;
         int iterations = 1000;
-        Variables vars = Variables.create().add("sum", new ReductionVariable<>(ReductionOperations.sum(), 0));
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
 
         JROMP.withThreads(threads)
-             .withVariables(vars)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .registerVariables(sum)
+             .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
-                     Variable<Integer> insideSum = variables.get("sum");
-                     insideSum.update(old -> old + 1);
+                     sum.update(old -> old + 1);
                  }
              })
              .join();
 
-        assertThat(vars.get("sum").value()).isEqualTo(iterations);
+        assertThat(sum.value()).isEqualTo(iterations);
     }
 
     @Test
-    @Disabled
     void testReductionPi() {
         int threads = 4;
         int n = 1000000;
-        ReductionVariable<Double> result = new ReductionVariable<>(ReductionOperations.sum(), 0D);
-        Variables vars = Variables.create().add("pi", result);
+        ReductionVariable<Double> pi = new ReductionVariable<>(ReductionOperations.sum(), 0D);
         double h = 1.0 / (double) n;
 
         JROMP.withThreads(threads)
-             .withVariables(vars)
-             .parallelFor(0, n, (start, end, variables) -> {
+             .registerVariables(pi)
+             .parallelFor(0, n, (start, end) -> {
                  double x, sum = 0.0;
 
                  for (int i = start; i < end; i++) {
@@ -50,11 +45,11 @@ class ReductionVariableTests {
                  }
 
                  final double finalSum = sum;
-                 variables.<Double>get("pi").update(old -> old + finalSum);
+                 pi.update(old -> old + finalSum);
              })
              .join();
 
-        double finalResult = h * result.value();
+        double finalResult = h * pi.value();
         assertThat(finalResult).isCloseTo(Math.PI, offset(1e-5));
     }
 
@@ -74,24 +69,6 @@ class ReductionVariableTests {
     void testUpdate() {
         ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
         assertThatThrownBy(() -> sum.update($ -> 1)).isInstanceOf(UnsupportedOperationException.class);
-    }
-
-    @Test
-    void testCopy() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
-        Variable<Integer> copy = sum.copy();
-        assertThat(copy.value()).isZero();
-        assertThat(copy).isInstanceOf(PrivateVariable.class);
-    }
-
-    @Test
-    void testMerge() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
-        sum.copy().update($ -> 1);
-        sum.copy().update($ -> 2);
-        sum.copy().update($ -> 3);
-        sum.merge();
-        assertThat(sum.value()).isEqualTo(6);
     }
 
     @Test
@@ -117,9 +94,7 @@ class ReductionVariableTests {
         assertThat(sum.toString()).hasToString(
                 "ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    \n  ],\n  result=PrivateVariable{value=0},\n  merged=false}");
 
-        sum.copy();
-        sum.copy();
-        sum.copy();
+        // Todo: the assert below should be checked inside a parallel block, to have the private variables initialized
         sum.merge();
 
         assertThat(sum.toString()).hasToString(
