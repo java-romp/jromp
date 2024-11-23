@@ -19,12 +19,18 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
     private final transient ThreadLocal<T> value;
 
     /**
+     * The thread that created this variable.
+     */
+    private final transient Thread creatorThread = Thread.currentThread();
+
+    /**
      * Constructs a new private variable with the given value.
      *
      * @param value the value of the variable.
      */
     public PrivateVariable(T value) {
         this.value = ThreadLocal.withInitial(() -> getInitialValue(castClass(value.getClass())));
+        this.value.set(value); // Value for the creator thread.
     }
 
     @Override
@@ -44,6 +50,11 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
 
     @Override
     public void end() {
+        if (Thread.currentThread() == creatorThread) {
+            return;
+        }
+
+        // Remove the value from the other threads, not the creator one.
         this.value.remove();
     }
 

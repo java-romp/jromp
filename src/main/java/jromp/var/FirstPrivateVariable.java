@@ -16,11 +16,17 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     private final transient ThreadLocal<T> value;
 
     /**
+     * The thread that created this variable.
+     */
+    private final transient Thread creatorThread = Thread.currentThread();
+
+    /**
      * Constructs a new private variable with the given value.
      *
      * @param value the value of the variable.
      */
     public FirstPrivateVariable(T value) {
+        // Creator thread takes the same value as the other threads.
         this.value = ThreadLocal.withInitial(() -> value);
     }
 
@@ -41,6 +47,11 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 
     @Override
     public void end() {
+        if (Thread.currentThread() == creatorThread) {
+            return;
+        }
+
+        // Remove the value from the other threads, not the creator one.
         this.value.remove();
     }
 
