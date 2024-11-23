@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+import static jromp.Utils.castClass;
+import static jromp.var.InitialValues.getInitialValue;
+
 /**
  * A variable that is not shared between threads.
  * It is initialized with the given value.
@@ -30,7 +33,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
      * Constructs a new private variable with the default value.
      */
     public LastPrivateVariable(T value) {
-        this.value = ThreadLocal.withInitial(() -> value);
+        this.value = ThreadLocal.withInitial(() -> getInitialValue(castClass(value.getClass())));
         this.lastValue = value;
         this.endCallback = val -> {
             this.value.set(val);

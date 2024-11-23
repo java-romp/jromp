@@ -64,6 +64,11 @@ public final class Utils {
         return threadsPerTeam;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> castClass(Class<?> clazz) {
+        return (Class<T>) clazz;
+    }
+
     /**
      * Utility class for number conversions.
      */
