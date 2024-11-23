@@ -23,20 +23,20 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
     private final transient ReductionOperation<T> operation;
 
     /**
-     * The initial value of the reduction variable.
-     */
-    private final T initialValue;
-
-    /**
      * The private variables that are used to reduce the result.
      * Each thread has its own private variable.
      */
-    private final Map<Thread, InternalVariable<T>> threadLocalVariables = new ConcurrentHashMap<>();
+    private final Map<Long, InternalVariable<T>> threadLocals = new ConcurrentHashMap<>();
+
+    /**
+     * The names of the threads that have accessed the reduction variable.
+     */
+    private final Map<Long, String> threadNames = new ConcurrentHashMap<>();
 
     /**
      * The result of the reduction operation.
      */
-    private final InternalVariable<T> result;
+    private final transient ThreadLocal<InternalVariable<T>> value;
 
     /**
      * Indicates whether the reduction variable has been merged.
@@ -59,47 +59,70 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
      */
     public ReductionVariable(ReductionOperation<T> operation, T initialValue) {
         this.operation = operation;
-        this.initialValue = initialValue;
-        this.result = new InternalVariable<>(initialValue);
+
+        this.value = ThreadLocal.withInitial(() -> {
+            T initValue = InitialValues.getInitialValue(castClass(initialValue.getClass()));
+            InternalVariable<T> iVar = new InternalVariable<>(initValue);
+            Thread thread = Thread.currentThread();
+
+            this.threadLocals.put(thread.threadId(), iVar);
+            this.threadNames.put(thread.threadId(), thread.getName());
+
+            return iVar;
+        }); // Other threads will initialize their variables when they access them (with the default initial value).
+
+        // The creator thread should initialize its variable immediately with the value passed to the constructor.
+        InternalVariable<T> variable = new InternalVariable<>(initialValue);
+
+        this.threadLocals.put(this.creatorThread.threadId(), variable);
+        this.threadNames.put(this.creatorThread.threadId(), this.creatorThread.getName());
+
+        this.value.set(variable); // Initialize the creator thread's variable and omit the thread-local initialization.
     }
 
     @Override
     public T value() {
-        if (Thread.currentThread() == creatorThread) {
-            return result.value(); // The creator thread can get the result directly.
-        }
-
-        return threadLocalVariables.computeIfAbsent(Thread.currentThread(),
-                                                    k -> new InternalVariable<>(initValue(initialValue)))
-                                   .value(); // Get the variable of the current thread.
+        // Creator thread can access the result directly.
+        // Other threads should access their private variables (or initialize them if not initialized yet).
+        return this.value.get().value();
     }
 
     @Override
     public void set(T value) {
-        if (Thread.currentThread() == creatorThread) {
-            result.set(value); // The creator thread can set the result directly.
+        long currentThreadId = Thread.currentThread().threadId();
+
+        if (this.threadLocals.containsKey(currentThreadId)) {
+            this.threadLocals.get(currentThreadId).set(value);
         } else {
-            threadLocalVariables.computeIfAbsent(Thread.currentThread(),
-                                                 k -> new InternalVariable<>(initValue(value)))
-                                .set(value); // Set the variable of the current thread.
+            // This will occur only once on sub-threads (first time they access the variable using this method).
+            this.value.get() // Initialize and add the new variable to the map.
+                      .set(value);
         }
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        if (Thread.currentThread() == creatorThread) {
-            result.update(operator); // The creator thread can update the result directly.
+        long currentThreadId = Thread.currentThread().threadId();
+
+        if (this.threadLocals.containsKey(currentThreadId)) {
+            this.threadLocals.get(currentThreadId).update(operator);
         } else {
-            threadLocalVariables.computeIfAbsent(Thread.currentThread(),
-                                                 k -> new InternalVariable<>(initValue(initialValue)))
-                                .update(operator); // Update the variable of the current thread.
+            // This will occur only once on sub-threads (first time they access the variable using this method).
+            this.value.get() // Initialize and add the new variable to the map.
+                      .update(operator);
         }
     }
 
     @Override
     public void end() {
-        threadLocalVariables.values().forEach(Variable::end); // It is a no-op.
-        threadLocalVariables.clear();
+        this.threadLocals.values().forEach(Variable::end); // It is a no-op.
+
+        if (Thread.currentThread() == creatorThread) {
+            return;
+        }
+
+        // Remove the value from the other threads, not the creator one.
+        this.value.remove();
     }
 
     public boolean isMerged() {
@@ -111,24 +134,28 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
             return;
         }
 
-        operation.initialize(result);
-        threadLocalVariables.values().forEach(
-                tlVar -> result.update(oldResult -> operation.combine(oldResult, tlVar.value())));
-        merged = true;
+        Variable<T> result = this.value.get();
+        this.operation.initialize(result);
+        this.threadLocals.values().forEach(
+                tlVar -> result.update(oldResult -> this.operation.combine(oldResult, tlVar.value())));
+        this.merged = true;
     }
 
     @Override
     public String toString() {
-        String privateVariablesString = threadLocalVariables.values()
-                                                            .stream()
-                                                            .map(InternalVariable::toString)
-                                                            .collect(Collectors.joining("\n    "));
+        String privateVariablesString = this.threadLocals.entrySet()
+                                                         .stream()
+                                                         .map(entry -> {
+                                                             long threadId = entry.getKey();
+                                                             String threadName = this.threadNames.get(threadId);
+                                                             InternalVariable<T> iVar = entry.getValue();
 
-        return "ReductionVariable{%n  operation=%s,%n  initialValue=%s,%n  threadLocalVariables=[%n    %s%n  ],%n  result=%s,%n  merged=%s,%n  creatorThread=%s%n}"
-                .formatted(operation, initialValue, privateVariablesString, result, merged, creatorThread);
-    }
+                                                             return "%s => %s".formatted(threadName, iVar);
+                                                         })
+                                                         .collect(Collectors.joining("\n    "));
 
-    private T initValue(T val) {
-        return InitialValues.getInitialValue(castClass(val.getClass()));
+        return "ReductionVariable{%n  operation=%s,%n  threadLocalVariables=[%n    %s%n  ],%n  value=%s,%n  merged=%s,%n  creatorThread=%s%n}"
+                .formatted(this.operation, privateVariablesString, this.value.get(), this.merged,
+                           this.creatorThread.getName());
     }
 }
