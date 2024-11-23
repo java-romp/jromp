@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+import static jromp.Utils.castClass;
+
 /**
  * Represents a reduction variable that its value is reduced from "custom" thread-local
  * variables using a reduction operation.
@@ -27,8 +29,7 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     /**
      * The private variables that are used to reduce the result.
-     * Each thread has its own private variable. Due to this, the hashmap is not needed
-     * to be thread-safe.
+     * Each thread has its own private variable.
      */
     private final Map<Thread, InternalVariable<T>> threadLocalVariables = new ConcurrentHashMap<>();
 
@@ -52,6 +53,9 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
      *
      * @param operation    the reduction operation.
      * @param initialValue the initial value of the reduction variable.
+     *
+     * @implNote The value of the "private" variables is initialized to the default initial value
+     * of the reduction variable.
      */
     public ReductionVariable(ReductionOperation<T> operation, T initialValue) {
         this.operation = operation;
@@ -61,7 +65,13 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     @Override
     public T value() {
-        return result.value();
+        if (Thread.currentThread() == creatorThread) {
+            return result.value(); // The creator thread can get the result directly.
+        }
+
+        return threadLocalVariables.computeIfAbsent(Thread.currentThread(),
+                                                    k -> new InternalVariable<>(initValue(initialValue)))
+                                   .value(); // Get the variable of the current thread.
     }
 
     @Override
@@ -69,7 +79,8 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
         if (Thread.currentThread() == creatorThread) {
             result.set(value); // The creator thread can set the result directly.
         } else {
-            threadLocalVariables.computeIfAbsent(Thread.currentThread(), k -> new InternalVariable<>(value))
+            threadLocalVariables.computeIfAbsent(Thread.currentThread(),
+                                                 k -> new InternalVariable<>(initValue(value)))
                                 .set(value); // Set the variable of the current thread.
         }
     }
@@ -79,7 +90,8 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
         if (Thread.currentThread() == creatorThread) {
             result.update(operator); // The creator thread can update the result directly.
         } else {
-            threadLocalVariables.computeIfAbsent(Thread.currentThread(), k -> new InternalVariable<>(initialValue))
+            threadLocalVariables.computeIfAbsent(Thread.currentThread(),
+                                                 k -> new InternalVariable<>(initValue(initialValue)))
                                 .update(operator); // Update the variable of the current thread.
         }
     }
@@ -114,5 +126,9 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
         return "ReductionVariable{%n  operation=%s,%n  initialValue=%s,%n  threadLocalVariables=[%n    %s%n  ],%n  result=%s,%n  merged=%s,%n  creatorThread=%s%n}"
                 .formatted(operation, initialValue, privateVariablesString, result, merged, creatorThread);
+    }
+
+    private T initValue(T val) {
+        return InitialValues.getInitialValue(castClass(val.getClass()));
     }
 }

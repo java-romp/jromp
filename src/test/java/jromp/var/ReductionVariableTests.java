@@ -1,11 +1,11 @@
 package jromp.var;
 
 import jromp.JROMP;
+import jromp.operation.Operations;
 import jromp.var.reduction.ReductionOperations;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.offset;
 
 class ReductionVariableTests {
@@ -56,19 +56,37 @@ class ReductionVariableTests {
     @Test
     void testValueBeforeMerge() {
         ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
-        assertThatThrownBy(sum::value).isInstanceOf(IllegalStateException.class);
+        assertThat(sum.value()).isZero();
     }
 
     @Test
     void testSet() {
         ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
-        assertThatThrownBy(() -> sum.set(1)).isInstanceOf(UnsupportedOperationException.class);
+        sum.set(1);
+        assertThat(sum.value()).isOne();
+    }
+
+    @Test
+    void testKeepOldValueAndResetOnParallelStart() {
+        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 20);
+        assertThat(sum.value()).isEqualTo(20);
+
+        JROMP.withThreads(2)
+             .registerVariables(sum)
+             .parallel(() -> {
+                 assertThat(sum.value()).isZero(); // The value should be reset to the initial value.
+                 sum.update(Operations.add(1));
+             })
+             .join();
+
+        assertThat(sum.value()).isEqualTo(2);
     }
 
     @Test
     void testUpdate() {
         ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
-        assertThatThrownBy(() -> sum.update($ -> 1)).isInstanceOf(UnsupportedOperationException.class);
+        sum.update(old -> old + 1);
+        assertThat(sum.value()).isOne();
     }
 
     @Test
