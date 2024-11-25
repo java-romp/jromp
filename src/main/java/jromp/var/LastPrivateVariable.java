@@ -1,11 +1,9 @@
 package jromp.var;
 
 import java.io.Serializable;
-import java.util.function.Consumer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
-
-import static jromp.Utils.castClass;
-import static jromp.var.InitialValues.getInitialValue;
 
 /**
  * A variable that is not shared between threads.
@@ -17,60 +15,73 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     /**
      * The value of the variable.
      */
-    private final transient ThreadLocal<T> value;
+    private final transient ThreadLocal<InternalVariable<T>> value;
 
     /**
-     * The last value set.
+     * The private variables that are used to get the last value set.
+     * Each thread has its own private variable.
      */
-    private T lastValue;
+    private final Map<Long, InternalVariable<T>> threadLocals = new ConcurrentHashMap<>();
 
     /**
-     * Callback to set the value of the variable when the block ends.
+     * The last thread that accessed the variable.
      */
-    private final transient Consumer<T> endCallback;
+    private long lastThreadId;
+
+    private final transient Thread creatorThread = Thread.currentThread();
 
     /**
      * Constructs a new private variable with the default value.
      */
     public LastPrivateVariable(T value) {
-        this.value = ThreadLocal.withInitial(() -> getInitialValue(castClass(value.getClass())));
-        this.lastValue = value;
-        this.endCallback = val -> {
-            this.value.set(val);
-            this.lastValue = val;
-        };
+        this.value = ThreadLocal.withInitial(() -> {
+            InternalVariable<T> internalVariable = new InternalVariable<>(value);
+            this.threadLocals.put(Thread.currentThread().threadId(), internalVariable);
+            return internalVariable;
+        });
+
+        InternalVariable<T> variable = new InternalVariable<>(value);
+        this.threadLocals.put(this.creatorThread.threadId(), variable);
+        this.value.set(variable); // Set the value of the creator thread
+        this.lastThreadId = this.creatorThread.threadId();
     }
 
     @Override
     public T value() {
-        return this.lastValue;
+        return this.value.get().value();
     }
 
+    /**
+     * @implNote This method is synchronized because we must ensure that the value is set by
+     * the same thread that updates the lastThreadId field.
+     */
     @Override
-    public void set(T value) {
-        this.value.set(value);
-        this.lastValue = value;
+    public synchronized void set(T value) {
+        this.value.get().set(value);
+        this.lastThreadId = Thread.currentThread().threadId();
     }
 
+    /**
+     * @implNote This method is synchronized because we must ensure that the value is set by
+     * the same thread that updates the lastThreadId field.
+     */
     @Override
-    public void update(UnaryOperator<T> operator) {
-        this.value.set(operator.apply(this.value.get()));
-        this.lastValue = this.value.get();
+    public synchronized void update(UnaryOperator<T> operator) {
+        this.value.get().update(operator);
+        this.lastThreadId = Thread.currentThread().threadId();
     }
 
     @Override
     public void end() {
-        this.value.set(this.lastValue);
-
-        if (this.endCallback != null) {
-            this.endCallback.accept(this.value.get());
-        }
-
-        this.value.remove();
+        this.value.set(this.threadLocals.get(this.lastThreadId));
+        // this.threadLocals.values().forEach(Variable::end); // This is a no-op, but kept this comment for understanding.
+        // this.threadLocals.clear();
+        // Todo: Add a method to the interface to remove the thread-local variables.
     }
 
     @Override
     public String toString() {
-        return "LastPrivateVariable{value=%s, lastValue=%s}".formatted(this.value.get(), this.lastValue);
+        return "LastPrivateVariable{value=%s, lastValue=%s}".formatted(value.get().value(),
+                                                                       this.threadLocals.get(this.lastThreadId).value());
     }
 }
