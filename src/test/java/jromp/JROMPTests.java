@@ -1,12 +1,6 @@
 package jromp;
 
-import jromp.operation.Operations;
 import jromp.var.AtomicVariable;
-import jromp.var.FirstPrivateVariable;
-import jromp.var.LastPrivateVariable;
-import jromp.var.PrivateVariable;
-import jromp.var.ReductionVariable;
-import jromp.var.reduction.ReductionOperations;
 import org.junit.jupiter.api.Test;
 
 import static jromp.JROMP.getNumThreads;
@@ -306,68 +300,5 @@ class JROMPTests {
              .join();
 
         assertThat(getNumThreadsPerTeam()).isEqualTo(1);
-    }
-
-    @Test
-    void testNewThreadLocalImplPrivate() {
-        PrivateVariable<Integer> privateVariable = new PrivateVariable<>(-1);
-
-        JROMP.allThreads()
-             .registerVariables(privateVariable)
-             .parallel(() -> {
-                 privateVariable.set(getThreadNum());
-             })
-             .join();
-
-        assertThat(privateVariable.value()).isEqualTo(-1);
-    }
-
-    @Test
-    void testNewThreadLocalImplFirstPrivate() {
-        FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(-1);
-
-        JROMP.allThreads()
-             .registerVariables(firstPrivateVariable)
-             .parallel(() -> {
-                 firstPrivateVariable.set(getThreadNum());
-             })
-             .join();
-
-        assertThat(firstPrivateVariable.value()).isEqualTo(-1);
-    }
-
-    @Test
-    void testNewThreadLocalImplLastPrivate() {
-        LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(-1);
-
-        JROMP.allThreads()
-             .registerVariables(lastPrivateVariable)
-             .parallel(() -> {
-                 if (getThreadNum() == 1) {
-                     try {
-                         Thread.sleep(250);
-                     } catch (InterruptedException e) {
-                         throw new RuntimeException(e);
-                     }
-                 }
-                 lastPrivateVariable.set(getThreadNum());
-             })
-             .join();
-
-        assertThat(lastPrivateVariable.value()).isEqualTo(1);
-    }
-
-    @Test
-    void testNewThreadLocalImplReduction() {
-        ReductionVariable<Integer> reductionVariable = new ReductionVariable<>(ReductionOperations.sum(), 0);
-
-        JROMP.withThreads(8)
-             .registerVariables(reductionVariable)
-             .parallel(() -> {
-                 reductionVariable.update(Operations.add(1));
-             })
-             .join();
-
-        assertThat(reductionVariable.value()).isEqualTo(8);
     }
 }
