@@ -115,14 +115,17 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     @Override
     public void end() {
-        this.threadLocals.values().forEach(Variable::end); // It is a no-op.
-
         if (Thread.currentThread() == creatorThread) {
+            this.threadLocals.values().forEach(Variable::end); // It is a no-op.
+
             return;
         }
 
         // Remove the value from the other threads, not the creator one.
         this.value.remove();
+
+        // Todo: since this method is only called once, we should remove the created thread-local variables.
+        //  Same in other classes using this technique.
     }
 
     public boolean isMerged() {

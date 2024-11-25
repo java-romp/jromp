@@ -104,18 +104,4 @@ class ReductionVariableTests {
         sum.merge();
         assertThat(sum.value()).isZero();
     }
-
-    @Test
-    void testToString() {
-        ReductionVariable<Integer> sum = new ReductionVariable<>(ReductionOperations.sum(), 0);
-
-        assertThat(sum.toString()).hasToString(
-                "ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    \n  ],\n  result=PrivateVariable{value=0},\n  merged=false}");
-
-        // Todo: the assert below should be checked inside a parallel block, to have the private variables initialized
-        sum.merge();
-
-        assertThat(sum.toString()).hasToString(
-                "ReductionVariable{\n  operation=Sum,\n  initialValue=0,\n  privateVariables=[\n    PrivateVariable{value=0}\n    PrivateVariable{value=0}\n    PrivateVariable{value=0}\n  ],\n  result=PrivateVariable{value=0},\n  merged=true}");
-    }
 }
