@@ -116,8 +116,7 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
     @Override
     public void end() {
         if (Thread.currentThread() == creatorThread) {
-            this.threadLocals.values().forEach(Variable::end); // It is a no-op.
-
+            // this.threadLocals.values().forEach(Variable::end); // This is a no-op, but kept this comment for understanding.
             return;
         }
 
