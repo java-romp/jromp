@@ -20,6 +20,8 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
      */
     private final transient Thread creatorThread = Thread.currentThread();
 
+    private T initialValue;
+
     /**
      * Constructs a new private variable with the given value.
      *
@@ -27,7 +29,13 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
      */
     public FirstPrivateVariable(T value) {
         // Creator thread takes the same value as the other threads.
-        this.value = ThreadLocal.withInitial(() -> value);
+        this.value = ThreadLocal.withInitial(() -> this.initialValue);
+
+        this.initialValue = value;
+        this.value.set(value);
+        // ^^^
+        // Prevent the current thread from getting the initial value from the Supplier callback.
+        // If this is not done, double update can happen and the initial value will be wrong.
     }
 
     @Override
@@ -37,11 +45,19 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 
     @Override
     public void set(T value) {
+        if (Thread.currentThread() == creatorThread) {
+            this.initialValue = value;
+        }
+
         this.value.set(value);
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
+        if (Thread.currentThread() == creatorThread) {
+            this.initialValue = operator.apply(this.initialValue);
+        }
+
         this.value.set(operator.apply(this.value.get()));
     }
 
