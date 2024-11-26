@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import jromp.operation.Operations;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +64,7 @@ class LastPrivateVariableTest {
                  assertThat(sum.value()).isZero();
 
                  for (int i = start; i < end; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
 
                  assertThat(sum.value()).isEqualTo(25);
@@ -93,7 +94,7 @@ class LastPrivateVariableTest {
                  assertThat(sum.value()).isZero();
 
                  for (int i = 0; i < 2; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
 
                  assertThat(sum.value()).isEqualTo(2);

@@ -11,14 +11,15 @@ class MinTests {
     void testIdentifier() {
         ReductionOperation<Integer> min = ReductionOperations.min();
         assertThat(min.identifier()).isEqualTo("min");
+        assertThat(ReductionOperations.fromIdentifier("min")).isEqualTo(min);
     }
 
     @Test
     void testInitialize() {
-        ReductionOperation<Integer> min = ReductionOperations.min();
-        Variable<Integer> variable = new PrivateVariable<>(0);
+        ReductionOperation<Double> min = ReductionOperations.min();
+        Variable<Double> variable = new PrivateVariable<>(0.0);
         min.initialize(variable);
-        assertThat(variable.value()).isEqualTo((int) Double.POSITIVE_INFINITY);
+        assertThat(variable.value()).isEqualTo(Double.POSITIVE_INFINITY);
     }
 
     @Test

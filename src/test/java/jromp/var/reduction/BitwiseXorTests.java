@@ -11,6 +11,7 @@ class BitwiseXorTests {
     void testIdentifier() {
         ReductionOperation<Integer> bitwiseXor = ReductionOperations.bxor();
         assertThat(bitwiseXor.identifier()).isEqualTo("^");
+        assertThat(ReductionOperations.fromIdentifier("^")).isEqualTo(bitwiseXor);
     }
 
     @Test

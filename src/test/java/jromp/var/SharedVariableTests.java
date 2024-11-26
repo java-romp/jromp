@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import jromp.operation.Operations;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class SharedVariableTests {
              .registerVariables(sum)
              .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                      countsPerThread[getThreadNum()]++;
                  }
              })
@@ -76,7 +77,7 @@ class SharedVariableTests {
 
                          sum.set(200);
                      } else {
-                         sum.update(old -> old + 1);
+                         sum.update(Operations.add(1));
                      }
                  }
              })

@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import jromp.operation.Operations;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,7 @@ class PrivateVariableTests {
     @Test
     void testUpdate() {
         PrivateVariable<Integer> privateVariable = new PrivateVariable<>(0);
-        privateVariable.update(x -> x + 1);
+        privateVariable.update(Operations.add(1));
         assertThat(privateVariable.value()).isOne();
     }
 
@@ -60,7 +61,7 @@ class PrivateVariableTests {
              .registerVariables(sum)
              .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
              })
              .join();
@@ -88,7 +89,7 @@ class PrivateVariableTests {
                  assertThat(sum.value()).isZero();
 
                  for (int i = 0; i < 20; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
 
                  assertThat(sum.value()).isEqualTo(20);

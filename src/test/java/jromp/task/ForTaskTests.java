@@ -1,5 +1,6 @@
 package jromp.task;
 
+import jromp.operation.Operations;
 import jromp.var.PrivateVariable;
 import org.junit.jupiter.api.Test;
 
@@ -11,12 +12,11 @@ class ForTaskTests {
         PrivateVariable<Integer> count = new PrivateVariable<>(0);
         ForTask forTask = (start, end) -> {
             for (int i = start; i < end; i++) {
-                count.update(old -> old + 1);
+                count.update(Operations.add(1));
             }
         };
 
         forTask.run(0, 10);
-
         assertThat(count.value()).isEqualTo(10);
     }
 }

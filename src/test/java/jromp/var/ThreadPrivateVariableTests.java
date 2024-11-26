@@ -29,7 +29,7 @@ class ThreadPrivateVariableTests {
     @Test
     void testUpdate() {
         ThreadPrivateVariable<Integer> threadPrivateVariable = new ThreadPrivateVariable<>(0);
-        threadPrivateVariable.update(x -> x + 1);
+        threadPrivateVariable.update(Operations.add(1));
         assertThat(threadPrivateVariable.value()).isOne();
     }
 

@@ -1,5 +1,7 @@
 package jromp;
 
+import jromp.operation.Operation;
+import jromp.operation.Operations;
 import jromp.var.AtomicVariable;
 import org.junit.jupiter.api.Test;
 
@@ -130,15 +132,16 @@ class JROMPTests {
     void testSectionsMoreSectionsThanThreadsKeepLastValueSystemArrayCopy() {
         int threads = 3;
         AtomicVariable<Integer> num = new AtomicVariable<>(0);
+        Operation<Integer> add = Operations.add(1);
 
         JROMP.withThreads(threads)
              .registerVariables(num)
              .sections(
-                     () -> num.update(n -> n + 1),
-                     () -> num.update(n -> n + 1),
-                     () -> num.update(n -> n + 1),
-                     () -> num.update(n -> n + 1),
-                     () -> num.update(n -> n + 1)
+                     () -> num.update(add),
+                     () -> num.update(add),
+                     () -> num.update(add),
+                     () -> num.update(add),
+                     () -> num.update(add)
              )
              .join();
 

@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import jromp.operation.Operations;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,7 @@ class FirstPrivateVariableTests {
     @Test
     void testUpdate() {
         FirstPrivateVariable<Integer> firstPrivateVariable = new FirstPrivateVariable<>(0);
-        firstPrivateVariable.update(x -> x + 1);
+        firstPrivateVariable.update(Operations.add(1));
         assertThat(firstPrivateVariable.value()).isOne();
     }
 
@@ -61,7 +62,7 @@ class FirstPrivateVariableTests {
              .registerVariables(sum)
              .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
              })
              .join();
@@ -87,7 +88,7 @@ class FirstPrivateVariableTests {
              .registerVariables(sum)
              .parallel(() -> {
                  for (int i = 0; i < 20; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
              })
              .join();
@@ -107,7 +108,7 @@ class FirstPrivateVariableTests {
                  assertThat(sum.value()).isEqualTo(15);
 
                  for (int i = 0; i < 20; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
 
                  assertThat(sum.value()).isEqualTo(35);
