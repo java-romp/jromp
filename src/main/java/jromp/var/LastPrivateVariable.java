@@ -7,7 +7,8 @@ import java.util.function.UnaryOperator;
 
 /**
  * A variable that is not shared between threads.
- * It is initialized with the given value.
+ * Same as {@link PrivateVariable}, but the value of the variable (on the creator thread) is the last
+ * value set by any thread.
  *
  * @param <T> the type of the variable.
  */
@@ -28,10 +29,10 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
      */
     private long lastThreadId;
 
-    private final transient Thread creatorThread = Thread.currentThread();
-
     /**
      * Constructs a new private variable with the default value.
+     *
+     * @param value the value of the variable.
      */
     public LastPrivateVariable(T value) {
         this.value = ThreadLocal.withInitial(() -> {
@@ -40,10 +41,11 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
             return internalVariable;
         });
 
+        Thread creatorThread = Thread.currentThread();
         InternalVariable<T> variable = new InternalVariable<>(value);
-        this.threadLocals.put(this.creatorThread.threadId(), variable);
+        this.threadLocals.put(creatorThread.threadId(), variable);
         this.value.set(variable); // Set the value of the creator thread
-        this.lastThreadId = this.creatorThread.threadId();
+        this.lastThreadId = creatorThread.threadId();
     }
 
     @Override

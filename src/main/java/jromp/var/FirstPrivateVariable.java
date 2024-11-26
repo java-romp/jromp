@@ -5,7 +5,8 @@ import java.util.function.UnaryOperator;
 
 /**
  * A variable that is not shared between threads.
- * It is initialized with the given value.
+ * Same as {@link PrivateVariable}, but the initial value of the variable (on the worker threads) is the value
+ * set by the creator thread prior to the execution of the parallel region.
  *
  * @param <T> the type of the variable.
  */
@@ -20,6 +21,9 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
      */
     private final transient Thread creatorThread = Thread.currentThread();
 
+    /**
+     * The initial value of the variable.
+     */
     private T initialValue;
 
     /**

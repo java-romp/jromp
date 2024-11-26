@@ -36,10 +36,20 @@ public class ThreadTeam {
         threads.add(thread);
     }
 
+    /**
+     * Team ID getter.
+     *
+     * @return the team ID.
+     */
     public int getTeamId() {
         return teamId;
     }
 
+    /**
+     * Returns the number of threads in this team.
+     *
+     * @return the number of threads in this team.
+     */
     public int size() {
         return threads.size();
     }

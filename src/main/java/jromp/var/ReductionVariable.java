@@ -113,10 +113,18 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
         //  Same in other classes using this technique.
     }
 
+    /**
+     * Indicates whether the reduction variable has been merged.
+     *
+     * @return {@code true} if the reduction variable has been merged; {@code false} otherwise.
+     */
     public boolean isMerged() {
         return merged;
     }
 
+    /**
+     * Merges the private variables of the threads to the result of the reduction operation.
+     */
     public void merge() {
         if (merged) {
             return;

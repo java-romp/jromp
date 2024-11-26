@@ -8,7 +8,10 @@ import static jromp.var.InitialValues.getInitialValue;
 
 /**
  * A variable that is not shared between threads.
- * It is initialized with the given value.
+ * The creator thread has the initial value of the variable. The worker threads have their own private variables,
+ * initialized with the default value for the type.
+ * After the end method is called, the value of the variable is removed, and the creator thread restores
+ * the value prior to the execution of the parallel region.
  *
  * @param <T> the type of the variable.
  */

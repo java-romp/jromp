@@ -2,6 +2,9 @@ package jromp.operation;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Operation to perform a logical OR operation on a value.
+ */
 public class LogicalOrOperation implements Operation<Boolean> {
     /**
      * The value to operate on.
