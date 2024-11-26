@@ -44,8 +44,7 @@ class ReductionVariableTests {
                      sum += 4.0 / (1.0 + x * x);
                  }
 
-                 final double finalSum = sum;
-                 pi.update(old -> old + finalSum);
+                 pi.update(Operations.add(sum));
              })
              .join();
 
