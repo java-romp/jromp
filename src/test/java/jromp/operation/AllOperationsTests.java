@@ -177,4 +177,22 @@ class AllOperationsTests {
 
         assertThat(x.value()).isEqualTo(5);
     }
+
+    @Test
+    void testOperationIdentifiers() {
+        assertThat(Operations.assign(0).identifier()).isEqualTo("=");
+        assertThat(Operations.add(0).identifier()).isEqualTo("+");
+        assertThat(Operations.multiply(0).identifier()).isEqualTo("*");
+        assertThat(Operations.subtract(0).identifier()).isEqualTo("-");
+        assertThat(Operations.divide(0).identifier()).isEqualTo("/");
+        assertThat(Operations.logicalAnd(false).identifier()).isEqualTo("&&");
+        assertThat(Operations.logicalOr(false).identifier()).isEqualTo("||");
+        assertThat(Operations.bitwiseAnd(0).identifier()).isEqualTo("&");
+        assertThat(Operations.bitwiseOr(0).identifier()).isEqualTo("|");
+        assertThat(Operations.bitwiseXor(0).identifier()).isEqualTo("^");
+        assertThat(Operations.shiftLeft(0).identifier()).isEqualTo("<<");
+        assertThat(Operations.shiftRight(0).identifier()).isEqualTo(">>");
+        assertThat(Operations.max(0).identifier()).isEqualTo("max");
+        assertThat(Operations.min(0).identifier()).isEqualTo("min");
+    }
 }
