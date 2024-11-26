@@ -55,13 +55,18 @@ class LastPrivateVariableTest {
         int threads = 4;
         int iterations = 100;
         LastPrivateVariable<Integer> sum = new LastPrivateVariable<>(0);
+        sum.set(2);
 
         JROMP.withThreads(threads)
              .registerVariables(sum)
              .parallelFor(0, iterations, (start, end) -> {
+                 assertThat(sum.value()).isZero();
+
                  for (int i = start; i < end; i++) {
                      sum.update(old -> old + 1);
                  }
+
+                 assertThat(sum.value()).isEqualTo(25);
              })
              .join();
 
