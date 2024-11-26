@@ -52,7 +52,9 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     }
 
     /**
-     * @implNote This method is synchronized because we must ensure that the value is set by
+     * {@inheritDoc}
+     * <p>
+     * Note: This method is synchronized because we must ensure that the value is set by
      * the same thread that updates the lastThreadId field.
      */
     @Override
@@ -62,7 +64,9 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     }
 
     /**
-     * @implNote This method is synchronized because we must ensure that the value is set by
+     * {@inheritDoc}
+     * <p>
+     * Note: This method is synchronized because we must ensure that the value is set by
      * the same thread that updates the lastThreadId field.
      */
     @Override

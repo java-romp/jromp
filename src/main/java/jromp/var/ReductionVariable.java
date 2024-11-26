@@ -50,12 +50,12 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     /**
      * Constructs a new reduction variable with the given reduction operation and initial value.
+     * <p>
+     * Note: The value of the "private" variables is initialized to the default initial value
+     * of the reduction variable.
      *
      * @param operation    the reduction operation.
      * @param initialValue the initial value of the reduction variable.
-     *
-     * @implNote The value of the "private" variables is initialized to the default initial value
-     * of the reduction variable.
      */
     public ReductionVariable(ReductionOperation<T> operation, T initialValue) {
         this.operation = operation;
