@@ -124,8 +124,12 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
         Variable<T> result = this.value.get();
         this.operation.initialize(result);
-        this.threadLocalValues.values().forEach(
-                tlVar -> result.update(oldResult -> this.operation.combine(oldResult, tlVar.value())));
+        this.threadLocalValues.entrySet()
+                              .stream()
+                              .filter(entry -> entry.getKey() != this.creatorThread.threadId())
+                              .map(Map.Entry::getValue)
+                              .map(InternalVariable::value)
+                              .forEach(val -> result.update(oldResult -> this.operation.combine(oldResult, val)));
         this.merged = true;
     }
 
