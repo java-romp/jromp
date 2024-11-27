@@ -22,9 +22,9 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     private final transient Thread creatorThread = Thread.currentThread();
 
     /**
-     * The initial value of the variable.
+     * The value of the variable prior to the parallel region.
      */
-    private T initialValue;
+    private T priorValue;
 
     /**
      * Constructs a new private variable with the given value.
@@ -33,9 +33,9 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
      */
     public FirstPrivateVariable(T value) {
         // Creator thread takes the same value as the other threads.
-        this.value = ThreadLocal.withInitial(() -> this.initialValue);
+        this.value = ThreadLocal.withInitial(() -> this.priorValue);
 
-        this.initialValue = value;
+        this.priorValue = value;
         this.value.set(value);
         // ^^^
         // Prevent the current thread from getting the initial value from the Supplier callback.
@@ -50,7 +50,7 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     @Override
     public void set(T value) {
         if (Thread.currentThread() == creatorThread) {
-            this.initialValue = value;
+            this.priorValue = value;
         }
 
         this.value.set(value);
@@ -59,7 +59,7 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     @Override
     public void update(UnaryOperator<T> operator) {
         if (Thread.currentThread() == creatorThread) {
-            this.initialValue = operator.apply(this.initialValue);
+            this.priorValue = operator.apply(this.priorValue);
         }
 
         this.value.set(operator.apply(this.value.get()));
@@ -67,12 +67,11 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 
     @Override
     public void end() {
-        if (Thread.currentThread() == creatorThread) {
-            return;
-        }
-
-        // Remove the value from the other threads, not the creator one.
-        this.value.remove();
+        this.value.remove(); // Remove the value from the thread local to prevent memory leaks.
+        /*
+         * NOTE: if the variable is used after the parallel region, the value will be restored from
+         * the one kept in the initialValue field (value prior to the parallel region).
+         */
     }
 
     @Override
