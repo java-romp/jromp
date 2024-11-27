@@ -78,6 +78,15 @@ public final class Utils {
     }
 
     /**
+     * Returns ID of the current thread.
+     *
+     * @return the ID of the current thread.
+     */
+    public static long getThreadId() {
+        return Thread.currentThread().threadId();
+    }
+
+    /**
      * Utility class for number conversions.
      */
     public static class NumberUtils {
