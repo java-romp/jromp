@@ -90,7 +90,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 
     @Override
     public void end() {
-        this.value.remove(); // Remove the value from the current thread to avoid memory leaks
+        this.value.remove();
 
         // The value is restored from the map because the value of the variable is the last value set by any thread
         if (Thread.currentThread() == creatorThread) {

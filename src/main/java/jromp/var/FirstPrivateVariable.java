@@ -69,7 +69,7 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
 
     @Override
     public void end() {
-        this.value.remove(); // Remove the value from the thread local to prevent memory leaks.
+        this.value.remove();
         /*
          * NOTE: if the variable is used after the parallel region, the value will be restored from
          * the one kept in the initialValue field (value prior to the parallel region).
