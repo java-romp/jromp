@@ -27,13 +27,22 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
     private final transient Thread creatorThread = Thread.currentThread();
 
     /**
+     * The value of the variable prior to the parallel region.
+     */
+    private T priorValue;
+
+    /**
      * Constructs a new private variable with the given value.
      *
      * @param value the value of the variable.
      */
     public PrivateVariable(T value) {
         this.value = ThreadLocal.withInitial(() -> getInitialValue(castClass(value.getClass())));
+
+        this.priorValue = value;
         this.value.set(value); // Value for the creator thread.
+        // ^^^
+        // Prevent the current thread from getting the initial value from the Supplier callback.
     }
 
     @Override
@@ -43,22 +52,30 @@ public class PrivateVariable<T extends Serializable> implements Variable<T> {
 
     @Override
     public void set(T value) {
+        if (Thread.currentThread() == creatorThread) {
+            this.priorValue = value;
+        }
+
         this.value.set(value);
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
+        if (Thread.currentThread() == creatorThread) {
+            this.priorValue = operator.apply(this.priorValue);
+        }
+
         this.value.set(operator.apply(this.value.get()));
     }
 
     @Override
     public void end() {
-        if (Thread.currentThread() == creatorThread) {
-            return;
-        }
-
-        // Remove the value from the other threads, not the creator one.
         this.value.remove();
+
+        if (Thread.currentThread() == creatorThread) {
+            // We must restore the prior value for the creator thread.
+            this.value.set(this.priorValue);
+        }
     }
 
     @Override
