@@ -91,6 +91,7 @@ public class JROMP {
      * Register the given variables into the current parallel context.
      *
      * @param vars The variables to register.
+     *
      * @return The parallel runtime.
      */
     public JROMP registerVariables(Variable<?>... vars) {
