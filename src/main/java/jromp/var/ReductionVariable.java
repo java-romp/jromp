@@ -89,28 +89,26 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
 
     @Override
     public void set(T value) {
-        this.value.get() // Initialize and add the new variable to the map.
+        this.value.get() // Initialize and add the new variable to the map (if not initialized yet).
                   .set(value);
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        this.value.get() // Initialize and add the new variable to the map.
+        this.value.get() // Initialize and add the new variable to the map (if not initialized yet).
                   .update(operator);
     }
 
     @Override
     public void end() {
         if (Thread.currentThread() == creatorThread) {
-            // this.threadLocals.values().forEach(Variable::end); // This is a no-op, but kept this comment for understanding.
+            // NOTE: The creator thread should not remove its variable,
+            // because it is the result of the reduction operation.
             return;
         }
 
         // Remove the value from the other threads, not the creator one.
         this.value.remove();
-
-        // Todo: since this method is only called once, we should remove the created thread-local variables.
-        //  Same in other classes using this technique.
     }
 
     /**
