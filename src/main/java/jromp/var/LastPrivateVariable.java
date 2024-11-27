@@ -1,5 +1,7 @@
 package jromp.var;
 
+import jromp.concurrent.JrompThreadLocal;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +21,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     /**
      * The value of the variable.
      */
-    private final transient ThreadLocal<InternalVariable<T>> value;
+    private final transient JrompThreadLocal<InternalVariable<T>> value;
 
     /**
      * The private variables that are used to get the last value set.
@@ -43,7 +45,7 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
      * @param value the value of the variable.
      */
     public LastPrivateVariable(T value) {
-        this.value = ThreadLocal.withInitial(() -> {
+        this.value = JrompThreadLocal.withInitial(() -> {
             // New initialValue variable just to be sure that the references are different
             T initialValue = getInitialValue(castClass(value.getClass()));
             InternalVariable<T> internalVariable = new InternalVariable<>(initialValue);

@@ -1,5 +1,7 @@
 package jromp.var;
 
+import jromp.concurrent.JrompThreadLocal;
+
 import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
@@ -13,7 +15,7 @@ public class ThreadPrivateVariable<T extends Serializable> implements Variable<T
     /**
      * The thread local variable that holds the value of the variable.
      */
-    private final transient ThreadLocal<T> value;
+    private final transient JrompThreadLocal<T> value;
 
     /**
      * Constructs a new thread private variable with the given value.
@@ -21,7 +23,7 @@ public class ThreadPrivateVariable<T extends Serializable> implements Variable<T
      * @param value the initial value of the variable.
      */
     public ThreadPrivateVariable(T value) {
-        this.value = ThreadLocal.withInitial(() -> value);
+        this.value = JrompThreadLocal.withInitial(() -> value);
     }
 
     @Override

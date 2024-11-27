@@ -1,5 +1,6 @@
 package jromp.var;
 
+import jromp.concurrent.JrompThreadLocal;
 import jromp.var.reduction.ReductionOperation;
 
 import java.io.Serializable;
@@ -36,7 +37,7 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
     /**
      * The result of the reduction operation.
      */
-    private final transient ThreadLocal<InternalVariable<T>> value;
+    private final transient JrompThreadLocal<InternalVariable<T>> value;
 
     /**
      * Indicates whether the reduction variable has been merged.
@@ -60,7 +61,7 @@ public class ReductionVariable<T extends Serializable> implements Variable<T> {
     public ReductionVariable(ReductionOperation<T> operation, T initialValue) {
         this.operation = operation;
 
-        this.value = ThreadLocal.withInitial(() -> {
+        this.value = JrompThreadLocal.withInitial(() -> {
             T initValue = InitialValues.getInitialValue(castClass(initialValue.getClass()));
             InternalVariable<T> iVar = new InternalVariable<>(initValue);
             Thread thread = Thread.currentThread();
