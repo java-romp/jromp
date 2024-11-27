@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 
+import static jromp.Utils.castClass;
+import static jromp.var.InitialValues.getInitialValue;
+
 /**
  * A variable that is not shared between threads.
  * Same as {@link PrivateVariable}, but the value of the variable (on the creator thread) is the last
@@ -30,22 +33,28 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
     private long lastThreadId;
 
     /**
+     * The thread that created this variable.
+     */
+    private final transient Thread creatorThread = Thread.currentThread();
+
+    /**
      * Constructs a new private variable with the default value.
      *
      * @param value the value of the variable.
      */
     public LastPrivateVariable(T value) {
         this.value = ThreadLocal.withInitial(() -> {
-            InternalVariable<T> internalVariable = new InternalVariable<>(value);
+            // New initialValue variable just to be sure that the references are different
+            T initialValue = getInitialValue(castClass(value.getClass()));
+            InternalVariable<T> internalVariable = new InternalVariable<>(initialValue);
             this.threadLocals.put(Thread.currentThread().threadId(), internalVariable);
             return internalVariable;
         });
 
-        Thread creatorThread = Thread.currentThread();
         InternalVariable<T> variable = new InternalVariable<>(value);
-        this.threadLocals.put(creatorThread.threadId(), variable);
+        this.threadLocals.put(this.creatorThread.threadId(), variable);
         this.value.set(variable); // Set the value of the creator thread
-        this.lastThreadId = creatorThread.threadId();
+        this.lastThreadId = this.creatorThread.threadId();
     }
 
     @Override
@@ -79,15 +88,19 @@ public class LastPrivateVariable<T extends Serializable> implements Variable<T> 
 
     @Override
     public void end() {
-        this.value.set(this.threadLocals.get(this.lastThreadId));
-        // this.threadLocals.values().forEach(Variable::end); // This is a no-op, but kept this comment for understanding.
-        // this.threadLocals.clear();
-        // Todo: Add a method to the interface to remove the thread-local variables.
+        this.value.remove(); // Remove the value from the current thread to avoid memory leaks
+
+        // The value is restored from the map because the value of the variable is the last value set by any thread
+        if (Thread.currentThread() == creatorThread) {
+            this.value.set(this.threadLocals.get(this.lastThreadId)); // Only creator thread's value is restored
+            // Since the variables stored in the map are InternalVariable, we can avoid calling the end method
+            // because it is a noop.
+        }
     }
 
     @Override
     public String toString() {
         return "LastPrivateVariable{value=%s, lastValue=%s}".formatted(value.get().value(),
-                                                                       this.threadLocals.get(this.lastThreadId).value());
+                                                                       threadLocals.get(lastThreadId).value());
     }
 }
