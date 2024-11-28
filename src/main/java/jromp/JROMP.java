@@ -1,7 +1,7 @@
 package jromp;
 
-import jromp.concurrent.JrompExecutorWrapper;
 import jromp.concurrent.JrompThread;
+import jromp.concurrent.SimpleRoundRobinExecutor;
 import jromp.concurrent.ThreadTeam;
 import jromp.task.ForTask;
 import jromp.task.Task;
@@ -27,7 +27,7 @@ public class JROMP {
     /**
      * The thread executor used to execute the tasks.
      */
-    private final JrompExecutorWrapper executor;
+    private final SimpleRoundRobinExecutor executor;
 
     /**
      * Create a new instance for the parallel runtime.
@@ -38,7 +38,7 @@ public class JROMP {
     private JROMP(int threads, int threadsPerTeam) {
         context.threads = checkThreads(threads);
         context.threadsPerTeam = checkThreadsPerTeam(context.threads, threadsPerTeam);
-        this.executor = new JrompExecutorWrapper(
+        this.executor = new SimpleRoundRobinExecutor(
                 context.threads,
                 JrompThread.newThreadFactory(context.threadsPerTeam)
         );

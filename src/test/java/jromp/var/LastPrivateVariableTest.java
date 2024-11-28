@@ -103,4 +103,33 @@ class LastPrivateVariableTest {
 
         assertThat(sum.value()).isEqualTo(2);
     }
+
+    @Test
+    void testDoubleParallel() {
+        LastPrivateVariable<Integer> sum = new LastPrivateVariable<>(12);
+
+        JROMP.withThreads(4)
+             .registerVariables(sum)
+             .parallel(() -> {
+                 assertThat(sum.value()).isZero();
+
+                 for (int i = 0; i < 20; i++) {
+                     sum.update(Operations.add(1));
+                 }
+
+                 assertThat(sum.value()).isEqualTo(20);
+             })
+             .parallel(() -> {
+                 assertThat(sum.value()).isEqualTo(20);
+
+                 for (int i = 0; i < 60; i++) {
+                     sum.update(Operations.add(1));
+                 }
+
+                 assertThat(sum.value()).isEqualTo(80);
+             })
+             .join();
+
+        assertThat(sum.value()).isEqualTo(80);
+    }
 }
