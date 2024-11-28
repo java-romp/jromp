@@ -100,7 +100,7 @@ class PrivateVariableTests {
     }
 
     @Test
-    void testDoubleParallelBlock() {
+    void testDoubleParallel() {
         PrivateVariable<Integer> sum = new PrivateVariable<>(12);
 
         JROMP.withThreads(4)

@@ -74,4 +74,24 @@ class ThreadPrivateVariableTests {
         ThreadPrivateVariable<Integer> threadPrivateVariable = new ThreadPrivateVariable<>(0);
         assertThat(threadPrivateVariable.toString()).hasToString("ThreadPrivateVariable{value=0}");
     }
+
+    @Test
+    void testDoubleParallel() {
+        ThreadPrivateVariable<Integer> variable = new ThreadPrivateVariable<>(-1);
+
+        JROMP.withThreads(4)
+             .parallel(() -> {
+                 for (int i = 0; i < 100; i++) {
+                     variable.set(variable.value() + 1);
+                 }
+             })
+             .parallel(() -> {
+                 for (int i = 0; i < 100; i++) {
+                     variable.set(variable.value() + 1);
+                 }
+             })
+             .join();
+
+        assertThat(variable.value()).isEqualTo(-1);
+    }
 }
