@@ -29,7 +29,7 @@ class ThreadPrivateVariableTests {
     @Test
     void testUpdate() {
         ThreadPrivateVariable<Integer> threadPrivateVariable = new ThreadPrivateVariable<>(0);
-        threadPrivateVariable.update(x -> x + 1);
+        threadPrivateVariable.update(Operations.add(1));
         assertThat(threadPrivateVariable.value()).isOne();
     }
 
@@ -40,7 +40,7 @@ class ThreadPrivateVariableTests {
         ThreadPrivateVariable<Integer> variable = new ThreadPrivateVariable<>(0);
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
                      variable.set(variable.value() + 1);
                      assertThat(variable.value()).isBetween(0, iterations / threads);
@@ -58,7 +58,7 @@ class ThreadPrivateVariableTests {
         ThreadPrivateVariable<Integer> variable = new ThreadPrivateVariable<>(0);
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
                      variable.update(Operations.add(1));
                      assertThat(variable.value()).isBetween(0, iterations / threads);
@@ -73,5 +73,25 @@ class ThreadPrivateVariableTests {
     void testToString() {
         ThreadPrivateVariable<Integer> threadPrivateVariable = new ThreadPrivateVariable<>(0);
         assertThat(threadPrivateVariable.toString()).hasToString("ThreadPrivateVariable{value=0}");
+    }
+
+    @Test
+    void testDoubleParallel() {
+        ThreadPrivateVariable<Integer> variable = new ThreadPrivateVariable<>(-1);
+
+        JROMP.withThreads(4)
+             .parallel(() -> {
+                 for (int i = 0; i < 100; i++) {
+                     variable.set(variable.value() + 1);
+                 }
+             })
+             .parallel(() -> {
+                 for (int i = 0; i < 100; i++) {
+                     variable.set(variable.value() + 1);
+                 }
+             })
+             .join();
+
+        assertThat(variable.value()).isEqualTo(-1);
     }
 }

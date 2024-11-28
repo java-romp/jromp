@@ -1,6 +1,7 @@
 package jromp.var;
 
 import jromp.JROMP;
+import jromp.operation.Operations;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,49 +34,44 @@ class LastPrivateVariableTest {
     }
 
     @Test
-    void testCopy() {
-        LastPrivateVariable<Integer> lastPrivateVariable = new LastPrivateVariable<>(0);
-        Variable<Integer> copy = lastPrivateVariable.copy();
-        assertThat(copy.value()).isZero();
-        assertThat(copy).isInstanceOf(LastPrivateVariable.class)
-                        .isNotEqualTo(lastPrivateVariable);
-    }
-
-    @Test
     void testParallelForLastPrivateVarSet() {
         int threads = 4;
         int iterations = 100;
-        Variables vars = Variables.create().add("sum", new LastPrivateVariable<>(0));
+        LastPrivateVariable<Integer> sum = new LastPrivateVariable<>(0);
 
         JROMP.withThreads(threads)
-             .withVariables(vars)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .registerVariables(sum)
+             .parallelFor(0, iterations, (start, end) -> {
                  for (int i = start; i < end; i++) {
-                     Variable<Integer> sum = variables.get("sum");
                      sum.set(sum.value() + 1);
                  }
              })
              .join();
 
-        assertThat(vars.get("sum").value()).isEqualTo(25);
+        assertThat(sum.value()).isEqualTo(25);
     }
 
     @Test
     void testParallelForLastPrivateVarUpdate() {
         int threads = 4;
         int iterations = 100;
-        Variables vars = Variables.create().add("sum", new LastPrivateVariable<>(0));
+        LastPrivateVariable<Integer> sum = new LastPrivateVariable<>(0);
+        sum.set(2);
 
         JROMP.withThreads(threads)
-             .withVariables(vars)
-             .parallelFor(0, iterations, (start, end, variables) -> {
+             .registerVariables(sum)
+             .parallelFor(0, iterations, (start, end) -> {
+                 assertThat(sum.value()).isZero();
+
                  for (int i = start; i < end; i++) {
-                     variables.<Integer>get("sum").update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
+
+                 assertThat(sum.value()).isEqualTo(25);
              })
              .join();
 
-        assertThat(vars.get("sum").value()).isEqualTo(25);
+        assertThat(sum.value()).isEqualTo(25);
     }
 
     @Test
@@ -89,43 +85,51 @@ class LastPrivateVariableTest {
 
     @Test
     void testKeepLastValueAfterExecution() {
-        LastPrivateVariable<Integer> variable = new LastPrivateVariable<>(0);
-        Variables vars = Variables.create().add("sum", variable);
-        variable.set(2);
+        LastPrivateVariable<Integer> sum = new LastPrivateVariable<>(0);
+        sum.set(2);
 
         JROMP.withThreads(4)
-             .withVariables(vars)
-             .parallel(variables -> {
-                 Variable<Integer> sum = variables.get("sum");
+             .registerVariables(sum)
+             .parallel(() -> {
                  assertThat(sum.value()).isZero();
 
                  for (int i = 0; i < 2; i++) {
-                     sum.update(old -> old + 1);
+                     sum.update(Operations.add(1));
                  }
 
                  assertThat(sum.value()).isEqualTo(2);
              })
              .join();
 
-        assertThat(vars.get("sum").value()).isEqualTo(2);
+        assertThat(sum.value()).isEqualTo(2);
     }
 
     @Test
-    void testChainedEnd() {
-        Variable<Integer> var1 = new LastPrivateVariable<>(0);
-        Variable<Integer> var2 = var1.copy();
-        Variable<Integer> var3 = var2.copy();
+    void testDoubleParallel() {
+        LastPrivateVariable<Integer> sum = new LastPrivateVariable<>(12);
 
-        var1.set(1);
-        var2.set(2);
-        var3.set(3);
+        JROMP.withThreads(4)
+             .registerVariables(sum)
+             .parallel(() -> {
+                 assertThat(sum.value()).isZero();
 
-        var1.end();
-        var2.end();
-        var3.end();
+                 for (int i = 0; i < 20; i++) {
+                     sum.update(Operations.add(1));
+                 }
 
-        assertThat(var1.value()).isEqualTo(2);
-        assertThat(var2.value()).isEqualTo(3);
-        assertThat(var3.value()).isEqualTo(3);
+                 assertThat(sum.value()).isEqualTo(20);
+             })
+             .parallel(() -> {
+                 assertThat(sum.value()).isEqualTo(20);
+
+                 for (int i = 0; i < 60; i++) {
+                     sum.update(Operations.add(1));
+                 }
+
+                 assertThat(sum.value()).isEqualTo(80);
+             })
+             .join();
+
+        assertThat(sum.value()).isEqualTo(80);
     }
 }

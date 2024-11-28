@@ -1,13 +1,14 @@
 package jromp.var;
 
-import org.apache.commons.lang3.SerializationUtils;
+import jromp.concurrent.JrompThreadLocal;
 
 import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
 /**
  * A variable that is not shared between threads.
- * It is initialized with the given value.
+ * Same as {@link PrivateVariable}, but the initial value of the variable (on the worker threads) is the value
+ * set by the creator thread prior to the execution of the parallel region.
  *
  * @param <T> the type of the variable.
  */
@@ -15,7 +16,17 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
     /**
      * The value of the variable.
      */
-    private T value;
+    private final transient JrompThreadLocal<T> value;
+
+    /**
+     * The thread that created this variable.
+     */
+    private final transient Thread creatorThread = Thread.currentThread();
+
+    /**
+     * The value of the variable prior to the parallel region.
+     */
+    private T priorValue;
 
     /**
      * Constructs a new private variable with the given value.
@@ -23,36 +34,50 @@ public class FirstPrivateVariable<T extends Serializable> implements Variable<T>
      * @param value the value of the variable.
      */
     public FirstPrivateVariable(T value) {
-        this.value = value;
+        // Creator thread takes the same value as the other threads.
+        this.value = JrompThreadLocal.withInitial(() -> this.priorValue);
+
+        this.priorValue = value;
+        this.value.set(value);
+        // ^^^
+        // Prevent the current thread from getting the initial value from the Supplier callback.
+        // If this is not done, double update can happen and the initial value will be wrong.
     }
 
     @Override
     public T value() {
-        return this.value;
+        return this.value.get();
     }
 
     @Override
     public void set(T value) {
-        this.value = value;
+        if (Thread.currentThread() == creatorThread) {
+            this.priorValue = value;
+        }
+
+        this.value.set(value);
     }
 
     @Override
     public void update(UnaryOperator<T> operator) {
-        this.value = operator.apply(this.value);
-    }
+        if (Thread.currentThread() == creatorThread) {
+            this.priorValue = operator.apply(this.priorValue);
+        }
 
-    @Override
-    public PrivateVariable<T> copy() {
-        return new PrivateVariable<>(SerializationUtils.clone(this.value));
+        this.value.set(operator.apply(this.value.get()));
     }
 
     @Override
     public void end() {
-        // Do nothing
+        this.value.remove();
+        /*
+         * NOTE: if the variable is used after the parallel region, the value will be restored from
+         * the one kept in the initialValue field (value prior to the parallel region).
+         */
     }
 
     @Override
     public String toString() {
-        return "FirstPrivateVariable{value=%s}".formatted(value);
+        return "FirstPrivateVariable{value=%s}".formatted(this.value.get());
     }
 }

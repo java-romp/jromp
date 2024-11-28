@@ -11,6 +11,7 @@ class LogicalAndTests {
     void testIdentifier() {
         ReductionOperation<Boolean> logicalAnd = ReductionOperations.land();
         assertThat(logicalAnd.identifier()).isEqualTo("&&");
+        assertThat(ReductionOperations.fromIdentifier("&&")).isEqualTo(logicalAnd);
     }
 
     @Test

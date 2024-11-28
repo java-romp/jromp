@@ -11,14 +11,15 @@ class MaxTests {
     void testIdentifier() {
         ReductionOperation<Integer> max = ReductionOperations.max();
         assertThat(max.identifier()).isEqualTo("max");
+        assertThat(ReductionOperations.fromIdentifier("max")).isEqualTo(max);
     }
 
     @Test
     void testInitialize() {
-        ReductionOperation<Integer> max = ReductionOperations.max();
-        Variable<Integer> variable = new PrivateVariable<>(0);
+        ReductionOperation<Double> max = ReductionOperations.max();
+        Variable<Double> variable = new PrivateVariable<>(0.0);
         max.initialize(variable);
-        assertThat(variable.value()).isEqualTo((int) Double.NEGATIVE_INFINITY);
+        assertThat(variable.value()).isEqualTo(Double.NEGATIVE_INFINITY);
     }
 
     @Test

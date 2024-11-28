@@ -11,6 +11,7 @@ class BitwiseAndTests {
     void testIdentifier() {
         ReductionOperation<Integer> op = ReductionOperations.band();
         assertThat(op.identifier()).isEqualTo("&");
+        assertThat(ReductionOperations.fromIdentifier("&")).isEqualTo(op);
     }
 
     @Test

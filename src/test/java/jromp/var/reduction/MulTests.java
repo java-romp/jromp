@@ -11,6 +11,7 @@ class MulTests {
     void testIdentifier() {
         ReductionOperation<Integer> mul = ReductionOperations.mul();
         assertThat(mul.identifier()).isEqualTo("*");
+        assertThat(ReductionOperations.fromIdentifier("*")).isEqualTo(mul);
     }
 
     @Test

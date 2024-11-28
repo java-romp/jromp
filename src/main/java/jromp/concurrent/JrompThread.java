@@ -7,6 +7,9 @@ import java.util.concurrent.ThreadFactory;
  * A thread class that extends {@link Thread} and provides additional information about the thread.
  */
 public class JrompThread extends Thread {
+    /**
+     * The class name of this thread.
+     */
     public static final String CLASS_NAME = JrompThread.class.getSimpleName();
 
     /**
@@ -44,14 +47,29 @@ public class JrompThread extends Thread {
         this.team.addThread(this);
     }
 
+    /**
+     * Thread id getter.
+     *
+     * @return the thread ID.
+     */
     public int getTid() {
         return tid;
     }
 
+    /**
+     * Thread team getter.
+     *
+     * @return the team of the thread.
+     */
     public ThreadTeam getTeam() {
         return team;
     }
 
+    /**
+     * Thread name getter.
+     *
+     * @return the thread name.
+     */
     public String getThreadName() {
         return threadName;
     }
@@ -73,6 +91,13 @@ public class JrompThread extends Thread {
         return threadName;
     }
 
+    /**
+     * Creates a {@link ThreadFactory} that creates new {@link JrompThread} instances.
+     *
+     * @param threadsPerTeam the number of threads per team.
+     *
+     * @return a new {@link ThreadFactory} that creates new {@link JrompThread} instances.
+     */
     public static ThreadFactory newThreadFactory(int threadsPerTeam) {
         return new JrompThreadFactory(threadsPerTeam);
     }

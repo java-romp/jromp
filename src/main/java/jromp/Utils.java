@@ -65,6 +65,28 @@ public final class Utils {
     }
 
     /**
+     * Casts the class to the given type.
+     *
+     * @param clazz the class to be cast.
+     * @param <T>   the type of the class.
+     *
+     * @return the cast class.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> castClass(Class<?> clazz) {
+        return (Class<T>) clazz;
+    }
+
+    /**
+     * Returns ID of the current thread.
+     *
+     * @return the ID of the current thread.
+     */
+    public static long getThreadId() {
+        return Thread.currentThread().threadId();
+    }
+
+    /**
      * Utility class for number conversions.
      */
     public static class NumberUtils {
@@ -77,6 +99,7 @@ public final class Utils {
          *
          * @param value the value used to determine the type of the conversion.
          * @param num   the number to be converted to the desired type.
+         * @param <T>   the type of the value.
          *
          * @return the converted value with type T.
          *

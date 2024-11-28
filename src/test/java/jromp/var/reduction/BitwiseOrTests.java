@@ -11,6 +11,7 @@ class BitwiseOrTests {
     void testIdentifier() {
         ReductionOperation<Integer> bitwiseOr = ReductionOperations.bor();
         assertThat(bitwiseOr.identifier()).isEqualTo("|");
+        assertThat(ReductionOperations.fromIdentifier("|")).isEqualTo(bitwiseOr);
     }
 
     @Test

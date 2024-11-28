@@ -11,6 +11,7 @@ class LogicalOrTests {
     void testIdentifier() {
         ReductionOperation<Boolean> logicalOr = ReductionOperations.lor();
         assertThat(logicalOr.identifier()).isEqualTo("||");
+        assertThat(ReductionOperations.fromIdentifier("||")).isEqualTo(logicalOr);
     }
 
     @Test

@@ -40,11 +40,6 @@ public class AtomicVariable<T extends Serializable> implements Variable<T> {
     }
 
     @Override
-    public Variable<T> copy() {
-        return this;
-    }
-
-    @Override
     public void end() {
         // Do nothing (keep the last value).
     }

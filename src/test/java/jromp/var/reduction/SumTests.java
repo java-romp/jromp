@@ -11,6 +11,7 @@ class SumTests {
     void testIdentifier() {
         ReductionOperation<Integer> sum = ReductionOperations.sum();
         assertThat(sum.identifier()).isEqualTo("+");
+        assertThat(ReductionOperations.fromIdentifier("+")).isEqualTo(sum);
     }
 
     @Test

@@ -45,11 +45,6 @@ public class SharedVariable<T extends Serializable> implements Variable<T> {
     }
 
     @Override
-    public SharedVariable<T> copy() {
-        return this;
-    }
-
-    @Override
     public void end() {
         if (this.atomicVariable != null) {
             this.value = this.atomicVariable.value();
