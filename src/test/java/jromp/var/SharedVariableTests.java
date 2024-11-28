@@ -85,4 +85,7 @@ class SharedVariableTests {
 
         assertThat(sum.value()).isEqualTo(200);
     }
+
+    // The testDoubleParallel test is not done for the SharedVariable class because it does not make sense
+    // to have a shared variable that is updated by multiple threads in parallel.
 }

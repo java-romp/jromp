@@ -82,4 +82,25 @@ class AtomicVariableTests {
 
         assertThat(sum.value()).isEqualTo(200);
     }
+
+    @Test
+    void testDoubleParallel() {
+        AtomicVariable<Integer> sum = new AtomicVariable<>(0);
+
+        JROMP.withThreads(4)
+             .registerVariables(sum)
+             .parallel(() -> {
+                 for (int i = 0; i < 2; i++) {
+                     sum.update(Operations.add(1));
+                 }
+             })
+             .parallel(() -> {
+                 for (int i = 0; i < 2; i++) {
+                     sum.update(Operations.add(1));
+                 }
+             })
+             .join();
+
+        assertThat(sum.value()).isEqualTo(16);
+    }
 }

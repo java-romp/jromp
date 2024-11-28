@@ -117,4 +117,34 @@ class FirstPrivateVariableTests {
 
         assertThat(sum.value()).isEqualTo(15);
     }
+
+    @Test
+    void testDoubleParallel() {
+        FirstPrivateVariable<Integer> sum = new FirstPrivateVariable<>(0);
+
+        JROMP.withThreads(4)
+             .registerVariables(sum)
+             .parallel(() -> {
+                 assertThat(sum.value()).isZero();
+
+                 for (int i = 0; i < 2; i++) {
+                     sum.update(Operations.add(1));
+                 }
+
+                 assertThat(sum.value()).isEqualTo(2);
+             })
+             .parallel(() -> {
+                 assertThat(sum.value()).isEqualTo(2);
+
+                 for (int i = 0; i < 2; i++) {
+                     sum.update(Operations.add(1));
+                 }
+
+                 assertThat(sum.value()).isEqualTo(4);
+             })
+             .join();
+
+        // The value is zero because each thread has its own copy of the variable
+        assertThat(sum.value()).isZero();
+    }
 }

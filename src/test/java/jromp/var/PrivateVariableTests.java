@@ -101,14 +101,11 @@ class PrivateVariableTests {
 
     @Test
     void testDoubleParallelBlock() {
-        PrivateVariable<Integer> sum = new PrivateVariable<>(10);
-        sum.set(12);
+        PrivateVariable<Integer> sum = new PrivateVariable<>(12);
 
         JROMP.withThreads(4)
              .registerVariables(sum)
              .parallel(() -> {
-                 System.out.println(
-                         "1: " + Thread.currentThread().getName() + " Id:" + Thread.currentThread().threadId());
                  assertThat(sum.value()).isZero();
 
                  for (int i = 0; i < 20; i++) {
@@ -117,17 +114,14 @@ class PrivateVariableTests {
 
                  assertThat(sum.value()).isEqualTo(20);
              })
-             .barrier()
              .parallel(() -> {
-                 System.out.println(
-                         "2: " + Thread.currentThread().getName() + " Id:" + Thread.currentThread().threadId());
                  assertThat(sum.value()).isEqualTo(20);
 
-                 for (int i = 0; i < 20; i++) {
+                 for (int i = 0; i < 60; i++) {
                      sum.update(Operations.add(1));
                  }
 
-                 assertThat(sum.value()).isEqualTo(40);
+                 assertThat(sum.value()).isEqualTo(80);
              })
              .join();
 
