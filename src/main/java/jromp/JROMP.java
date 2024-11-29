@@ -140,6 +140,69 @@ public class JROMP {
     }
 
     /**
+     * Executes a task in a parallel block, using the current variables, if the condition is met.
+     * Otherwise, the task is executed by one of the threads.
+     *
+     * @param task              The task to run.
+     * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP parallel(Task task, boolean shouldParallelize) {
+        if (shouldParallelize) {
+            return parallel(task);
+        }
+
+        executor.execute(task::run);
+        return this;
+    }
+
+    /**
+     * Executes a for loop in parallel with the given start and end indices, using
+     * a task implementation if the condition is met.
+     *
+     * @param start             The start index of the for loop.
+     * @param end               The end index of the for loop.
+     * @param nowait            Whether to wait for the threads to finish.
+     * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     * @param task              The task to be executed in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP parallelFor(int start, int end, boolean nowait, boolean shouldParallelize, ForTask task) {
+        Barrier barrier = new Barrier("ParallelFor", context.threads);
+        barrier.setNowait(nowait);
+
+        if (shouldParallelize) {
+            for (int i = 0; i < context.threads; i++) {
+                // Calculate the start and end indices for the current thread.
+                int chunkSize = (end - start) / context.threads;
+                int chunkStart = start + i * chunkSize;
+                int chunkEnd;
+
+                // If this is the last thread, make sure to include the remaining elements.
+                if (i == context.threads - 1) {
+                    chunkEnd = end;
+                } else {
+                    chunkEnd = chunkStart + chunkSize;
+                }
+
+                executor.execute(() -> {
+                    task.run(chunkStart, chunkEnd);
+                    barrier.await();
+                });
+            }
+        } else {
+            executor.execute(() -> {
+                task.run(start, end);
+                barrier.await();
+            });
+        }
+
+        return this;
+    }
+
+    /**
      * Executes a for loop in parallel with the given start and end indices, using
      * a task implementation.
      *
@@ -151,29 +214,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP parallelFor(int start, int end, boolean nowait, ForTask task) {
-        Barrier barrier = new Barrier("ParallelFor", context.threads);
-        barrier.setNowait(nowait);
-
-        for (int i = 0; i < context.threads; i++) {
-            // Calculate the start and end indices for the current thread.
-            int chunkSize = (end - start) / context.threads;
-            int chunkStart = start + i * chunkSize;
-            int chunkEnd;
-
-            // If this is the last thread, make sure to include the remaining elements.
-            if (i == context.threads - 1) {
-                chunkEnd = end;
-            } else {
-                chunkEnd = chunkStart + chunkSize;
-            }
-
-            executor.execute(() -> {
-                task.run(chunkStart, chunkEnd);
-                barrier.await();
-            });
-        }
-
-        return this;
+        return parallelFor(start, end, nowait, true, task);
     }
 
     /**
@@ -187,18 +228,27 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP parallelFor(int start, int end, ForTask task) {
-        return parallelFor(start, end, false, task);
+        return parallelFor(start, end, false, true, task);
     }
 
     /**
-     * Executes the given tasks in separate sections.
+     * Executes the given tasks in separate sections if the condition is met.
      *
-     * @param nowait Whether to wait for the threads to finish.
-     * @param tasks  The tasks to run in parallel.
+     * @param nowait            Whether to wait for the threads to finish.
+     * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     * @param tasks             The tasks to run in parallel.
      *
      * @return The parallel runtime.
      */
-    public JROMP sections(boolean nowait, Task... tasks) {
+    public JROMP sections(boolean nowait, boolean shouldParallelize, Task... tasks) {
+        if (!shouldParallelize) {
+            return single(() -> {
+                for (Task task : tasks) {
+                    task.run();
+                }
+            });
+        }
+
         if (tasks.length <= context.threads) {
             Barrier barrier = new Barrier("Sections", tasks.length);
             barrier.setNowait(nowait);
@@ -217,11 +267,23 @@ public class JROMP {
                 Task[] batch = new Task[batchSize];
 
                 System.arraycopy(tasks, i, batch, 0, batchSize);
-                this.sections(nowait, batch);
+                this.sections(nowait, true, batch);
             }
         }
 
         return this;
+    }
+
+    /**
+     * Executes the given tasks in separate sections.
+     *
+     * @param nowait Whether to wait for the threads to finish.
+     * @param tasks  The tasks to run in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP sections(boolean nowait, Task... tasks) {
+        return sections(nowait, true, tasks);
     }
 
     /**
@@ -232,7 +294,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP sections(Task... tasks) {
-        return sections(false, tasks);
+        return sections(false, true, tasks);
     }
 
     /**
@@ -244,7 +306,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP sections(boolean nowait, List<Task> tasks) {
-        return sections(nowait, tasks.toArray(Task[]::new));
+        return sections(nowait, true, tasks.toArray(Task[]::new));
     }
 
     /**
