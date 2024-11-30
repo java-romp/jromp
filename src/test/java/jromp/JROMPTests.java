@@ -68,7 +68,7 @@ class JROMPTests {
         int[] countsPerThread = new int[threads];
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end) -> {
+             .parallelFor(0, iterations, false, (start, end) -> {
                  for (int i = start; i < end; i++) {
                      countsPerThread[getThreadNum()]++;
                  }
@@ -76,6 +76,13 @@ class JROMPTests {
              .join();
 
         assertThat(countsPerThread).containsOnly(iterations / threads);
+    }
+
+    @Test
+    void testParallelForDeactivatedParallelization() {
+        JROMP.withThreads(4)
+             .parallelFor(0, 1000, false, false, (start, end) -> assertThat(getNumThreads()).isOne())
+             .join();
     }
 
     @Test
@@ -136,7 +143,7 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .registerVariables(num)
-             .sections(
+             .sections(false,
                      () -> num.update(add),
                      () -> num.update(add),
                      () -> num.update(add),
@@ -146,6 +153,18 @@ class JROMPTests {
              .join();
 
         assertThat(num.value()).isEqualTo(5);
+    }
+
+    @Test
+    void testSectionsDeactivatedParallelization() {
+        JROMP.withThreads(4)
+             .sections(false, false,
+                       () -> assertThat(getNumThreads()).isOne(),
+                       () -> assertThat(getNumThreads()).isOne(),
+                       () -> assertThat(getNumThreads()).isOne(),
+                       () -> assertThat(getNumThreads()).isOne()
+             )
+             .join();
     }
 
     @Test
@@ -174,6 +193,13 @@ class JROMPTests {
              .join();
 
         assertThat(result).containsOnly("Hello, world!");
+    }
+
+    @Test
+    void testParallelDeactivatedParallelization() {
+        JROMP.withThreads(4)
+             .parallel(false, () -> assertThat(getNumThreads()).isOne())
+             .join();
     }
 
     @Test
