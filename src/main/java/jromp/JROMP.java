@@ -2,6 +2,7 @@ package jromp;
 
 import jromp.concurrent.JrompThread;
 import jromp.concurrent.SimpleRoundRobinExecutor;
+import jromp.concurrent.ThreadLocalFlag;
 import jromp.concurrent.ThreadTeam;
 import jromp.task.ForTask;
 import jromp.task.Task;
@@ -140,6 +141,65 @@ public class JROMP {
     }
 
     /**
+     * Executes a task in a parallel block, using the current variables, if the condition is met.
+     * Otherwise, the task is executed by one of the threads.
+     *
+     * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     * @param task              The task to run.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP parallel(boolean shouldParallelize, Task task) {
+        if (shouldParallelize) {
+            return parallel(task);
+        }
+
+        executor.execute(context.disableParallelismForTask(task)::run);
+        return this;
+    }
+
+    /**
+     * Executes a for loop in parallel with the given start and end indices, using
+     * a task implementation if the condition is met. Otherwise, the task is executed
+     * by one of the threads.
+     *
+     * @param start             The start index of the for loop.
+     * @param end               The end index of the for loop.
+     * @param nowait            Whether to wait for the threads to finish.
+     * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     * @param task              The task to be executed in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP parallelFor(int start, int end, boolean nowait, boolean shouldParallelize, ForTask task) {
+        Barrier barrier = new Barrier("ParallelFor", context.threads);
+        barrier.setNowait(nowait);
+
+        if (shouldParallelize) {
+            for (int i = 0; i < context.threads; i++) {
+                // Calculate the start and end indices for the current thread.
+                int chunkSize = (end - start) / context.threads;
+                int chunkStart = start + i * chunkSize;
+                int chunkEnd;
+
+                // If this is the last thread, make sure to include the remaining elements.
+                if (i == context.threads - 1) {
+                    chunkEnd = end;
+                } else {
+                    chunkEnd = chunkStart + chunkSize;
+                }
+
+                executor.execute(() -> task.run(chunkStart, chunkEnd));
+            }
+        } else {
+            executor.execute(context.disableParallelismForTask(() -> task.run(start, end))::run);
+        }
+
+        sync(barrier);
+        return this;
+    }
+
+    /**
      * Executes a for loop in parallel with the given start and end indices, using
      * a task implementation.
      *
@@ -151,29 +211,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP parallelFor(int start, int end, boolean nowait, ForTask task) {
-        Barrier barrier = new Barrier("ParallelFor", context.threads);
-        barrier.setNowait(nowait);
-
-        for (int i = 0; i < context.threads; i++) {
-            // Calculate the start and end indices for the current thread.
-            int chunkSize = (end - start) / context.threads;
-            int chunkStart = start + i * chunkSize;
-            int chunkEnd;
-
-            // If this is the last thread, make sure to include the remaining elements.
-            if (i == context.threads - 1) {
-                chunkEnd = end;
-            } else {
-                chunkEnd = chunkStart + chunkSize;
-            }
-
-            executor.execute(() -> {
-                task.run(chunkStart, chunkEnd);
-                barrier.await();
-            });
-        }
-
-        return this;
+        return parallelFor(start, end, nowait, true, task);
     }
 
     /**
@@ -187,20 +225,38 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP parallelFor(int start, int end, ForTask task) {
-        return parallelFor(start, end, false, task);
+        return parallelFor(start, end, false, true, task);
     }
 
     /**
-     * Executes the given tasks in separate sections.
+     * Executes the given tasks in separate sections if the condition is met. Otherwise,
+     * the tasks are executed by one of the threads.
      *
-     * @param nowait Whether to wait for the threads to finish.
-     * @param tasks  The tasks to run in parallel.
+     * @param nowait            Whether to wait for the threads to finish.
+     * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     * @param tasks             The tasks to run in parallel.
      *
      * @return The parallel runtime.
      */
-    public JROMP sections(boolean nowait, Task... tasks) {
+    public JROMP sections(boolean nowait, boolean shouldParallelize, Task... tasks) {
+        Barrier barrier;
+
+        if (!shouldParallelize) {
+            barrier = new Barrier("Sections", context.threads);
+            barrier.setNowait(nowait);
+
+            executor.execute(context.disableParallelismForTask(() -> {
+                for (Task task : tasks) {
+                    task.run();
+                }
+            })::run);
+            sync(barrier);
+            return this;
+        }
+
         if (tasks.length <= context.threads) {
-            Barrier barrier = new Barrier("Sections", tasks.length);
+            // Todo: change barrier to use context.threads and sync at the end.
+            barrier = new Barrier("Sections", tasks.length);
             barrier.setNowait(nowait);
 
             for (Task task : tasks) {
@@ -217,11 +273,23 @@ public class JROMP {
                 Task[] batch = new Task[batchSize];
 
                 System.arraycopy(tasks, i, batch, 0, batchSize);
-                this.sections(nowait, batch);
+                this.sections(nowait, true, batch);
             }
         }
 
         return this;
+    }
+
+    /**
+     * Executes the given tasks in separate sections.
+     *
+     * @param nowait Whether to wait for the threads to finish.
+     * @param tasks  The tasks to run in parallel.
+     *
+     * @return The parallel runtime.
+     */
+    public JROMP sections(boolean nowait, Task... tasks) {
+        return sections(nowait, true, tasks);
     }
 
     /**
@@ -232,7 +300,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP sections(Task... tasks) {
-        return sections(false, tasks);
+        return sections(false, true, tasks);
     }
 
     /**
@@ -244,7 +312,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP sections(boolean nowait, List<Task> tasks) {
-        return sections(nowait, tasks.toArray(Task[]::new));
+        return sections(nowait, true, tasks.toArray(Task[]::new));
     }
 
     /**
@@ -392,13 +460,18 @@ public class JROMP {
     }
 
     /**
-     * Get the number of threads used in the current parallel block. If not in a parallel context,
-     * the number of threads is 1.
+     * Get the number of threads used in the current parallel block.
+     * If not in a parallel context, or parallelism is disabled, the number of threads is 1.
      *
      * @return The number of threads.
      */
     public static int getNumThreads() {
-        return isInParallelContext() ? context.threads : 1;
+        if (!isInParallelContext() || context.parallelism.isInactive()) {
+            return 1;
+        }
+
+        return context.threads;
+
     }
 
     /**
@@ -421,12 +494,25 @@ public class JROMP {
     }
 
     /**
+     * Synchronizes the threads at the given barrier.
+     *
+     * @param barrier The barrier to synchronize the threads.
+     */
+    private void sync(Barrier barrier) {
+        executor.distributeToAll(barrier::await);
+    }
+
+    /**
      * The context for the current parallel block. This class is used to store several properties
      * that has a parallel block:
      * <ul>
      *     <li>The number of threads used in the current parallel block.</li>
      *     <li>The number of threads per team used in the current parallel block.</li>
      *     <li>The variables used in the current parallel block.</li>
+     *     <li>
+     *         The parallelism flag. If disabled, the parallel block will be executed by a single thread, and
+     *         {@link #getNumThreads()} will return 1.
+     *     </li>
      * </ul>
      */
     private static class Context {
@@ -440,10 +526,41 @@ public class JROMP {
          */
         private int threadsPerTeam;
 
+        /**
+         * The variables used in the current parallel block.
+         */
         private final List<Variable<?>> variablesList = new ArrayList<>();
 
+        /**
+         * The disabled parallelism flag.
+         */
+        private final ThreadLocalFlag parallelism = new ThreadLocalFlag(true);
+
+        /**
+         * Register the given variable into the current parallel context.
+         *
+         * @param variable The variable to register.
+         */
         void registerVariable(Variable<?> variable) {
             variablesList.add(variable);
+        }
+
+        Task disableParallelismForTask(Task task) {
+            return () -> {
+                parallelism.deactivate();
+                task.run();
+                parallelism.activate();
+            };
+        }
+
+        @Override
+        public String toString() {
+            return "Context{" +
+                    "threads=" + threads +
+                    ", threadsPerTeam=" + threadsPerTeam +
+                    ", variablesList=" + variablesList +
+                    ", parallelism=" + parallelism +
+                    '}';
         }
     }
 }

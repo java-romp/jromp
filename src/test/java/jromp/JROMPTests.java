@@ -3,6 +3,8 @@ package jromp;
 import jromp.operation.Operation;
 import jromp.operation.Operations;
 import jromp.var.AtomicVariable;
+import jromp.var.SharedVariable;
+import jromp.var.Variable;
 import org.junit.jupiter.api.Test;
 
 import static jromp.JROMP.getNumThreads;
@@ -68,7 +70,7 @@ class JROMPTests {
         int[] countsPerThread = new int[threads];
 
         JROMP.withThreads(threads)
-             .parallelFor(0, iterations, (start, end) -> {
+             .parallelFor(0, iterations, false, (start, end) -> {
                  for (int i = start; i < end; i++) {
                      countsPerThread[getThreadNum()]++;
                  }
@@ -76,6 +78,13 @@ class JROMPTests {
              .join();
 
         assertThat(countsPerThread).containsOnly(iterations / threads);
+    }
+
+    @Test
+    void testParallelForDeactivatedParallelization() {
+        JROMP.withThreads(4)
+             .parallelFor(0, 1000, false, false, (start, end) -> assertThat(getNumThreads()).isOne())
+             .join();
     }
 
     @Test
@@ -136,16 +145,34 @@ class JROMPTests {
 
         JROMP.withThreads(threads)
              .registerVariables(num)
-             .sections(
-                     () -> num.update(add),
-                     () -> num.update(add),
-                     () -> num.update(add),
-                     () -> num.update(add),
-                     () -> num.update(add)
+             .sections(false,
+                       () -> num.update(add),
+                       () -> num.update(add),
+                       () -> num.update(add),
+                       () -> num.update(add),
+                       () -> num.update(add)
              )
              .join();
 
         assertThat(num.value()).isEqualTo(5);
+    }
+
+    @Test
+    void testSectionsDeactivatedParallelization() {
+        Variable<Integer> num = new SharedVariable<>(0);
+
+        JROMP.withThreads(4)
+             .sections(false, false,
+                       () -> {
+                           assertThat(getNumThreads()).isOne();
+                           num.update(Operations.add(1));
+                       },
+                       () -> num.update(Operations.add(1)),
+                       () -> num.update(Operations.add(1)),
+                       () -> num.update(Operations.add(1))
+             )
+             .single(() -> assertThat(num.value()).isEqualTo(4))
+             .join();
     }
 
     @Test
@@ -174,6 +201,13 @@ class JROMPTests {
              .join();
 
         assertThat(result).containsOnly("Hello, world!");
+    }
+
+    @Test
+    void testParallelDeactivatedParallelization() {
+        JROMP.withThreads(4)
+             .parallel(false, () -> assertThat(getNumThreads()).isOne())
+             .join();
     }
 
     @Test
