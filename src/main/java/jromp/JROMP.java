@@ -402,12 +402,7 @@ public class JROMP {
      * @return The parallel runtime.
      */
     public JROMP barrier() {
-        Barrier barrier = new Barrier("Barrier", context.threads);
-
-        for (int i = 0; i < context.threads; i++) {
-            executor.execute(barrier::await);
-        }
-
+        sync(new Barrier("Barrier", context.threads));
         return this;
     }
 
