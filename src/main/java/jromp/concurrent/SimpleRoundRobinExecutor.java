@@ -68,4 +68,10 @@ public class SimpleRoundRobinExecutor {
         this.executors[this.currentExecutor].execute(runnable);
         this.currentExecutor = (this.currentExecutor + 1) % this.executors.length;
     }
+
+    public void distributeToAll(Runnable runnable) {
+        for (ExecutorService executor : this.executors) {
+            executor.execute(runnable);
+        }
+    }
 }

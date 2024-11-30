@@ -3,6 +3,8 @@ package jromp;
 import jromp.operation.Operation;
 import jromp.operation.Operations;
 import jromp.var.AtomicVariable;
+import jromp.var.SharedVariable;
+import jromp.var.Variable;
 import org.junit.jupiter.api.Test;
 
 import static jromp.JROMP.getNumThreads;
@@ -144,11 +146,11 @@ class JROMPTests {
         JROMP.withThreads(threads)
              .registerVariables(num)
              .sections(false,
-                     () -> num.update(add),
-                     () -> num.update(add),
-                     () -> num.update(add),
-                     () -> num.update(add),
-                     () -> num.update(add)
+                       () -> num.update(add),
+                       () -> num.update(add),
+                       () -> num.update(add),
+                       () -> num.update(add),
+                       () -> num.update(add)
              )
              .join();
 
@@ -157,13 +159,19 @@ class JROMPTests {
 
     @Test
     void testSectionsDeactivatedParallelization() {
+        Variable<Integer> num = new SharedVariable<>(0);
+
         JROMP.withThreads(4)
              .sections(false, false,
-                       () -> assertThat(getNumThreads()).isOne(),
-                       () -> assertThat(getNumThreads()).isOne(),
-                       () -> assertThat(getNumThreads()).isOne(),
-                       () -> assertThat(getNumThreads()).isOne()
+                       () -> {
+                           assertThat(getNumThreads()).isOne();
+                           num.update(Operations.add(1));
+                       },
+                       () -> num.update(Operations.add(1)),
+                       () -> num.update(Operations.add(1)),
+                       () -> num.update(Operations.add(1))
              )
+             .single(() -> assertThat(num.value()).isEqualTo(4))
              .join();
     }
 
