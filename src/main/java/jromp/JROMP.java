@@ -502,8 +502,16 @@ public class JROMP {
          */
         private int threadsPerTeam;
 
+        /**
+         * The variables used in the current parallel block.
+         */
         private final List<Variable<?>> variablesList = new ArrayList<>();
 
+        /**
+         * Register the given variable into the current parallel context.
+         *
+         * @param variable The variable to register.
+         */
         void registerVariable(Variable<?> variable) {
             variablesList.add(variable);
         }
