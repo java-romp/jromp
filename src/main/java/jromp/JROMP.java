@@ -143,12 +143,12 @@ public class JROMP {
      * Executes a task in a parallel block, using the current variables, if the condition is met.
      * Otherwise, the task is executed by one of the threads.
      *
-     * @param task              The task to run.
      * @param shouldParallelize The condition to check if the task should be executed in parallel.
+     * @param task              The task to run.
      *
      * @return The parallel runtime.
      */
-    public JROMP parallel(Task task, boolean shouldParallelize) {
+    public JROMP parallel(boolean shouldParallelize, Task task) {
         if (shouldParallelize) {
             return parallel(task);
         }
