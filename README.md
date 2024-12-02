@@ -32,6 +32,7 @@ using Java's `ThreadPoolExecutor` and designed to be efficient and scalable.
 - `lastprivate` - Last private variable (it takes the value after the parallel region).
 - `reduction` - Reduction variable (it accumulates the value of each thread depending on the operation).
 - `atomic` - Atomic variable (it is updated atomically).
+- `threadprivate` - Private variable for each thread.
 
 ## Installation
 
@@ -44,7 +45,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 <dependency>
   <groupId>io.github.java-romp</groupId>
   <artifactId>jromp</artifactId>
-  <version>2.2.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 <!-- @formatter:on -->
@@ -52,7 +53,7 @@ To use JROMP in your project, you can add the dependency using the following cod
 ### Gradle
 
 ```groovy
-implementation 'io.github.java-romp:jromp:2.2.0'
+implementation 'io.github.java-romp:jromp:3.0.0'
 ```
 
 If your package manager is not listed here, you can check the latest version on
@@ -71,7 +72,7 @@ import static jromp.JROMP.getThreadNum;
 public class BasicUsage {
   public static void main(String[] args) {
     JROMP.allThreads()
-         .parallel(variables -> System.out.printf("Hello World from thread %d of %d%n", getThreadNum(), getNumThreads()))
+         .parallel(() -> System.out.printf("Hello World from thread %d of %d%n", getThreadNum(), getNumThreads()))
          .join();
   }
 }

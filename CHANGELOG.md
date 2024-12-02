@@ -6,6 +6,30 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## Version [3.0.0](https://github.com/java-romp/jromp/releases/tag/3.0.0) (2024-12-02)
+
+[2.2.0...3.0.0](https://github.com/java-romp/jromp/compare/2.2.0...3.0.0)
+
+### ⚠️ Breaking Changes
+
+* remove variable wrapping in [#99](https://github.com/java-romp/jromp/pull/99)
+
+### ✨ Features
+
+* new methods with `false` as `nowait` value in [#92](https://github.com/java-romp/jromp/pull/92)
+* implemented logical and/or operations in [#94](https://github.com/java-romp/jromp/pull/94)
+* added new `ThreadPrivateVariable` in [#97](https://github.com/java-romp/jromp/pull/97)
+* conditional execution in [#102](https://github.com/java-romp/jromp/pull/102)
+
+### 🐞 Fixes
+
+* implemented new round-robin executor and tested double parallel call in [#101](https://github.com/java-romp/jromp/pull/101)
+* update all dependencies in [#95](https://github.com/java-romp/jromp/pull/95)
+
+### 🛠️ Refactor
+
+* improve and move checks to constructor in [#93](https://github.com/java-romp/jromp/pull/93)
+
 ## Version [2.2.0](https://github.com/java-romp/jromp/releases/tag/2.2.0) (2024-10-16)
 
 [2.1.0...2.2.0](https://github.com/java-romp/jromp/compare/2.1.0...2.2.0)
