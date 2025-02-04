@@ -49,7 +49,7 @@
 
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/java-romp/jromp</url>
+    <url>https://github.com/java-romp/jromp/issues</url>
   </issueManagement>
 
   <dependencies>
