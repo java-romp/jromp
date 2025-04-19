@@ -255,7 +255,6 @@ public class JROMP {
         }
 
         if (tasks.length <= context.threads) {
-            // Todo: change barrier to use context.threads and sync at the end.
             barrier = new Barrier("Sections", tasks.length);
             barrier.setNowait(nowait);
 
